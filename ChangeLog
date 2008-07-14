@@ -1,365 +1,338 @@
+2008-07-14 12:17  sloot
+
+	* [r2235] .: moved
+
+2008-07-01 10:00  sloot
+
+	* [r2206] : fixed copyright notice. its 2008 man!
+	  and isn't this Mbt3 since long?
+
+2008-06-23 14:48  sloot
+
+	* [r2199] : fixed includes
+
+2008-06-02 15:15  sloot
+
+	* [r2167] : we are SVN based now
+
 2008-04-15 14:03  sloot
 
-	* [r2081] Makefile.am, README, README2.in, configure.ac: README2 is
-	  gone now
+	* [r2081] : README2 is gone now
 
 2008-04-15 13:43  sloot
 
-	* [r2080] init/mbt.in: oesp. --pidfile is very badly needed!
+	* [r2080] : oesp. --pidfile is very badly needed!
 
 2008-04-15 12:42  sloot
 
-	* [r2074] Makefile.am, configure.ac, init, init/.cvsignore,
-	  init/Makefile.am, init/mbt.in: added init script
+	* [r2074] : added init script
 
 2008-04-15 09:51  sloot
 
-	* [r2073] src/Makefile.am: do not install demo and convert utility
+	* [r2073] : do not install demo and convert utility
 
 2008-04-15 09:31  sloot
 
-	* [r2072] src/MbtAPI.cxx, src/Tagger.cxx: now -logfile and -pidfile
-	  work as we like it
+	* [r2072] : now -logfile and -pidfile work as we like it
 
 2008-04-08 15:43  sloot
 
-	* [r2048] src/Tagger.cxx: first attempt to add pidfile and logfile.
+	* [r2048] : first attempt to add pidfile and logfile.
 	  needs more work
 
 2008-03-31 10:30  sloot
 
-	* [r2016] configure.ac, include/mbt/Pattern.h, src/Pattern.cxx,
-	  src/Sentence.cxx: added compiler flags for GCC, and fixed
-	  warnings resulting form that
+	* [r2016] : added compiler flags for GCC, and fixed warnings
+	  resulting form that
 
 2008-03-18 10:47  sloot
 
-	* [r1999] src, src/.cvsignore: forgotthe this one
+	* [r1999] : forgotthe this one
 
 2008-03-18 10:47  sloot
 
-	* [r1998] trunk/Dimbl, trunk/Dimbl/.cvsignore, trunk/Dimbl/src,
-	  trunk/Dimbl/src/.cvsignore, ., .cvsignore, src, src/.cvsignore,
-	  trunk/Tadpole, trunk/Tadpole/.cvsignore, trunk/Tadpole/src,
-	  trunk/Tadpole/src/.cvsignore, trunk/Timbl6,
-	  trunk/Timbl6/.cvsignore, trunk/Timbl6/src,
-	  trunk/Timbl6/src/.cvsignore: added ignores
+	* [r1998] : added ignores
 
 2008-03-18 10:44  sloot
 
-	* [r1997] src/Makefile.am: added version
+	* [r1997] : added version
 
 2008-03-18 09:20  sloot
 
-	* [r1992] configure.ac, src/Makefile.am: added libtool stuff
+	* [r1992] : added libtool stuff
 	  bumped version
 
 2008-03-05 11:04  sloot
 
-	* [r1984] configure.ac, mbt.pc.in: setting versions for release
+	* [r1984] : setting versions for release
 
 2008-03-05 11:04  sloot
 
-	* [r1983] README2.in: next year
+	* [r1983] : next year
 
 2008-03-05 11:03  sloot
 
-	* [r1982] AUTHORS: one more contribuant
+	* [r1982] : one more contribuant
 
 2008-03-05 11:02  sloot
 
-	* [r1981] NEWS: news
+	* [r1981] : news
 
 2008-03-03 08:47  sloot
 
-	* [r1970] src/Tagger.cxx: close fd's before unlinking the files
+	* [r1970] : close fd's before unlinking the files
 
 2008-02-20 11:09  sloot
 
-	* [r1951] ., .cvsignore: more to ignore
+	* [r1951] : more to ignore
 
 2008-02-20 11:02  sloot
 
-	* [r1950] acinclude.m4: and still more
+	* [r1950] : and still more
 
 2008-02-20 11:01  sloot
 
-	* [r1949] acinclude.m4: and more...
+	* [r1949] : and more...
 
 2008-02-20 10:53  sloot
 
-	* [r1948] acinclude.m4: another macro added
+	* [r1948] : another macro added
 
 2008-02-20 09:48  sloot
 
-	* [r1947] acinclude.m4: added PKG_CHECK_MODULES
+	* [r1947] : added PKG_CHECK_MODULES
 
 2008-02-19 14:10  sloot
 
-	* [r1942] configure.ac: better info to clueless user
+	* [r1942] : better info to clueless user
 
 2008-02-19 13:01  sloot
 
-	* [r1941] src/Tagger.cxx: fixed building om sigwin, i hope
+	* [r1941] : fixed building om sigwin, i hope
 
 2008-01-22 15:22  sloot
 
-	* [r1910] ChangeLog, Makefile.am, configure.ac, mbt.pc.in,
-	  trunk/Tadpole/ChangeLog, trunk/Tadpole/configure.ac: added
-	  pkg-config stuff
+	* [r1910] : added pkg-config stuff
 
 2008-01-22 14:38  sloot
 
-	* [r1908] ChangeLog, configure.ac: fixed pkg-config stuff for old
-	  RedHat system
+	* [r1908] : fixed pkg-config stuff for old RedHat system
 
 2008-01-22 11:07  sloot
 
-	* [r1907] configure.ac: attempt to use pkg-config
+	* [r1907] : attempt to use pkg-config
 
 2008-01-21 14:53  sloot
 
-	* [r1902] src/Tagger.cxx: changed statistics display
+	* [r1902] : changed statistics display
 
 2008-01-21 10:25  sloot
 
-	* [r1899] src/Tagger.cxx: now we honour Timbl's +vas and +vcm
-	  options
+	* [r1899] : now we honour Timbl's +vas and +vcm options
 
 2008-01-02 09:46  antalb
 
-	* [r1876] AUTHORS: edited authors file
+	* [r1876] : edited authors file
 
 2007-12-12 08:33  sloot
 
-	* [r1852] example/Makefile.am: eindh.data.settings shouldn't be
-	  here
+	* [r1852] : eindh.data.settings shouldn't be here
 
 2007-12-11 22:38  antalb
 
-	* [r1851] docs/Mbt_3.1_Manual.pdf: changed one last minor detail
+	* [r1851] : changed one last minor detail
 
 2007-12-11 16:26  sloot
 
-	* [r1850] ChangeLog, configure.ac: getting ready for release
+	* [r1850] : getting ready for release
 
 2007-12-11 09:01  sloot
 
-	* [r1846] docs/Makefile.am, docs/Mbt_3.0_Manual.pdf,
-	  docs/Mbt_3.1_Manual.pdf: new manual
+	* [r1846] : new manual
 
 2007-12-10 13:48  sloot
 
-	* [r1845] ChangeLog: changed
+	* [r1845] : changed
 
 2007-12-10 13:44  sloot
 
-	* [r1842] ChangeLog: changed
+	* [r1842] : changed
 
 2007-12-10 13:44  sloot
 
-	* [r1841] src/Tagger.cxx: other temporary files solution. avoid
-	  conflicts with other users.
+	* [r1841] : other temporary files solution. avoid conflicts with
+	  other users.
 	  But is this 'old style timbl' testing still needed anyway?
 
 2007-12-10 13:42  sloot
 
-	* [r1840] Makefile.am: also 'make' examples!
+	* [r1840] : also 'make' examples!
 
 2007-12-04 09:44  sloot
 
-	* [r1820] ChangeLog, trunk/Tadpole/ChangeLog: changed
+	* [r1820] : changed
 
 2007-12-04 09:43  sloot
 
-	* [r1818] configure.ac: changed order of tests. test for libTimbl
-	  after sockets and such
+	* [r1818] : changed order of tests. test for libTimbl after sockets
+	  and such
 
 2007-12-03 13:56  sloot
 
-	* [r1814] AUTHORS: oesp
+	* [r1814] : oesp
 
 2007-12-03 13:50  sloot
 
-	* [r1813] trunk/Dimbl/NEWS, AUTHORS, ChangeLog, NEWS, README,
-	  README2.in, TODO: finishing packaging
+	* [r1813] : finishing packaging
 
 2007-12-03 11:51  sloot
 
-	* [r1811] ChangeLog, example, example/.cvsignore: added more to
-	  ignore
+	* [r1811] : added more to ignore
 
 2007-12-03 11:50  sloot
 
-	* [r1810] example/Makefile.am: new entry
+	* [r1810] : new entry
 
 2007-12-03 11:47  sloot
 
-	* [r1809] ChangeLog, Makefile.am, configure.ac: added ChangeLog
-	  generation
+	* [r1809] : added ChangeLog generation
 	  now we install the examples
 
 2007-11-28 11:15  sloot
 
-	* [r1793] trunk/Dimbl/configure.ac, configure.ac,
-	  trunk/Tadpole/configure.ac: conditional mabi=64 test
+	* [r1793] : conditional mabi=64 test
 
 2007-11-28 10:37  sloot
 
-	* [r1791] configure.ac, src/Tagger.cxx: now we test for
-	  timbl_present in libTimbl, and we define our own mbt_present
+	* [r1791] : now we test for timbl_present in libTimbl, and we
+	  define our own mbt_present
 
 2007-11-26 14:06  sloot
 
-	* [r1782] Makefile.am, configure.ac, src/Makefile.am: cleaned up
-	  build
+	* [r1782] : cleaned up build
 
 2007-11-20 15:53  sloot
 
-	* [r1776] configure.ac: this is still beta, so advertise that
+	* [r1776] : this is still beta, so advertise that
 
 2007-11-20 15:29  sloot
 
-	* [r1775] include/mbt/Sentence.h, src/Sentence.cxx, src/Tagger.cxx:
-	  removed MAX_WORDS limit. On the fly fixed Beaming bug (for
-	  default options)
+	* [r1775] : removed MAX_WORDS limit. On the fly fixed Beaming bug
+	  (for default options)
 	  for IGTREE combined with Beaming, the +D option must always be
 	  present!
 
 2007-11-20 13:31  sloot
 
-	* [r1774] configure.ac: added -mabi-64 test
+	* [r1774] : added -mabi-64 test
 
 2007-11-06 14:28  sloot
 
-	* [r1769] docs, docs/.cvsignore: added
+	* [r1769] : added
 
 2007-11-06 14:15  sloot
 
-	* [r1764] Makefile.am, README, README.in, README2.in, configure.ac,
-	  docs/Makefile.am: cleanup the mess
+	* [r1764] : cleanup the mess
 
 2007-11-06 14:15  sloot
 
-	* [r1763] ., .cvsignore, src, src/.cvsignore: more to ignore
+	* [r1763] : more to ignore
 
 2007-11-06 13:46  sloot
 
-	* [r1760] trunk/Dimbl/README, trunk/Dimbl/README.in,
-	  trunk/Dimbl/configure.ac, Makefile.am, README, README.in,
-	  configure.ac, trunk/Tadpole/README, trunk/Tadpole/README.in,
-	  trunk/Tadpole/configure.ac: replaced README by README.in
+	* [r1760] : replaced README by README.in
 
 2007-10-29 14:12  sloot
 
-	* [r1743] trunk/Dimbl/configure.ac, configure.ac: added test for
-	  libTimbl
+	* [r1743] : added test for libTimbl
 
 2007-10-16 15:21  sloot
 
-	* [r1721] TODO, configure.ac: updated
+	* [r1721] : updated
 	  CVS
 
 2007-10-15 10:14  sloot
 
-	* [r1710] include/mbt/MbtAPI.h, src/MbtAPI.cxx: use version info
-	  from config.h (aka the auto tools)
+	* [r1710] : use version info from config.h (aka the auto tools)
 
 2007-10-15 10:13  sloot
 
-	* [r1709] configure.ac: intel compiler is preferred for now
+	* [r1709] : intel compiler is preferred for now
 
 2007-10-08 12:03  sloot
 
-	* [r1683] bootstrap, trunk/Timbl6/bootstrap: autotools 1.8 seems ok
+	* [r1683] : autotools 1.8 seems ok
 
 2007-10-03 10:32  sloot
 
-	* [r1665] src/Makefile.am, src/demo.cxx: added demo and convert
+	* [r1665] : added demo and convert
 
 2007-10-03 10:09  sloot
 
-	* [r1664] configure.ac: Default is now, to build a server
+	* [r1664] : Default is now, to build a server
 
 2007-10-03 09:34  sloot
 
-	* [r1662] src, src/.cvsignore: ignore
+	* [r1662] : ignore
 
 2007-10-03 09:27  sloot
 
-	* [r1661] ., .cvsignore, acinclude.m4: small fixup
+	* [r1661] : small fixup
 
 2007-10-03 09:23  sloot
 
-	* [r1660] ., .cvsignore, include, include/.cvsignore, include/mbt,
-	  include/mbt/.cvsignore: to ignore
+	* [r1660] : to ignore
 
 2007-10-03 09:20  sloot
 
-	* [r1659] Logging.h, Makefile, Mbt.cxx, MbtAPI.cxx, MbtAPI.h,
-	  Mbtg.cxx, Pattern.cxx, Pattern.h, Sentence.cxx, Sentence.h,
-	  TagLex.cxx, TagLex.h, Tagger.cxx, Tagger.h, convert.cxx,
-	  demo.cxx, eindh.data, eindh.test: were moved to other dirs
+	* [r1659] : were moved to other dirs
 
 2007-10-03 09:16  sloot
 
-	* [r1658] AUTHORS, ChangeLog, Makefile.am, NEWS, README, TODO,
-	  bootstrap, configure.ac, example, example/eindh.data,
-	  example/eindh.test, include, include/Makefile.am, include/mbt,
-	  include/mbt/Logging.h, include/mbt/Makefile.am,
-	  include/mbt/MbtAPI.h, include/mbt/Pattern.h,
-	  include/mbt/Sentence.h, include/mbt/TagLex.h,
-	  include/mbt/Tagger.h, src, src/Makefile.am, src/Mbt.cxx,
-	  src/MbtAPI.cxx, src/Mbtg.cxx, src/Pattern.cxx, src/Sentence.cxx,
-	  src/TagLex.cxx, src/Tagger.cxx, src/convert.cxx, src/demo.cxx: a
-	  lot of new/moved files for packaging
+	* [r1658] : a lot of new/moved files for packaging
 
 2007-07-16 12:08  sloot
 
-	* [r1535] convert.cxx: small fix for intel compiler
+	* [r1535] : small fix for intel compiler
 
 2007-07-16 10:55  sloot
 
-	* [r1534] Tagger.cxx: IPV6 server mode
+	* [r1534] : IPV6 server mode
 
 2007-07-16 09:35  sloot
 
-	* [r1533] Sentence.cxx: try to avoid warning from intel compiler
+	* [r1533] : try to avoid warning from intel compiler
 
 2007-07-16 09:22  sloot
 
-	* [r1532] Tagger.cxx: and more ...
+	* [r1532] : and more ...
 
 2007-07-16 09:17  sloot
 
-	* [r1531] Sentence.cxx, TagLex.h, Tagger.cxx: more 64 bit stuff
+	* [r1531] : more 64 bit stuff
 
 2007-07-16 09:08  sloot
 
-	* [r1530] Pattern.cxx, Pattern.h, Sentence.cxx: 64 bits adaptation
+	* [r1530] : 64 bits adaptation
 
 2007-07-11 19:16  antalb
 
-	* [r1523] docs/advances99.pdf, docs/wvlc96.pdf: added the two pdfs
-	  of the key publications describing Mbt
+	* [r1523] : added the two pdfs of the key publications describing
+	  Mbt
 
 2007-07-10 14:03  sloot
 
-	* [r1510] docs, docs/Mbt_3.0_Manual.pdf, test.tok: manual and a
-	  forgotten file
+	* [r1510] : manual and a forgotten file
 
 2007-07-10 12:20  sloot
 
-	* [r1506] Tagger.cxx: adapted to cleaned Timbl6 API
+	* [r1506] : adapted to cleaned Timbl6 API
 
 2007-07-10 09:00  sloot
 
-	* [r1501] ., .cvsignore: to ignore ;)
+	* [r1501] : to ignore ;)
 
 2007-07-10 08:52  sloot
 
-	* [r1498] ., COPYING, Logging.h, Makefile, Mbt.cxx, MbtAPI.cxx,
-	  MbtAPI.h, Mbtg.cxx, Pattern.cxx, Pattern.h, Sentence.cxx,
-	  Sentence.h, TagLex.cxx, TagLex.h, Tagger.cxx, Tagger.h,
-	  convert.cxx, demo.cxx, eindh.data, eindh.test: Initial revision
+	* [r1498] : Initial revision
 
