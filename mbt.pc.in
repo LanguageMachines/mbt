@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Mbt
+Version: @VERSION@
+Description: mbt library.
+Requires: timbl >= 6.1.2
+Libs: -L${libdir} -lMbt
+Libs.private: @LIBS@
+Cflags: -I${includedir}

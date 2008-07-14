@@ -1,0 +1,11 @@
+Makefile
+Makefile.in
+aclocal.m4
+libtool
+autom4te.cache
+config.*
+configure
+stamp-h1
+README2
+mbt.pc
+*.gz

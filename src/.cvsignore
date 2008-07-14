@@ -1,0 +1,10 @@
+.deps
+.libs
+*.lo
+libMbt*
+Makefile
+Makefile.in
+Mbt
+Mbtg
+demo
+convert
