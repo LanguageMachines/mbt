@@ -127,6 +127,8 @@ if test "$ac_cv_prog_ac_ct_CXX" == "g++"; then
       AC_MSG_RESULT( [Ok] )
   fi
   CPPFLAGS="$CPPFLAGS -W -Wall"
+else
+  CPPFLAGS="$CPPFLAGS -Wcheck"
 fi
 
 AC_PATH_PROG(pkgconfigpath, pkg-config, NONE)
