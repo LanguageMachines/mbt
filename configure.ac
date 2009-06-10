@@ -120,7 +120,7 @@ else
 fi
 dnl
 
-if test "$ac_cv_prog_ac_ct_CXX" == "g++"; then
+if test "$ac_cv_prog_ac_ct_CXX" == "g++" -o "$ac_cv_env_CXX_value" == "g++"; then
   have_abi64=0
   oldLibs=$LIBS
   oldCXXFLAGS=$CXXFLAGS
