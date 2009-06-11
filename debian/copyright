@@ -1,0 +1,37 @@
+This package was debianized by Joost van Baal <joostvb-mbt@ad1810.com> on
+Sat, 16 May 2009 11:06:19 +0200.
+
+It was downloaded from http://ilk.uvt.nl/downloads/pub/software/.
+
+Upstream Authors:
+
+  Lead programmer:
+    Ko van der Sloot
+  Code, algorithm, and design contributions by:
+    Antal van den Bosch
+    Walter Daelemans
+    Jakub Zavrel
+
+Copyright:
+
+    Copyright (c) 1998 - 2009
+    ILK  -  Tilburg University
+    CNTS -  University of Antwerp
+
+License:
+
+    Mbt3 is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    Mbt3 is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+The Debian packaging is (C) 2009, Joost van Baal and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+
+# $Id$
+# $URL$

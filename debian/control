@@ -1,0 +1,28 @@
+Source: mbt
+Section: science
+Priority: extra
+Maintainer: Joost van Baal <joostvb-mbt@ad1810.com>
+Build-Depends: cdbs, debhelper (>= 7), autotools-dev, timbl (>= 6.1.2)
+Standards-Version: 3.8.0
+Homepage: http://ilk.uvt.nl/mbt/
+
+Package: mbt
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, timbl (>= 6.1.2)
+Description: memory-based tagger-generator and tagger for natural language processing
+ MBT is a memory-based tagger-generator and tagger in one. The tagger-generator
+ part can generate a sequence tagger on the basis of a training set of tagged
+ sequences; the tagger part can tag new sequences. MBT can, for instance, be
+ used to generate part-of-speech taggers or chunkers for natural language
+ processing.  Features:
+  * Tagger generation: tagged text in, tagger out,
+  * Optional feedback loop: feed previous tag decision back to input of next
+    decision,
+  * Easily customizable feature representation; can incorporate user-provided
+    features,
+  * Automatic generation of separate sub-taggers for known words and unknown
+    words,
+  * Can make use of full algorithmic parameters of TiMBL.
+ .
+ If you do scientific research in natural language processing, MBT will
+ likely be of use to you.
