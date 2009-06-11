@@ -24,6 +24,9 @@ set -e
 
 case "$1" in
     configure)
+        getent passwd mbt >/dev/null || \
+          adduser --disabled-password  --quiet --system --home /nonexistent \
+          --no-create-home --gecos "MBT daemon" mbt
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

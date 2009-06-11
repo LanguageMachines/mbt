@@ -1,14 +1,14 @@
 #! /bin/sh
 
 # $Id$
-# $URL: $
+# $URL$
 
 DESC="Mbt Server"
 NAME=Mbt
 DAEMON=@BIN_PATH@/$NAME
 PIDFILE=@LOCALSTATE_PATH@/run/$NAME/pid
 LOGFILE=@LOCALSTATE_PATH@/log/$NAME/mbt.log
-USER=sloot
+USER=mbt
 
 # On Debian systems, configuration for init scripts is in /etc/default/
 test -f @SYSCONF_PATH@/default/@PACKAGE_TARNAME@ && . @SYSCONF_PATH@/default/@PACKAGE_TARNAME@

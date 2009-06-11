@@ -8,7 +8,7 @@ Homepage: http://ilk.uvt.nl/mbt/
 
 Package: mbt
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, timbl (>= 6.1.2)
+Depends: ${shlibs:Depends}, ${misc:Depends}, timbl (>= 6.1.2), adduser
 Description: memory-based tagger-generator and tagger for natural language processing
  MBT is a memory-based tagger-generator and tagger in one. The tagger-generator
  part can generate a sequence tagger on the basis of a training set of tagged
