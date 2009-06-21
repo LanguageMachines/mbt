@@ -1,0 +1,23 @@
+# $Id$
+# $URL$
+
+# Defaults for mbt initscript
+# sourced by /etc/init.d/mbt
+# installed at /etc/default/mbt by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+
+RUN=yes
+
+# PORT=55555                  # FIXME: change to something which is actually
+#                            # being used by current Timbl users.
+
+                            # Datafile holding training patterns
+# DATAFILE=/usr/share/doc/timbl/examples/small_1.train
+
+                            # For running as a daemon, both the -S-flag and
+                            # -f flags are needed.
+# TIMBLSERVER_OPTS="-S $PORT -f $DATAFILE"
+
