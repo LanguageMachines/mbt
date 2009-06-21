@@ -28,6 +28,8 @@ case "$1" in
     ;;
     purge)
         deluser --quiet --system mbt || true
+        # purge datafiles generated in postinst
+        rm -r /usr/share/doc/mbt
     ;;
     *)
         echo "postrm called with unknown argument \`$1'" >&2
