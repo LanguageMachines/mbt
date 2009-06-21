@@ -41,6 +41,7 @@ DAEMON=/usr/bin/Mbt        # the server's location
 NAME=mbt                   # the short server's name
 DESC="Memory Based Tagger" # short description
 LOGDIR=/var/log/mbt        # Log directory to use
+LOGFILE=$LOGDIR/$NAME.log  # Server logfile
 
 PIDDIR=/var/run/$NAME
 PIDFILE=$PIDDIR/pid
@@ -68,7 +69,6 @@ STARTTIME=2               # Time to wait for the server to start, in seconds
                           # be a false positive (says it did not start
                           # when it actually did)
 
-LOGFILE=$LOGDIR/$NAME.log # Server logfile
 DAEMONUSER=mbt            # Users to run the daemons as. If this value
                           # is set start-stop-daemon will chuid the server
 
