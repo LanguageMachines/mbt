@@ -1,3 +1,11 @@
+
+mbt version 3.1.4, 2009-06-21
+
+[Changes by Joost van Baal]
+- init/mbt.in: use user "mbt" (not sloot) for running the daemon
+- configure.ac: make sure it compiles with Debian cdbs, which sets CXX environment
+  variable.
+
 2009-05-11: Ko vd Sloot
 	    Just another year
 2008-06-01: Ko vd Sloot
