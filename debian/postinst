@@ -27,6 +27,11 @@ case "$1" in
         getent passwd mbt >/dev/null || \
           adduser --disabled-password  --quiet --system --home /nonexistent \
           --no-create-home --gecos "MBT daemon" mbt
+        # Generate a tagger for the eindhoven corpus, to be used by daemon
+        cd /usr/share/doc/mbt/examples/
+        zcat eindh.data.gz > /tmp/eindh.data
+        Mbtg -T /tmp/eindh.data
+        # This will create some datafiles and a settingsfile, eindh.data.settings
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

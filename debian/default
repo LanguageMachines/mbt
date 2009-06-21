@@ -11,13 +11,12 @@
 
 RUN=yes
 
-# PORT=55555                  # FIXME: change to something which is actually
-#                            # being used by current Timbl users.
+PORT=19999                   # FIXME: See debian/TODO
 
-                            # Datafile holding training patterns
-# DATAFILE=/usr/share/doc/timbl/examples/small_1.train
+                            # Datafile holding settings
+DATAFILE=/usr/share/doc/mbt/examples/eindh.data.settings
 
                             # For running as a daemon, both the -S-flag and
-                            # -f flags are needed.
-# TIMBLSERVER_OPTS="-S $PORT -f $DATAFILE"
+                            # -s flags are needed.
+MBTSERVER_OPTS="-S $PORT -s $DATAFILE"
 
