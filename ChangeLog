@@ -1,3 +1,23 @@
+2009-06-21 12:32  
+
+	* [r2685] debian/postrm: purge datafiles on purge. release
+
+2009-06-21 12:31  
+
+	* [r2684] debian/init.d, debian/postinst: fix LOGFILE and daemon
+	  data files
+
+2009-06-21 12:14  
+
+	* [r2682] debian/default, debian/postinst: supply needed options to
+	  daemon. make sure settings file is generated on initial install
+
+2009-06-21 11:57  
+
+	* [r2681] ChangeLog, debian/changelog, debian/default,
+	  debian/init.d, debian/rules: use debian-specific configurable
+	  init-script
+
 2009-06-21 11:48  
 
 	* [r2680] NEWS, configure.ac: release 3.1.4

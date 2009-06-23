@@ -1776,7 +1776,8 @@ namespace Tagger {
       else
 	result = result + tagstring + " ";
     } // end of output loop through one sentence
-    result = result + mySentence->Eos() + "\n";
+    if ( input_kind != ENRICHED )
+      result = result + mySentence->Eos() + "\n";
     return result;
   }
   
@@ -1816,11 +1817,16 @@ namespace Tagger {
     // loop as long as you get sentences
     //
     int HartBeat = 0;
-    string tagged_sentence;
     while ( go_on && 
 	    (mySentence->reset( EosMark), mySentence->read(infile, input_kind ) ) ){
+      string tagged_sentence;
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
+      }
+      if ( mySentence->getword(0) == EosMark ){
+	// only possible for ENRICHED!
+	outfile << EosMark << endl;
+	continue;
       }
       if ( Tag( tagged_sentence ) ){
 	// show the results of 1 sentence

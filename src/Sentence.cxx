@@ -564,14 +564,15 @@ namespace Tagger {
     string Word;
     string Tag;
     vector<string> extras;
-    bool go_on = infile;
-    while( go_on && infile ) {
+    bool nothing_yet = true;
+    while( nothing_yet && infile ) {
       getline( infile, linebuffer );
       infile >> ws;
       size_t size = split( linebuffer, extras );
       if ( size == 1 && Utt_Terminator( extras.front() ) ){
-	extras.clear();
-	go_on = false;
+	Word = extras.front();
+	add( Word, "" );
+	nothing_yet = false;
       }
       if ( size >= 2 ){
 	Word = extras.front();
@@ -581,9 +582,9 @@ namespace Tagger {
 	if ( !Word.empty() && !Tag.empty() ){
 	  add( Word, extras, Tag );
 	}
+	nothing_yet = false;
       }
     };
-    //    print( cerr );
     return no_words > 0;
   }
   
