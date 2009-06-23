@@ -2235,6 +2235,10 @@ namespace Tagger {
     int HartBeat = 0;
     while ( (mySentence->reset( EosMark), mySentence->read( infile, input_kind ) )){
       //      mySentence->print( cerr );
+      if ( mySentence->getword(0) == EosMark ){
+	// only possible for ENRICHED!
+	continue;
+      }
       if ( HartBeat++ % 100 == 0 ){
 	cout << "."; cout.flush();
       }
