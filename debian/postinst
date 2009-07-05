@@ -28,7 +28,6 @@ case "$1" in
           adduser --disabled-password  --quiet --system --home /nonexistent \
           --no-create-home --gecos "MBT daemon" mbt
         # Generate a tagger for the eindhoven corpus, to be used by daemon
-        # FIXME : tmprace
         cd /usr/share/doc/mbt/examples/
         zcat eindh.data.gz >eindh.data
         # FIXME : || true!?
