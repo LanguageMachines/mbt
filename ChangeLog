@@ -1,3 +1,12 @@
+2009-06-23 10:43  
+
+	* [r2690] src/Tagger.cxx: ouch
+
+2009-06-23 10:35  
+
+	* [r2689] ChangeLog, src/Sentence.cxx, src/Tagger.cxx: fixed
+	  problem for enriched input with <utt> at the begin
+
 2009-06-21 12:32  
 
 	* [r2685] debian/postrm: purge datafiles on purge. release
