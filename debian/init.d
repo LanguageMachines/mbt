@@ -80,9 +80,8 @@ DAEMON_OPTS="$DAEMON_OPTS $MBTSERVER_OPTS"
 
 # the user can explicitly set 'RUN' in /etc/default/
 if [ "x$RUN" != "xyes" ] ; then
-    log_failure_msg "$NAME disabled, please adjust the configuration to your needs "
-    log_failure_msg "and then set RUN to 'yes' in /etc/default/$NAME to enable it."
-    exit 1
+    log_success_msg "$NAME daemon disabled, set RUN in /etc/default/$NAME to enable it"
+    exit 0
 fi
 
 # Check that the user exists (if we set a user)

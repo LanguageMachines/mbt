@@ -1,17 +1,16 @@
 # $Id$
 # $URL$
 
-# Defaults for mbt initscript
-# sourced by /etc/init.d/mbt
-# installed at /etc/default/mbt by the maintainer scripts
+# /etc/default/mbt - defaults for mbt initscript, sourced by /etc/init.d/mbt
 
 #
 # This is a POSIX shell fragment
 #
 
-RUN=yes
+# RUN=yes
+RUN=no
 
-PORT=19999                   # FIXME: See debian/TODO
+PORT=19999                  # Daemon listens on this TCP port
 
                             # Datafile holding settings
 DATAFILE=/usr/share/doc/mbt/examples/eindh.data.settings

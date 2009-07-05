@@ -1,8 +1,14 @@
+mbt (3.1.4-2) unstable; urgency=low
+
+  * Do not start daemon on initial install.
+
+ -- Joost van Baal <joostvb-mbt@ad1810.com>  Sun, 05 Jul 2009 09:42:28 +0200
+
 mbt (3.1.4-1) unstable; urgency=low
 
   * Initial release.
 
- -- Joost van Baal <joostvb-mbt@ad1810.com>  Sat, 16 May 2009 11:06:19 +0200
+ -- Joost van Baal <joostvb-mbt@ad1810.com>  Sun, 21 Jun 2009 14:32:59 +0200
 
 # $Id$
 # $URL$
