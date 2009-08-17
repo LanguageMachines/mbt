@@ -1819,6 +1819,8 @@ namespace Tagger {
     int HartBeat = 0;
     while ( go_on && 
 	    (mySentence->reset( EosMark), mySentence->read(infile, input_kind ) ) ){
+      if ( mySentence->No_Words() == 0 )
+	continue;
       string tagged_sentence;
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
