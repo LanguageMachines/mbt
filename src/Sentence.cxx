@@ -414,11 +414,9 @@ namespace Tagger {
     // is formatted by the client to one sentence per line
     // the client should also do the tokenization!
     
-    char linebuffer[MAXTCPBUF];
     string line;
     // Read input
     if ( sock->read( line ) ) {
-      line = linebuffer;
       if ( line.length() > 0 )
 	return Fill( line, tagged );
       else
