@@ -38,6 +38,7 @@
 #include <unistd.h> // for unlink()
 #include "config.h"
 #include "timbl/TimblAPI.h"
+#include "timbl/SocketBasics.h"
 #include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
@@ -62,6 +63,7 @@ namespace Tagger {
   using namespace std;
   using namespace Hash;
   using namespace Timbl;
+  using namespace Sockets;
 
   const string UNKSTR   = "UNKNOWN";
   const int EMPTY_PATH = -1000000;
@@ -80,7 +82,7 @@ namespace Tagger {
     bool InitTagging();
     bool InitLearning();
     bool InitBeaming( unsigned int );
-    TaggerClass *clone( int );
+    TaggerClass *clone( Socket * );
     int Run( );
     bool Tag( string& );
     bool RunServer();
@@ -130,7 +132,7 @@ namespace Tagger {
     bool readsettings( string& fname );
     void create_lexicons( const string& filename );
     int ProcessFile( istream&, ostream& );
-    int ProcessSocket( int );
+    int ProcessSocket();
     void ProcessTags( TagInfo *TI );
     void InitTest( MatchAction Action );
     bool NextBest( int, int );
@@ -178,14 +180,13 @@ namespace Tagger {
     string SettingsFilePath;
     
     bool servermode;
-    int Sock;
+    Socket *Sock;
     vector<int> *TestPat; 
   };
 
   TaggerClass::TaggerClass( ){
     cur_log->setlevel( LogNormal );
     cur_log->setstamp( StampMessage );
-    KnownTree = NULL;
     KnownTree = NULL;
     unKnownTree = NULL;
     mySentence = new sentence();
@@ -237,7 +238,7 @@ namespace Tagger {
     distrib_flag = false;
     klistflag= false;
     servermode = false;
-    Sock = -1;
+    Sock = 0;
   }
   
   class n_best_tuple {
@@ -548,10 +549,12 @@ namespace Tagger {
   }
   
   TaggerClass::~TaggerClass(){
-    if ( Sock == -1 ){
+    if ( Sock == 0 ){
       delete KnownTree;
       delete unKnownTree;
     }
+    else
+      delete Sock;
     delete Beam;
     delete TestPat;
     delete mySentence;    
@@ -575,41 +578,7 @@ namespace Tagger {
 #include <netdb.h>
 #include <arpa/inet.h>
 
-  bool sock_write( int sockfd, const char *str ){
-    // This is just like the write() system call, accept that it will
-    // make sure that all data is transmitted. 
-    // return -1 if the connection is closed while it is trying to write.
-    size_t bytes_sent = 0;
-    size_t this_write;
-    size_t count = strlen( str );
-    while (bytes_sent < count) {
-      do {
-      this_write = write(sockfd, str, count - bytes_sent);
-      } while ( (this_write <= 0) && (errno == EINTR) );
-      if (this_write <= 0)
-      return false;
-      bytes_sent += this_write;
-      str += this_write;
-    }
-    return true;
-  }
-  
-  bool write_line( int socknum,  const string& line ){
-    // write a line to the socket
-    if ( !line.empty() )
-      if ( !sock_write( socknum, line.c_str() ) ) {
-	//      cerr << "connection lost" << endl;
-      return false;
-      }
-    return true;
-  }
-
-#ifdef __sgi__
-  static pthread_mutex_t my_lock = {PTHREAD_MUTEX_INITIALIZER};
-#else
   static pthread_mutex_t my_lock = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
   static int service_count = 0;
 
   void StopServerFun( int Signal ){
@@ -637,8 +606,8 @@ namespace Tagger {
     service_count++;
     int nw = 0;
     if ( service_count > Max_Connections ){
-      write_line( Sock, "Maximum connections exceeded\n" );
-      write_line( Sock, "try again later...\n" );
+      Sock->write( "Maximum connections exceeded\n" );
+      Sock->write( "try again later...\n" );
       pthread_mutex_unlock( &my_lock );
       cerr << "Thread " << pthread_self() << " refused " << endl;
     }
@@ -650,183 +619,40 @@ namespace Tagger {
       time( &timebefore );
       // report connection to the server terminal
       //
-      cerr << "Thread " << pthread_self() << ", Socket number = "
-	   << Sock << ", started at: " 
-	   << asctime( localtime( &timebefore) ) << endl;
-      write_line( Sock, "Welcome to the Mbt server.\n" );
-      nw = ProcessSocket( Sock );
+      LOG << "Thread " << pthread_self() << ", Socket number = "
+	  << Sock->getSockId() << ", started at: " 
+	  << asctime( localtime( &timebefore) );
+      Sock->write( "Welcome to the Mbt server.\n" );
+      nw = ProcessSocket();
       time( &timeafter );
-      cerr << "Thread " << pthread_self() << ", terminated at: " 
-	   << asctime( localtime( &timeafter ) )
-	   << "Total time used in this thread: " << timeafter - timebefore 
-	   << " sec, " << nw << " words processed " ;
-      if ( (timeafter - timebefore) > 0 )
-	cerr << " (" << nw/(timeafter - timebefore) << " words/sec)";
-      cerr << endl;
+      LOG << "Thread " << pthread_self() << ", terminated at: " 
+	  << asctime( localtime( &timeafter ) );
+      LOG << "Total time used in this thread: " << timeafter - timebefore 
+	  << " sec, " << nw << " words processed " << endl;
     }
-    // close the socket and exit this thread
-    //
-    if ( close( Sock ) < 0 ){
-      cerr << "closing problems on " << Sock
-	   << " (" << strerror(errno) <<  ")" << endl;
-    };
-    // use a mutex to update the global service counter
+    // exit this thread
     //
     pthread_mutex_lock( &my_lock );
     service_count--;
-    cerr << "Socket Total = " << service_count << endl;
+    LOG << "Socket Total = " << service_count << endl;
     pthread_mutex_unlock( &my_lock );
   }
   
-#if !defined( HAVE_GETADDRINFO )
   bool TaggerClass::RunServer(){
     if ( initialized ){
-      if ( !logFile.empty() ){
-	ostream *tmp = new ofstream( logFile.c_str() );
-	if ( tmp && tmp->good() ){
-	  LOG << "switching logging to file "  << logFile << endl;
-	  cur_log->associate( *tmp );
-	  cur_log->message( "MbtServer:" );
-	  LOG << "Started logging " << endl;	
-	}
-	else {
-	  cerr << "unable to create logfile: " << logFile << endl;
-	  cerr << "not started" << endl;
-	  exit(1);
-	}
-      }
-#if defined( __sgi__ )
-      int start = _daemonize( 0, -1, -1, -1 );
-#else
-      int start = daemon( 0, 0 );
-#endif
-      if ( start < 0 ){
-	cerr << "failed to daemonize error= " << strerror(errno) << endl;
-	exit(1);
-      };
-      if ( !pidFile.empty() ){
-	// we have a liftoff!
-	// signal it to the world
-	unlink( pidFile.c_str() ) ;
-	ofstream pid_file( pidFile.c_str() ) ;
-	if ( !pid_file ){
-	  LOG << "unable to create pidfile:"<< pidFile << endl;
-	  LOG << "TimblServer NOT Started" << endl;
-	  exit(1);
-	}
-	else {
-	  pid_t pid = getpid();
-	  pid_file << pid << endl;
-	}
-      }
-      
-      int    sockfd, newsockfd;
-      TIMBL_SOCKLEN_T clilen;
-      struct sockaddr_in cli_addr, serv_addr;
-      pthread_t chld_thr;
-      pthread_attr_t attr;
-      //
-      // setup Signal handling to abort the server.
-      signal( SIGINT, StopServerFun );
-      int TCP_PORT = stringTo<int>(portnumstr);
-      if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ){
-	cerr << "server: can't open stream socket" << endl; 
-	exit(0);
-      }
-      memset((char *) &serv_addr, 0, sizeof(serv_addr));
-      serv_addr.sin_family = AF_INET;
-      serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-      serv_addr.sin_port = htons(TCP_PORT);
-      int val = 1;
-      setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (void *)&val, sizeof(val) );
-      val = 1;
-      setsockopt( sockfd, IPPROTO_TCP, TCP_NODELAY, (void *)&val, sizeof(val) );
-      if(bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
-	cerr << "server: can't bind local address" << endl; 
-	exit(0);
-      }
       Max_Connections = stringTo<int>( Max_Conn_Str );
       if ( Max_Connections < 1 ){
 	cerr << "Error in -C option, setting Max_Connections to 10" << endl;
 	Max_Connections = 10;
       }
-      // start up server
-      // 
-      cerr << "Starting Server on port: " << portnumstr << endl
+      cerr << "Trying to Start a Server on port: " << portnumstr << endl
 	   << "maximum # of simultanious connections: " << Max_Connections
 	   << endl;
-      pthread_attr_init(&attr); // Niet nodig???
-      pthread_attr_setdetachstate( &attr, PTHREAD_CREATE_DETACHED );
-      
-      if ( listen( sockfd, 5 ) < 0 ){
-	cerr << "server: listen failed " << strerror( errno ) << endl;
-	exit(0);
-      };
-      
-      while(true){ // waiting for connections loop
-	clilen = sizeof(cli_addr);
-	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-	if(newsockfd < 0){
-	  if( errno == EINTR )
-	    continue;
-	  else {
-	    cerr << "Server: Accept Error " << newsockfd << endl;
-	    cerr << "status = " << strerror( errno ) << endl;
-	    exit(0);
-	  }
-	}
-	cerr << "Accepting Connection " << newsockfd << endl;
-	
-	// create a new thread to process the incoming request 
-	// (The thread will terminate itself when done processing
-	// and release its socket handle)
-	//
-	TaggerClass *child = clone( newsockfd);
-	pthread_create( &chld_thr, &attr, tag_child, child );
-	// the server is now free to accept another socket request 
-      }
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-#else
 
-  void show_connection( ostream& os, int sock,
-                        const sockaddr *addr, socklen_t len ){
-    
-    string result;
-    char host_name[NI_MAXHOST];
-    int err = getnameinfo( addr,
-                           len,
-                           host_name, sizeof(host_name),
-                           0, 0,
-                           0 );
-    if ( err != 0 ){
-      result = string(" failed: getnameinfo ") + strerror(errno);
-    }
-    else {
-      result = host_name;
-    }
-    err = getnameinfo( addr,
-                       len,
-                       host_name, sizeof(host_name),
-                       0, 0,
-                       NI_NUMERICHOST );
-    if ( err == 0 ){
-      result += string(" [") + host_name + "]";
-    }
-    os << "Accepting Connection #" << sock
-       << " from remote host: " << result << endl;
-  }
-  
-  bool TaggerClass::RunServer(){
-    if ( initialized ){
       if ( !logFile.empty() ){
 	ostream *tmp = new ofstream( logFile.c_str() );
 	if ( tmp && tmp->good() ){
-	  LOG << "switching logging to file " << logFile << endl;
+	  cerr << "switching logging to file " << logFile << endl;
 	  cur_log->associate( *tmp );
 	  cur_log->message( "MbtServer:" );
 	  LOG << "Started logging " << endl;	
@@ -837,13 +663,13 @@ namespace Tagger {
 	  exit(1);
 	}
       }
-#if defined( __sgi__ )
-      int start = _daemonize( 0, -1, -1, -1 );
-#else
-      int start = daemon( 0, 0 );
-#endif
+      int start;
+      if ( logFile.empty() )
+	start = daemon( 1, 1 );
+      else
+	start = daemon( 0, 0 );
       if ( start < 0 ){
-	cerr << "failed to daemonize error= " << strerror(errno) << endl;
+	LOG << "failed to daemonize error= " << strerror(errno) << endl;
 	exit(1);
       };
       if ( !pidFile.empty() ){
@@ -861,99 +687,54 @@ namespace Tagger {
 	  pid_file << pid << endl;
 	}
       }
-      
+
       // set the attributes
       pthread_attr_t attr;
       if ( pthread_attr_init(&attr) ||
 	   pthread_attr_setdetachstate( &attr, PTHREAD_CREATE_DETACHED ) ){
-	cerr << "Threads: couldn't set attributes" << endl;
+	LOG << "Threads: couldn't set attributes" << endl;
 	exit(0);
       }
       //
       // setup Signal handling to abort the server.
       signal( SIGINT, StopServerFun );
       
-      int newsockfd;
       pthread_t chld_thr;
-      
-      struct addrinfo hints, *res, *resSave;
-      memset(&hints, 0, sizeof(struct addrinfo));
-      hints.ai_flags    = AI_PASSIVE;
-      hints.ai_family   = AF_UNSPEC;
-      hints.ai_socktype = SOCK_STREAM;
 
-      int status = getaddrinfo( 0, portnumstr.c_str(), &hints, &res);
-      if ( status != 0) {
-	cerr << "getaddrinfo error:: [" << gai_strerror(status) << "]\n" << endl;
-      }
-      resSave = res;
-      int sockfd = -1;
-      // try to start up server
-      //
-      while ( res ){
-	sockfd = socket( res->ai_family, res->ai_socktype, res->ai_protocol );
-	if ( sockfd >= 0 ){
-	  int val = 1;
-	  if ( setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR,
-			   (void *)&val, sizeof(val) ) == 0 ){
-	    val = 1;
-	    if ( setsockopt( sockfd, IPPROTO_TCP, TCP_NODELAY,
-			     (void *)&val, sizeof(val) ) == 0 ){
-	      if ( bind( sockfd, res->ai_addr, res->ai_addrlen ) == 0 )
-		break;
-	    }
-	  }
-	  status = errno;
-	  close( sockfd );
-	  sockfd = -1;
-	}
-	res = res->ai_next;
-    }
-      
-      freeaddrinfo( resSave );
-      if ( sockfd < 0 ){
-	cerr  << "failed to start Server " << endl;
-	exit(0);
-      }
-      
-      Max_Connections = stringTo<int>( Max_Conn_Str );
-      if ( Max_Connections < 1 ){
-	cerr << "Error in -C option, setting Max_Connections to 10" << endl;
-	Max_Connections = 10;
-      }
       // start up server
       // 
-      cerr << "Starting Server on port: " << portnumstr << endl
-	   << "maximum # of simultanious connections: " << Max_Connections
-	   << endl;
+      LOG << "Started Server on port: " << portnumstr << endl
+	  << "maximum # of simultanious connections: " << Max_Connections
+	  << endl;
       
-      if ( listen( sockfd, Max_Connections ) < 0 ){
-	cerr << "server: listen failed " << strerror( errno ) << endl;
+      ServerSocket server;
+      if ( !server.connect( portnumstr ) ){
+	LOG << "failed to start Server: " << server.getMessage() << endl;
+	exit(0);
+      }
+      if ( !server.listen( Max_Connections ) < 0 ){
+	LOG << "server: listen failed " << strerror( errno ) << endl;
 	exit(0);
       };
       
       while(true){ // waiting for connections loop
-	struct sockaddr_storage cli_addr;
-	socklen_t clilen = sizeof(cli_addr);
-	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-	if(newsockfd < 0){
+	ServerSocket *newSock = new ServerSocket();
+	if ( !server.accept( *newSock ) ){
 	  if( errno == EINTR )
 	    continue;
 	  else {
-	    cerr << "Server: Accept Error " << newsockfd << endl;
-	    cerr << "status = " << strerror( errno ) << endl;
+	    LOG << "Server: Accept Error: " << server.getMessage() << endl;
 	    exit(0);
 	  }
 	}
-	cerr << "Accepting Connection " << newsockfd << endl;
-	show_connection( cerr, newsockfd,
-                         (struct sockaddr *)&cli_addr, clilen );
+	LOG << "Accepting Connection " << newSock->getSockId()
+	    << " from remote host: " << newSock->getClientName() << endl;
 	
 	// create a new thread to process the incoming request 
 	// (The thread will terminate itself when done processing
 	// and release its socket handle)
 	//
-	TaggerClass *child = clone( newsockfd);
+	TaggerClass *child = clone( newSock );
 	pthread_create( &chld_thr, &attr, tag_child, child );
 	// the server is now free to accept another socket request 
       }
@@ -963,19 +744,18 @@ namespace Tagger {
       return false;
     }
   }
-#endif
 
-  int TaggerClass::ProcessSocket( int socket ){
+  int TaggerClass::ProcessSocket(){
     bool go_on = true;
     int no_words=0;    
     // loop as long as you get sentences
     //
     string tagged_sentence;
     while ( go_on &&
-	    ( mySentence->reset( EosMark ), mySentence->read( socket, input_kind ) )) {
+	    ( mySentence->reset( EosMark ), mySentence->read( Sock->getSockId(), input_kind ) )) {
       if ( Tag( tagged_sentence ) ){
 	// show the results of 1 sentence
-	go_on = write_line( socket, tagged_sentence );
+	go_on = Sock->write( tagged_sentence );
 	// increase the counter of processed words
 	no_words += mySentence->No_Words();
       }
@@ -1502,7 +1282,7 @@ namespace Tagger {
     return true;
   }
 
-  TaggerClass *TaggerClass::clone( int sock ){
+  TaggerClass *TaggerClass::clone( Socket *sock ){
     TaggerClass *ta = new TaggerClass( *this );
     ta->Sock = sock;
     ta->mySentence = new sentence(); // we need our own testing structures
@@ -1552,13 +1332,8 @@ namespace Tagger {
   }
 
 #if defined(PTHREADS)  
-#ifdef __sgi__
-  static pthread_mutex_t known_lock = {PTHREAD_MUTEX_INITIALIZER};
-  static pthread_mutex_t unknown_lock = {PTHREAD_MUTEX_INITIALIZER};
-#else
   static pthread_mutex_t known_lock = PTHREAD_MUTEX_INITIALIZER;
   static pthread_mutex_t unknown_lock = PTHREAD_MUTEX_INITIALIZER;
-#endif
 #endif
 
   void TaggerClass::InitTest( MatchAction Action ){

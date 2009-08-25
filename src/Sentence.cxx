@@ -448,7 +448,7 @@ namespace Tagger {
     string line;
     // Read input
     if ( read_line( socknum, linebuffer, MAXTCPBUF ) ) {
-      cerr << socknum << " - " << linebuffer << endl;
+      //      cerr << socknum << " - " << linebuffer << endl;
       line = linebuffer;
       if ( line.length() > 0 )
 	return Fill( line, tagged );
