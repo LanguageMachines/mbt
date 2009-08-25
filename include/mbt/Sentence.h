@@ -80,7 +80,7 @@ namespace Tagger {
     bool known( unsigned int );
     std::string Eos() const;
     bool read( std::istream &, input_kind_type );
-    bool read( int, input_kind_type );
+    bool read( Sockets::Socket* , input_kind_type );
   private:
     int UTAG;
     std::vector<word *> Words;
@@ -93,9 +93,9 @@ namespace Tagger {
     void add( const std::string&, const std::vector<std::string>&,
 	      const std::string& );
     void add( const std::string&, const std::string& );
-    bool read( std::istream &infile, bool );
-    bool read( std::istream &infile );
-    bool read( int, bool tagged );
+    bool read( std::istream &, bool );
+    bool read( std::istream & );
+    bool read( Sockets::Socket*, bool tagged );
   };
 
 }

@@ -34,6 +34,7 @@
 #include <cassert>
 
 #include "timbl/StringOps.h"
+#include "timbl/SocketBasics.h"
 #include "timbl/Tree.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
@@ -52,6 +53,7 @@
 namespace Tagger {
   using namespace Hash;
   using namespace Timbl;
+  using namespace Sockets;
   using namespace std;
  
   const string Separators = "\t \n";
@@ -398,48 +400,16 @@ namespace Tagger {
   }
 
 #if defined( PTHREADS)
-  bool sock_read(int sockfd,char *str,size_t count){
-    size_t total_count = 0;
-    char last_read = 0;
-    char *current_position = str;
-    while (last_read != 10) {
-      size_t bytes_read = read( sockfd, &last_read, 1 );
-      if (bytes_read <= 0) {
-	// The other side may have closed unexpectedly 
-	return false; 
-      }
-      if ( ( total_count < count) && 
-	   (last_read != 10) && (last_read !=13) ) {
-	*current_position++ = last_read;
-	total_count++;
-      }
-    }
-    if (count > 0)
-      *current_position = 0;
-    return true;
-  }
-  
-  bool read_line( int socknum, char *line, int Size ){
-    // read a line from the socket
-    if ( !sock_read( socknum, line, Size ) ) {
-    //    cerr << "connection lost" << endl;
-      return false;
-    }
-    else {
-      return true;
-    }
-  }
-  
-  bool sentence::read( int socknum, input_kind_type kind ){
+  bool sentence::read( Socket *sock, input_kind_type kind ){
     if ( kind == ENRICHED ){
       cerr << "Sorry Enriched inputformat not supported in servermode" << endl;
       return false;
     }
     else
-      return read( socknum, kind == TAGGED );
+      return read( sock, kind == TAGGED );
   }
 
-  bool sentence::read( int socknum, bool tagged ){
+  bool sentence::read( Socket *sock, bool tagged ){
     // read a line from the socket; we assume that the input
     // is formatted by the client to one sentence per line
     // the client should also do the tokenization!
@@ -447,8 +417,7 @@ namespace Tagger {
     char linebuffer[MAXTCPBUF];
     string line;
     // Read input
-    if ( read_line( socknum, linebuffer, MAXTCPBUF ) ) {
-      //      cerr << socknum << " - " << linebuffer << endl;
+    if ( sock->read( line ) ) {
       line = linebuffer;
       if ( line.length() > 0 )
 	return Fill( line, tagged );
@@ -459,12 +428,12 @@ namespace Tagger {
       return false;
   }  
 #else
-  bool sentence::read( int, input_kind_type ){
+  bool sentence::read( Socket*, input_kind_type ){
     cerr << "Sorry, not implemented..." << endl;
     abort();
   }
 
-  bool sentence::read( int, bool ){
+  bool sentence::read( Socket*, bool ){
     cerr << "Sorry, not implemented..." << endl;
     abort();
   }  

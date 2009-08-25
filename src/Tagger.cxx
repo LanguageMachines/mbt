@@ -752,7 +752,7 @@ namespace Tagger {
     //
     string tagged_sentence;
     while ( go_on &&
-	    ( mySentence->reset( EosMark ), mySentence->read( Sock->getSockId(), input_kind ) )) {
+	    ( mySentence->reset( EosMark ), mySentence->read( Sock, input_kind ) )) {
       if ( Tag( tagged_sentence ) ){
 	// show the results of 1 sentence
 	go_on = Sock->write( tagged_sentence );
