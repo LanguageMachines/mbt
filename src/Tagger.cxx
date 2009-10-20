@@ -2011,6 +2011,8 @@ namespace Tagger {
     //
     int HartBeat = 0;
     while ( (mySentence->reset( EosMark), mySentence->read( infile, input_kind ) )){
+      if ( mySentence->No_Words() == 0 )
+	continue;
       //      mySentence->print( cerr );
       if ( mySentence->getword(0) == EosMark ){
 	// only possible for ENRICHED!
