@@ -6,27 +6,28 @@ Package: mbt
 Version: 3.2.0-pre1
 Revision: 1
 BuildDependsOnly: false
-# FIXME
-Shlibs: %p/lib/libMbt.2.dylib 3.0.0 %n (>= 6.2.0-1)
+Shlibs: %p/lib/libMbt.0.dylib 1.0.0 %n (>= 3.1.4-1)
 DescPackaging: <<
 This package was built on PowerPC running Darwin / Mac OS X v. 10.5,
 using fink 0.29.10-41.
 
 FIXME: A libMbt.dylib symlink should be in "mbt".  libMbt.2.dylib
 should be in a yet to be created package (SplitOff: %N-shlibs).  For now,
-we remove the symlink in order to keep fink happy.
+we remove the symlink in order to keep fink happy.  And for now,
+we have to execute "root@dhcp-23.mdcc.cx:/sw/lib# ln -s libTimbl.2.dylib
+libTimbl.dylib" before building this package! *Gasp* !
 
 TODO: use daemonic (DaemonicFile, DaemonicName) if running daemon is needed.
+
 <<
-Description: Memory Based Tagger-Generator and Tagger for Natural Language Processing
+Description: Memory Based Tagger for NLP Research
 # Source: http://ilk.uvt.nl/downloads/pub/software/mbt-%v.tar.gz
 Source: http://ilk.uvt.nl/packages/beta/mbt-%v.tar.gz
-# FIXME
-Source-Checksum: SHA1(75907e58aa842aab53c4eefe6ae6733b690f589f)
+Source-Checksum: SHA1(b3eece803b656df6bfe284fcfcf26944da8c93f3)
 InstallScript: <<
  make install DESTDIR=%d
- test -L %d/%p/lib/libTimbl.dylib && rm %d/%p/lib/libTimbl.dylib || true
- rm %d/%p/etc/init.d/timbl
+ test -L %d/%p/lib/libMbt.dylib && rm %d/%p/lib/libMbt.dylib || true
+ rm %d/%p/etc/init.d/mbt
  rmdir %d/%p/etc/init.d || true
 <<
 DocFiles: AUTHORS ChangeLog NEWS README TODO
