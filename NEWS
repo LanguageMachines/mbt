@@ -1,4 +1,8 @@
-mbt version 3.2.0-pre1, 2009-09-03
+mbt version 3.1.99.1, 2009-11-15
+
+- NOT YET RELEASED (as of 2009-11-15, it fails to compile Sentence.o:
+  Sentence.h:83: error: ‘Sockets’ has not been declared)
+- SVN snapshot release.
 
 
 mbt version 3.2.0-pre1, 2009-09-03
