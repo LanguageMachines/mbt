@@ -11,6 +11,8 @@ DescPackaging: <<
 This package was built on PowerPC running Darwin / Mac OS X v. 10.5,
 using fink 0.29.10-41.
 
+FIXME: Add Timbl (build-)depends
+
 FIXME: A libMbt.dylib symlink should be in "mbt".  libMbt.2.dylib
 should be in a yet to be created package (SplitOff: %N-shlibs).  For now,
 we remove the symlink in order to keep fink happy.  And for now,
