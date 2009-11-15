@@ -1,19 +1,58 @@
 mbt version 3.2.0-pre1, 2009-09-03
 
+
+mbt version 3.2.0-pre1, 2009-09-03
+
 - SVN snapshot release.
+
 
 mbt version 3.1.4, 2009-06-21
 
 [Changes by Joost van Baal]
 - init/mbt.in: use user "mbt" (not sloot) for running the daemon
-- configure.ac: make sure it compiles with Debian cdbs, which sets CXX environment
-  variable.
+- configure.ac: make sure it compiles with Debian cdbs, which sets CXX
+  environment variable.
 
-2009-05-11: Ko vd Sloot
-	    Just another year
-2008-06-01: Ko vd Sloot
-	    switched to SVN
-2008-03-04: Ko vd Sloot
-	    getting 3.1.2 out real soon now
-2007-12-03: Ko vd Sloot
-	    Finished packaging
+
+mbt version 3.1.3, 2009-02-09
+
+- shipped as mbt-3.1.3.tar.gz
+[2008-06-01: Ko vd Sloot]
+- switched to SVN
+
+
+mbt version 3.1.2, 2008-03-08
+
+- shipped as mbt-3.1.2.tar.gz
+[2008-03-04: Ko vd Sloot]
+- getting 3.1.2 out real soon now
+
+
+mbt version 3.1, 2007-12-12
+
+- shipped as mbt-3.1.tar.gz
+
+
+mbt version 3.0, 2007-12-01
+
+- shipped as Mbt.3.0.tar.gz
+[2007-12-03: Ko vd Sloot]
+- Finished packaging
+
+
+mbt version 2.0.1
+
+- shipped as Mbt.2.0.1.tar.gz
+
+
+mbt version 2.0, 2004-01-14 (?)
+
+- shipped as Mbt.2.0.tar.gz
+
+
+mbt version 1.0
+
+- shipped as Mbt.1.0.tar.gz
+
+# $Id$
+# $URL$
