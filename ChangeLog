@@ -1,466 +1,1148 @@
+2009-11-23 11:31  joostvb
+
+	* [r3273]
+	  NEWS:
+	  document
+	  requirement,
+	  ship
+	  snapshot
+	  release
+
+2009-11-15 09:30  joostvb
+
+	* [r3217]
+	  fink/mbt.info:
+	  
+
+2009-11-15 09:25  joostvb
+
+	* [r3216]
+	  fink/mbt.info:
+	  it
+	  compiles
+
+2009-11-15 08:53  joostvb
+
+	* [r3215]
+	  fink/mbt.info:
+	  first
+	  draft
+
+2009-11-15 08:45  joostvb
+
+	* [r3214]
+	  NEWS,
+	  configure.ac:
+	  record
+	  current
+	  status
+	  of
+	  svn:
+	  fails
+	  to
+	  compile
+
+2009-11-15 08:39  joostvb
+
+	* [r3213]
+	  src/Makefile.am:
+	  tags
+
+2009-11-15 08:34  joostvb
+
+	* [r3212]
+	  NEWS:
+	  added
+	  some
+	  content
+	  about
+	  history
+
+2009-11-15 08:22  joostvb
+
+	* [r3211]
+	  fink,
+	  fink/mbt.info:
+	  stolen
+	  from
+	  Timbl-pkg/fink/timbl.info
+
+2009-10-20 14:26  sloot
+
+	* [r3082]
+	  src/Tagger.cxx:
+	  fixed
+	  problem
+	  with
+	  empty
+	  sentence
+
+2009-09-07 09:45  sloot
+
+	* [r2904]
+	  Makefile.am:
+	  'make
+	  distcheck'
+	  works
+	  now
+
+2009-09-05 06:50  joostvb
+
+	* [r2898]
+	  Makefile.am:
+	  do
+	  not
+	  install
+	  ChangeLog:
+	  it
+	  interferes
+	  bad
+	  with
+	  Debian
+	  packaging
+
+2009-09-05 06:50  joostvb
+
+	* [r2897]
+	  Makefile.am:
+	  tags
+
+2009-09-03 14:20  sloot
+
+	* [r2886]
+	  debian/changelog:
+	  new
+	  upstream
+
+2009-09-03 14:09  sloot
+
+	* [r2885]
+	  ChangeLog,
+	  NEWS,
+	  configure.ac:
+	  ship
+	  it
+
 2009-09-02 14:12  sloot
 
-	* [r2873] configure.ac: cleanup
+	* [r2873]
+	  configure.ac:
+	  cleanup
 
 2009-08-25 13:38  sloot
 
-	* [r2833] src/Sentence.cxx: arghh
+	* [r2833]
+	  src/Sentence.cxx:
+	  arghh
 
 2009-08-25 13:34  sloot
 
-	* [r2832] include/mbt/Sentence.h, src/Sentence.cxx, src/Tagger.cxx:
+	* [r2832]
+	  include/mbt/Sentence.h,
+	  src/Sentence.cxx,
+	  src/Tagger.cxx:
 	  better
 
 2009-08-25 13:25  sloot
 
-	* [r2831] configure.ac, src/Sentence.cxx, src/Tagger.cxx: Now based
-	  on new Timbl Sockets stuff.
-	  Bumped version to reflect this
+	* [r2831]
+	  configure.ac,
+	  src/Sentence.cxx,
+	  src/Tagger.cxx:
+	  Now
+	  based
+	  on
+	  new
+	  Timbl
+	  Sockets
+	  stuff. Bumped
+	  version
+	  to
+	  reflect
+	  this
 
 2009-08-17 14:23  
 
-	* [r2810] src/Tagger.cxx: dont't process empty sentences
+	* [r2810]
+	  src/Tagger.cxx:
+	  dont't
+	  process
+	  empty
+	  sentences
 
 2009-07-05 08:08  
 
-	* [r2718] debian/postinst:
+	* [r2718]
+	  debian/postinst:
+	  
 
 2009-07-05 07:46  
 
-	* [r2717] debian/changelog, debian/default, debian/init.d: Do not
-	  start daemon on initial install
+	* [r2717]
+	  debian/changelog,
+	  debian/default,
+	  debian/init.d:
+	  Do
+	  not
+	  start
+	  daemon
+	  on
+	  initial
+	  install
 
 2009-07-05 07:39  
 
-	* [r2716] debian/TODO: list debian packaging stuff to do
+	* [r2716]
+	  debian/TODO:
+	  list
+	  debian
+	  packaging
+	  stuff
+	  to
+	  do
 
 2009-07-05 07:37  
 
-	* [r2715] ChangeLog:
+	* [r2715]
+	  ChangeLog:
+	  
 
 2009-06-23 10:43  
 
-	* [r2690] src/Tagger.cxx: ouch
+	* [r2690]
+	  src/Tagger.cxx:
+	  ouch
 
 2009-06-23 10:35  
 
-	* [r2689] ChangeLog, src/Sentence.cxx, src/Tagger.cxx: fixed
-	  problem for enriched input with <utt> at the begin
+	* [r2689]
+	  ChangeLog,
+	  src/Sentence.cxx,
+	  src/Tagger.cxx:
+	  fixed
+	  problem
+	  for
+	  enriched
+	  input
+	  with
+	  <utt>
+	  at
+	  the
+	  begin
 
 2009-06-21 12:32  
 
-	* [r2685] debian/postrm: purge datafiles on purge. release
+	* [r2685]
+	  debian/postrm:
+	  purge
+	  datafiles
+	  on
+	  purge.
+	  
+	  release
 
 2009-06-21 12:31  
 
-	* [r2684] debian/init.d, debian/postinst: fix LOGFILE and daemon
-	  data files
+	* [r2684]
+	  debian/init.d,
+	  debian/postinst:
+	  fix
+	  LOGFILE
+	  and
+	  daemon
+	  data
+	  files
 
 2009-06-21 12:14  
 
-	* [r2682] debian/default, debian/postinst: supply needed options to
-	  daemon. make sure settings file is generated on initial install
+	* [r2682]
+	  debian/default,
+	  debian/postinst:
+	  supply
+	  needed
+	  options
+	  to
+	  daemon.
+	  make
+	  sure
+	  settings
+	  file
+	  is
+	  generated
+	  on
+	  initial
+	  install
 
 2009-06-21 11:57  
 
-	* [r2681] ChangeLog, debian/changelog, debian/default,
-	  debian/init.d, debian/rules: use debian-specific configurable
+	* [r2681]
+	  ChangeLog,
+	  debian/changelog,
+	  debian/default,
+	  debian/init.d,
+	  debian/rules:
+	  use
+	  debian-specific
+	  configurable
 	  init-script
 
 2009-06-21 11:48  
 
-	* [r2680] NEWS, configure.ac: release 3.1.4
+	* [r2680]
+	  NEWS,
+	  configure.ac:
+	  release
+	  3.1.4
 
 2009-06-16 14:49  
 
-	* [r2665] NEWS: News
+	* [r2665]
+	  NEWS:
+	  News
 
 2009-06-11 11:42  
 
-	* [r2655] debian/control, debian/postinst, debian/postrm,
-	  init/mbt.in: user user "mbt" (not sloot) for running the daemon.
-	  create and remove user on package install/purge
+	* [r2655]
+	  debian/control,
+	  debian/postinst,
+	  debian/postrm,
+	  init/mbt.in:
+	  user
+	  user
+	  "mbt"
+	  (not
+	  sloot)
+	  for
+	  running
+	  the
+	  daemon.
+	  create
+	  and
+	  remove
+	  user
+	  on
+	  package
+	  install/purge
 
 2009-06-11 07:54  
 
-	* [r2654] debian, debian/changelog, debian/compat, debian/control,
-	  debian/copyright, debian/docs, debian/postinst, debian/postrm,
-	  debian/prerm, debian/rules: debian packaging infrastructure. it
+	* [r2654]
+	  debian,
+	  debian/changelog,
+	  debian/compat,
+	  debian/control,
+	  debian/copyright,
+	  debian/docs,
+	  debian/postinst,
+	  debian/postrm,
+	  debian/prerm,
+	  debian/rules:
+	  debian
+	  packaging
+	  infrastructure.
+	  
+	  it
 	  compiles.
 
 2009-06-10 16:06  
 
-	* [r2653] configure.ac: make sure it compiles with Debian cdbs,
-	  which sets CXX env var
+	* [r2653]
+	  configure.ac:
+	  make
+	  sure
+	  it
+	  compiles
+	  with
+	  Debian
+	  cdbs,
+	  which
+	  sets
+	  CXX
+	  env
+	  var
 
 2009-01-26 10:07  
 
-	* [r2466] Makefile.am, m4: fix m4 stuff
+	* [r2466]
+	  Makefile.am,
+	  m4:
+	  fix
+	  m4
+	  stuff
 
 2009-01-21 15:29  
 
-	* [r2461] Makefile.am, configure.ac: modernize
+	* [r2461]
+	  Makefile.am,
+	  configure.ac:
+	  modernize
 
 2009-01-07 15:44  
 
-	* [r2432] include/mbt/Logging.h, include/mbt/MbtAPI.h,
-	  include/mbt/Pattern.h, include/mbt/TagLex.h,
-	  include/mbt/Tagger.h, src/Mbt.cxx, src/MbtAPI.cxx, src/Mbtg.cxx,
-	  src/Pattern.cxx, src/Sentence.cxx, src/TagLex.cxx,
-	  src/Tagger.cxx, src/convert.cxx, src/demo.cxx: Bumped year
+	* [r2432]
+	  include/mbt/Logging.h,
+	  include/mbt/MbtAPI.h,
+	  include/mbt/Pattern.h,
+	  include/mbt/TagLex.h,
+	  include/mbt/Tagger.h,
+	  src/Mbt.cxx,
+	  src/MbtAPI.cxx,
+	  src/Mbtg.cxx,
+	  src/Pattern.cxx,
+	  src/Sentence.cxx,
+	  src/TagLex.cxx,
+	  src/Tagger.cxx,
+	  src/convert.cxx,
+	  src/demo.cxx:
+	  Bumped
+	  year
 
 2008-12-09 09:42  sloot
 
-	* [r2404] src/Tagger.cxx: some desparate SGI hack
+	* [r2404]
+	  src/Tagger.cxx:
+	  some
+	  desparate
+	  SGI
+	  hack
 
 2008-08-12 14:01  sloot
 
-	* [r2266] configure.ac: fixed configuration to allow users to set
-	  CXXFLAGS at configuration time
+	* [r2266]
+	  configure.ac:
+	  fixed
+	  configuration
+	  to
+	  allow
+	  users
+	  to
+	  set
+	  CXXFLAGS
+	  at
+	  configuration
+	  time
 
 2008-08-11 13:41  sloot
 
-	* [r2262] configure.ac: more strickt cjecking for icpc (-Wall is
+	* [r2262]
+	  configure.ac:
+	  more
+	  strickt
+	  cjecking
+	  for
+	  icpc
+	  (-Wall
+	  is
 	  unwise)
 
 2008-07-14 13:42  sloot
 
-	* [r2247] ChangeLog: modified after reinstall
+	* [r2247]
+	  ChangeLog:
+	  modified
+	  after
+	  reinstall
 
 2008-07-14 12:17  sloot
 
-	* [r2235] .: moved
+	* [r2235]
+	  .:
+	  moved
 
 2008-07-01 10:00  sloot
 
-	* [r2206] fixed copyright notice. its 2008 man!
-	  and isn't this Mbt3 since long?
+	* [r2206]
+	  fixed
+	  copyright
+	  notice.
+	  its
+	  2008
+	  man! and
+	  isn't
+	  this
+	  Mbt3
+	  since
+	  long?
 
 2008-06-23 14:48  sloot
 
-	* [r2199] fixed includes
+	* [r2199]
+	  fixed
+	  includes
 
 2008-06-02 15:15  sloot
 
-	* [r2167] we are SVN based now
+	* [r2167]
+	  we
+	  are
+	  SVN
+	  based
+	  now
 
 2008-04-15 14:03  sloot
 
-	* [r2081] README2 is gone now
+	* [r2081]
+	  README2
+	  is
+	  gone
+	  now
 
 2008-04-15 13:43  sloot
 
-	* [r2080] oesp. --pidfile is very badly needed!
+	* [r2080]
+	  oesp.
+	  --pidfile
+	  is
+	  very
+	  badly
+	  needed!
 
 2008-04-15 12:42  sloot
 
-	* [r2074] added init script
+	* [r2074]
+	  added
+	  init
+	  script
 
 2008-04-15 09:51  sloot
 
-	* [r2073] do not install demo and convert utility
+	* [r2073]
+	  do
+	  not
+	  install
+	  demo
+	  and
+	  convert
+	  utility
 
 2008-04-15 09:31  sloot
 
-	* [r2072] now -logfile and -pidfile work as we like it
+	* [r2072]
+	  now
+	  -logfile
+	  and
+	  -pidfile
+	  work
+	  as
+	  we
+	  like
+	  it
 
 2008-04-08 15:43  sloot
 
-	* [r2048] first attempt to add pidfile and logfile.
-	  needs more work
+	* [r2048]
+	  first
+	  attempt
+	  to
+	  add
+	  pidfile
+	  and
+	  logfile. needs
+	  more
+	  work
 
 2008-03-31 10:30  sloot
 
-	* [r2016] added compiler flags for GCC, and fixed warnings
-	  resulting form that
+	* [r2016]
+	  added
+	  compiler
+	  flags
+	  for
+	  GCC,
+	  and
+	  fixed
+	  warnings
+	  resulting
+	  form
+	  that
 
 2008-03-18 10:47  sloot
 
-	* [r1999] forgotthe this one
+	* [r1999]
+	  forgotthe
+	  this
+	  one
 
 2008-03-18 10:47  sloot
 
-	* [r1998] added ignores
+	* [r1998]
+	  added
+	  ignores
 
 2008-03-18 10:44  sloot
 
-	* [r1997] added version
+	* [r1997]
+	  added
+	  version
 
 2008-03-18 09:20  sloot
 
-	* [r1992] added libtool stuff
-	  bumped version
+	* [r1992]
+	  added
+	  libtool
+	  stuff bumped
+	  version
 
 2008-03-05 11:04  sloot
 
-	* [r1984] setting versions for release
+	* [r1984]
+	  setting
+	  versions
+	  for
+	  release
 
 2008-03-05 11:04  sloot
 
-	* [r1983] next year
+	* [r1983]
+	  next
+	  year
 
 2008-03-05 11:03  sloot
 
-	* [r1982] one more contribuant
+	* [r1982]
+	  one
+	  more
+	  contribuant
 
 2008-03-05 11:02  sloot
 
-	* [r1981] news
+	* [r1981]
+	  news
 
 2008-03-03 08:47  sloot
 
-	* [r1970] close fd's before unlinking the files
+	* [r1970]
+	  close
+	  fd's
+	  before
+	  unlinking
+	  the
+	  files
 
 2008-02-20 11:09  sloot
 
-	* [r1951] more to ignore
+	* [r1951]
+	  more
+	  to
+	  ignore
 
 2008-02-20 11:02  sloot
 
-	* [r1950] and still more
+	* [r1950]
+	  and
+	  still
+	  more
 
 2008-02-20 11:01  sloot
 
-	* [r1949] and more...
+	* [r1949]
+	  and
+	  more...
 
 2008-02-20 10:53  sloot
 
-	* [r1948] another macro added
+	* [r1948]
+	  another
+	  macro
+	  added
 
 2008-02-20 09:48  sloot
 
-	* [r1947] added PKG_CHECK_MODULES
+	* [r1947]
+	  added
+	  PKG_CHECK_MODULES
 
 2008-02-19 14:10  sloot
 
-	* [r1942] better info to clueless user
+	* [r1942]
+	  better
+	  info
+	  to
+	  clueless
+	  user
 
 2008-02-19 13:01  sloot
 
-	* [r1941] fixed building om sigwin, i hope
+	* [r1941]
+	  fixed
+	  building
+	  om
+	  sigwin,
+	  i
+	  hope
 
 2008-01-22 15:22  sloot
 
-	* [r1910] added pkg-config stuff
+	* [r1910]
+	  added
+	  pkg-config
+	  stuff
 
 2008-01-22 14:38  sloot
 
-	* [r1908] fixed pkg-config stuff for old RedHat system
+	* [r1908]
+	  fixed
+	  pkg-config
+	  stuff
+	  for
+	  old
+	  RedHat
+	  system
 
 2008-01-22 11:07  sloot
 
-	* [r1907] attempt to use pkg-config
+	* [r1907]
+	  attempt
+	  to
+	  use
+	  pkg-config
 
 2008-01-21 14:53  sloot
 
-	* [r1902] changed statistics display
+	* [r1902]
+	  changed
+	  statistics
+	  display
 
 2008-01-21 10:25  sloot
 
-	* [r1899] now we honour Timbl's +vas and +vcm options
+	* [r1899]
+	  now
+	  we
+	  honour
+	  Timbl's
+	  +vas
+	  and
+	  +vcm
+	  options
 
 2008-01-02 09:46  antalb
 
-	* [r1876] edited authors file
+	* [r1876]
+	  edited
+	  authors
+	  file
 
 2007-12-12 08:33  sloot
 
-	* [r1852] eindh.data.settings shouldn't be here
+	* [r1852]
+	  eindh.data.settings
+	  shouldn't
+	  be
+	  here
 
 2007-12-11 22:38  antalb
 
-	* [r1851] changed one last minor detail
+	* [r1851]
+	  changed
+	  one
+	  last
+	  minor
+	  detail
 
 2007-12-11 16:26  sloot
 
-	* [r1850] getting ready for release
+	* [r1850]
+	  getting
+	  ready
+	  for
+	  release
 
 2007-12-11 09:01  sloot
 
-	* [r1846] new manual
+	* [r1846]
+	  new
+	  manual
 
 2007-12-10 13:48  sloot
 
-	* [r1845] changed
+	* [r1845]
+	  changed
 
 2007-12-10 13:44  sloot
 
-	* [r1842] changed
+	* [r1842]
+	  changed
 
 2007-12-10 13:44  sloot
 
-	* [r1841] other temporary files solution. avoid conflicts with
-	  other users.
-	  But is this 'old style timbl' testing still needed anyway?
+	* [r1841]
+	  other
+	  temporary
+	  files
+	  solution.
+	  avoid
+	  conflicts
+	  with
+	  other
+	  users. But
+	  is
+	  this
+	  'old
+	  style
+	  timbl'
+	  testing
+	  still
+	  needed
+	  anyway?
 
 2007-12-10 13:42  sloot
 
-	* [r1840] also 'make' examples!
+	* [r1840]
+	  also
+	  'make'
+	  examples!
 
 2007-12-04 09:44  sloot
 
-	* [r1820] changed
+	* [r1820]
+	  changed
 
 2007-12-04 09:43  sloot
 
-	* [r1818] changed order of tests. test for libTimbl after sockets
-	  and such
+	* [r1818]
+	  changed
+	  order
+	  of
+	  tests.
+	  test
+	  for
+	  libTimbl
+	  after
+	  sockets
+	  and
+	  such
 
 2007-12-03 13:56  sloot
 
-	* [r1814] oesp
+	* [r1814]
+	  oesp
 
 2007-12-03 13:50  sloot
 
-	* [r1813] finishing packaging
+	* [r1813]
+	  finishing
+	  packaging
 
 2007-12-03 11:51  sloot
 
-	* [r1811] added more to ignore
+	* [r1811]
+	  added
+	  more
+	  to
+	  ignore
 
 2007-12-03 11:50  sloot
 
-	* [r1810] new entry
+	* [r1810]
+	  new
+	  entry
 
 2007-12-03 11:47  sloot
 
-	* [r1809] added ChangeLog generation
-	  now we install the examples
+	* [r1809]
+	  added
+	  ChangeLog
+	  generation now
+	  we
+	  install
+	  the
+	  examples
 
 2007-11-28 11:15  sloot
 
-	* [r1793] conditional mabi=64 test
+	* [r1793]
+	  conditional
+	  mabi=64
+	  test
 
 2007-11-28 10:37  sloot
 
-	* [r1791] now we test for timbl_present in libTimbl, and we define
-	  our own mbt_present
+	* [r1791]
+	  now
+	  we
+	  test
+	  for
+	  timbl_present
+	  in
+	  libTimbl,
+	  and
+	  we
+	  define
+	  our
+	  own
+	  mbt_present
 
 2007-11-26 14:06  sloot
 
-	* [r1782] cleaned up build
+	* [r1782]
+	  cleaned
+	  up
+	  build
 
 2007-11-20 15:53  sloot
 
-	* [r1776] this is still beta, so advertise that
+	* [r1776]
+	  this
+	  is
+	  still
+	  beta,
+	  so
+	  advertise
+	  that
 
 2007-11-20 15:29  sloot
 
-	* [r1775] removed MAX_WORDS limit. On the fly fixed Beaming bug
-	  (for default options)
-	  for IGTREE combined with Beaming, the +D option must always be
+	* [r1775]
+	  removed
+	  MAX_WORDS
+	  limit.
+	  On
+	  the
+	  fly
+	  fixed
+	  Beaming
+	  bug
+	  (for
+	  default
+	  options) for
+	  IGTREE
+	  combined
+	  with
+	  Beaming,
+	  the
+	  +D
+	  option
+	  must
+	  always
+	  be
 	  present!
 
 2007-11-20 13:31  sloot
 
-	* [r1774] added -mabi-64 test
+	* [r1774]
+	  added
+	  -mabi-64
+	  test
 
 2007-11-06 14:28  sloot
 
-	* [r1769] added
+	* [r1769]
+	  added
 
 2007-11-06 14:15  sloot
 
-	* [r1764] cleanup the mess
+	* [r1764]
+	  cleanup
+	  the
+	  mess
 
 2007-11-06 14:15  sloot
 
-	* [r1763] more to ignore
+	* [r1763]
+	  more
+	  to
+	  ignore
 
 2007-11-06 13:46  sloot
 
-	* [r1760] replaced README by README.in
+	* [r1760]
+	  replaced
+	  README
+	  by
+	  README.in
 
 2007-10-29 14:12  sloot
 
-	* [r1743] added test for libTimbl
+	* [r1743]
+	  added
+	  test
+	  for
+	  libTimbl
 
 2007-10-16 15:21  sloot
 
-	* [r1721] updated
-	  CVS
+	* [r1721]
+	  updated CVS
 
 2007-10-15 10:14  sloot
 
-	* [r1710] use version info from config.h (aka the auto tools)
+	* [r1710]
+	  use
+	  version
+	  info
+	  from
+	  config.h
+	  (aka
+	  the
+	  auto
+	  tools)
 
 2007-10-15 10:13  sloot
 
-	* [r1709] intel compiler is preferred for now
+	* [r1709]
+	  intel
+	  compiler
+	  is
+	  preferred
+	  for
+	  now
 
 2007-10-08 12:03  sloot
 
-	* [r1683] autotools 1.8 seems ok
+	* [r1683]
+	  autotools
+	  1.8
+	  seems
+	  ok
 
 2007-10-03 10:32  sloot
 
-	* [r1665] added demo and convert
+	* [r1665]
+	  added
+	  demo
+	  and
+	  convert
 
 2007-10-03 10:09  sloot
 
-	* [r1664] Default is now, to build a server
+	* [r1664]
+	  Default
+	  is
+	  now,
+	  to
+	  build
+	  a
+	  server
 
 2007-10-03 09:34  sloot
 
-	* [r1662] ignore
+	* [r1662]
+	  ignore
 
 2007-10-03 09:27  sloot
 
-	* [r1661] small fixup
+	* [r1661]
+	  small
+	  fixup
 
 2007-10-03 09:23  sloot
 
-	* [r1660] to ignore
+	* [r1660]
+	  to
+	  ignore
 
 2007-10-03 09:20  sloot
 
-	* [r1659] were moved to other dirs
+	* [r1659]
+	  were
+	  moved
+	  to
+	  other
+	  dirs
 
 2007-10-03 09:16  sloot
 
-	* [r1658] a lot of new/moved files for packaging
+	* [r1658]
+	  a
+	  lot
+	  of
+	  new/moved
+	  files
+	  for
+	  packaging
 
 2007-07-16 12:08  sloot
 
-	* [r1535] small fix for intel compiler
+	* [r1535]
+	  small
+	  fix
+	  for
+	  intel
+	  compiler
 
 2007-07-16 10:55  sloot
 
-	* [r1534] IPV6 server mode
+	* [r1534]
+	  IPV6
+	  server
+	  mode
 
 2007-07-16 09:35  sloot
 
-	* [r1533] try to avoid warning from intel compiler
+	* [r1533]
+	  try
+	  to
+	  avoid
+	  warning
+	  from
+	  intel
+	  compiler
 
 2007-07-16 09:22  sloot
 
-	* [r1532] and more ...
+	* [r1532]
+	  and
+	  more
+	  ...
 
 2007-07-16 09:17  sloot
 
-	* [r1531] more 64 bit stuff
+	* [r1531]
+	  more
+	  64
+	  bit
+	  stuff
 
 2007-07-16 09:08  sloot
 
-	* [r1530] 64 bits adaptation
+	* [r1530]
+	  64
+	  bits
+	  adaptation
 
 2007-07-11 19:16  antalb
 
-	* [r1523] added the two pdfs of the key publications describing Mbt
+	* [r1523]
+	  added
+	  the
+	  two
+	  pdfs
+	  of
+	  the
+	  key
+	  publications
+	  describing
+	  Mbt
 
 2007-07-10 14:03  sloot
 
-	* [r1510] manual and a forgotten file
+	* [r1510]
+	  manual
+	  and
+	  a
+	  forgotten
+	  file
 
 2007-07-10 12:20  sloot
 
-	* [r1506] adapted to cleaned Timbl6 API
+	* [r1506]
+	  adapted
+	  to
+	  cleaned
+	  Timbl6
+	  API
 
 2007-07-10 09:00  sloot
 
-	* [r1501] to ignore ;)
+	* [r1501]
+	  to
+	  ignore
+	  ;)
 
 2007-07-10 08:52  sloot
 
-	* [r1498] Initial revision
+	* [r1498]
+	  Initial
+	  revision
 
