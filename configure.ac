@@ -4,7 +4,7 @@
 # $URL$
 
 AC_PREREQ(2.59)
-AC_INIT([Mbt], [3.1.99.1], [timbl@uvt.nl])
+AC_INIT([Mbt], [3.1.99.2], [timbl@uvt.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -23,8 +23,7 @@ else
 fi
 
 # Checks for programs.
-# when available, we prefer the Intel Compiler
-AC_PROG_CXX( [icpc g++] )
+AC_PROG_CXX( [g++] )
 
 if $cxx_flags_were_set; then
   CXXFLAGS=$CXXFLAGS
@@ -111,7 +110,7 @@ AC_DEFINE_UNQUOTED(TIMBL_SOCKLEN_T,$ac_cv_check_socklen_t, "sock_len" )
 
 dnl ------ server mode
 AC_ARG_ENABLE(server,[  --enable-server[=PREFIX]  enable server mode])
-if test "$enable_server" -a "$enable_server" == "no"; then
+if test "$enable_server" -a "$enable_server" = "no"; then
 AC_MSG_WARN([not building servermode] )
 else
     if test "$enable_server" != "no"; then
@@ -121,7 +120,7 @@ else
 fi
 dnl
 
-if test "$ac_cv_prog_ac_ct_CXX" == "g++" -o "$ac_cv_env_CXX_value" == "g++"; then
+if test "$ac_cv_prog_ac_ct_CXX" = "g++" -o "$ac_cv_env_CXX_value" = "g++"; then
   have_abi64=0
   oldLibs=$LIBS
   oldCXXFLAGS=$CXXFLAGS
@@ -130,7 +129,7 @@ if test "$ac_cv_prog_ac_ct_CXX" == "g++" -o "$ac_cv_env_CXX_value" == "g++"; the
   AC_MSG_CHECKING([-mabi=64 compiler flag] )
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[const char hw[] = "Hello World\n";]])],
                  [have_abi64=1])
-  if test "$have_abi64" == "0"; then
+  if test "$have_abi64" = "0"; then
       LIBS=$oldLibs
       CXXFLAGS=$oldCXXFLAGS
       AC_MSG_RESULT( [No] )
@@ -149,7 +148,7 @@ AC_PATH_PROG(pkgconfigpath, pkg-config, NONE)
 if test "$pkgconfigpath" != "NONE"; then
 # ugly hack when PKG_CONFIG_PATH isn't defined.
 # couldn't get it to work otherwise
-  if test "x$PKG_CONFIG_PATH" == x; then
+  if test "x$PKG_CONFIG_PATH" = x; then
      export PKG_CONFIG_PATH=""
   fi
   AC_ARG_WITH(timbl,
