@@ -29,10 +29,11 @@
 #include <cstdlib>
 #include "timbl/TimblAPI.h"
 #include "config.h"
-#include "mbt/Tagger.h"
 #include "mbt/Logging.h"
 #include "mbt/MbtAPI.h"
+#include "mbt/Tagger.h"
 
+using std::ostream;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -42,6 +43,14 @@ MbtAPI::MbtAPI( const std::string& opts ){
   // get all the commandline options in an TimblOpts structure
   //
   TimblOpts Opts( opts );
+  tagger = Tagger::CreateTagger( Opts );
+}
+
+MbtAPI::MbtAPI( const std::string& opts, LogStream& ls ){
+  // get all the commandline options in an TimblOpts structure
+  //
+  TimblOpts Opts( opts );
+  Tagger::setLog( ls );
   tagger = Tagger::CreateTagger( Opts );
 }
 

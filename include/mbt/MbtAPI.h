@@ -27,6 +27,7 @@
 #ifndef MBT_API_H
 #define MBT_API_H
 
+#include "timbl/LogStream.h"
 #include "timbl/TimblAPI.h"
 #include "mbt/Tagger.h"
 
@@ -38,6 +39,7 @@ class MbtAPI {
   static bool GenerateTagger( int, char** );
   static bool RunTagger( int, char** );
   MbtAPI( const std::string& );
+  MbtAPI( const std::string&, LogStream& );
   ~MbtAPI();
   std::string Tag( const std::string& );
  private:

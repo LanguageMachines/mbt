@@ -31,6 +31,7 @@ namespace Tagger {
   int MakeTagger( Timbl::TimblOpts& );
   int RunTagger( Timbl::TimblOpts& );
   TaggerClass *CreateTagger( Timbl::TimblOpts& );
+  bool setLog( LogStream& );
   void RemoveTagger( TaggerClass * );
   std::string Tag( TaggerClass*, const std::string& );
 }

@@ -42,8 +42,8 @@
 #include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
-#include "mbt/Tagger.h"
 #include "mbt/Logging.h"
+#include "mbt/Tagger.h"
 
 extern "C" {
   int mbt_present(){ return 1; };
@@ -53,7 +53,7 @@ extern "C" {
 #include <pthread.h>
 #endif
 
-LogStream default_log( std::cerr, "DBG->" ); // fall-back
+LogStream default_log( std::cerr ); // fall-back
 LogStream *cur_log = &default_log;  // fill the externals
 
 LogLevel internal_default_level = LogNormal;
@@ -240,7 +240,12 @@ namespace Tagger {
     servermode = false;
     Sock = 0;
   }
-  
+
+  bool setLog( LogStream& os ){
+    cur_log = new LogStream( os, "mbt-" );
+    return true;
+  }
+
   class n_best_tuple {
   public:
     n_best_tuple(){ path = EMPTY_PATH; tag = EMPTY_PATH; prob = 0.0; }
@@ -1086,14 +1091,13 @@ namespace Tagger {
     string valbuf;
     int no_words=0;
     ifstream lexfile( FileName.c_str(), ios::in);  
-    cerr << "  Reading the lexicon from: " << FileName << "...";
-    
     while ( lexfile >> wordbuf >> valbuf ){
       MT_lexicon.Store( wordbuf, valbuf );
       no_words++;
       lexfile >> ws;
     }
-    cerr << "ready, (" << no_words << " words)." << endl;
+    LOG << "  Reading the lexicon from: " << FileName << " ("
+	<< no_words << " words)." << endl;
   }
 
   bool old_style( const string& name ){
@@ -1126,19 +1130,19 @@ namespace Tagger {
     string wordbuf;
     int no_words=0;
     ifstream wordfile( FileName.c_str(), ios::in);  
-    cerr << "  Reading frequent words list from: " << FileName << "...";
     while( wordfile >> wordbuf ) {
       words.Hash( wordbuf );
       ++no_words;
     }
-    cerr << "ready, (" << no_words << " words)." << endl;
+    LOG << "  Read frequent words list from: " << FileName << " ("
+	<< no_words << " words)." << endl;
   }
   
   bool TaggerClass::InitTagging( ){
     if ( !servermode ){
       if ( !cur_log->set_single_threaded_mode() ){
-	cerr << "PROBLEM setting to single threaded Failed" << endl;
-	cerr << "Tagging might be slower than hoped for" << endl;
+// 	LOG << "PROBLEM setting to single threaded Failed" << endl;
+// 	LOG << "Tagging might be slower than hoped for" << endl;
       }
     }
     // read the lexicon
@@ -1178,9 +1182,8 @@ namespace Tagger {
       return false;
     // read a previously stored InstanceBase for known words
     //
-    cerr << "  Reading case-base for known words from: " << KnownTreeName 
-	 << "... ";
-    cerr.flush();
+    LOG << "  Reading case-base for known words from: " << KnownTreeName 
+	<< "... " << endl;
     if ( !KnownTree->GetInstanceBase( KnownTreeName) ){
       cerr << "Could not read the known tree from " 
 	   << KnownTreeName << endl;
@@ -1195,14 +1198,13 @@ namespace Tagger {
 	else
 	  cerr << "\n  Read known weights from " << kwf << endl;
       }
-      cerr << "ready." << endl;
+      LOG << "  case-base for known words read." << endl;
       // read  a previously stored InstanceBase for unknown words
       //
-      cerr << "  Reading case-base for unknown words from: " 
-	   << UnknownTreeName << "... ";
-      cerr.flush();
+      LOG << "  Reading case-base for unknown words from: " 
+	  << UnknownTreeName << "... " << endl;
       if( !unKnownTree->GetInstanceBase( UnknownTreeName) ){
-	cerr << "Could not read the unknown tree from " 
+	LOG << "Could not read the unknown tree from " 
 	     << UnknownTreeName << endl;
 	return false;
       }
@@ -1213,18 +1215,18 @@ namespace Tagger {
 	    return false;
 	  }
 	  else
-	    cerr << "\n  Read unknown weights from " << uwf << endl;
+	    LOG << "\n  Read unknown weights from " << uwf << endl;
 	}
-	cerr << "ready." << endl;
+	LOG << "  case-base for unknown word read" << endl;
 	string kfn_template = "/tmp/knownXXXXXX";
 	string ufn_template = "/tmp/unknownXXXXXX";
 	char *tfn = strdup( kfn_template.c_str() );
 	int fd = mkstemp( tfn );
 	string kTempFileName = tfn;
 	if (fd==-1) {
-	  cerr << "Could not open temporaryfile: " << kTempFileName 
-	       << " (" << strerror(errno) << ")" << endl;
-	  cerr << "this might not be a problem, so we go on..." << endl;
+	  LOG << "Could not open temporaryfile: " << kTempFileName 
+	      << " (" << strerror(errno) << ")" << endl;
+	  LOG << "this might not be a problem, so we go on..." << endl;
 	}
 	else {
 	  close( fd );
@@ -1235,9 +1237,9 @@ namespace Tagger {
 	  fd = mkstemp( tfn );
 	  string uTempFileName = tfn;
 	  if ( fd == -1 ){
-	    cerr << "Could not open temporaryfile: " << uTempFileName 
-		 << " (" << strerror(errno) << ")" << endl;
-	    cerr << "this might not be a problem, so we go on..." << endl;
+	    LOG << "Could not open temporaryfile: " << uTempFileName 
+		<< " (" << strerror(errno) << ")" << endl;
+	    LOG << "this might not be a problem, so we go on..." << endl;
 	    unlink( kTempFileName.c_str() );
 	  }
 	  else {
@@ -1246,16 +1248,16 @@ namespace Tagger {
 	    unKnownTree->WriteNamesFile( uTempFileName );
 	    if ( old_style( uTempFileName ) 
 		 || old_style( kTempFileName ) ){
-	      cerr << "Timbl InstanceBases seem to be in old style format" 
-		   << endl;
-	      cerr << "please consider converting them" << endl;
+	      LOG << "Timbl InstanceBases seem to be in old style format" 
+		  << endl;
+	      LOG << "please consider converting them" << endl;
 	      if ( !r_option_name.empty() ){
-		cerr << "use 'convert " << r_option_name << " " << KnownTreeName
+		LOG << "use 'convert " << r_option_name << " " << KnownTreeName
 		     << "'" << endl;
-		cerr << "and 'convert " << r_option_name << " " << UnknownTreeName
-		     << "'" << endl;
+		LOG << "and 'convert " << r_option_name << " " << UnknownTreeName
+		    << "'" << endl;
 	      }
-	      cerr << "unable to proceed" << endl;
+	      LOG << "unable to proceed" << endl;
 	      unlink( uTempFileName.c_str() );
 	      unlink( kTempFileName.c_str() );
 	      exit(0);
@@ -1268,12 +1270,12 @@ namespace Tagger {
 	}
       }
     }
-    cerr << "  Sentence delimiter set to '" << EosMark << "'" << endl;
-    cerr << "  Beam size = " << Beam_Size << endl;    
-    cerr << "  Known Tree, Algorithm = " 
-	 << to_string( KnownTree->Algo() ) << endl;
-    cerr << "  Unknown Tree, Algorithm = " 
-	 << to_string( unKnownTree->Algo() ) << endl << endl;
+    LOG << "  Sentence delimiter set to '" << EosMark << "'" << endl;
+    LOG << "  Beam size = " << Beam_Size << endl;    
+    LOG << "  Known Tree, Algorithm = " 
+	<< to_string( KnownTree->Algo() ) << endl;
+    LOG << "  Unknown Tree, Algorithm = " 
+	<< to_string( unKnownTree->Algo() ) << endl << endl;
     // the testpattern is of the form given in Ktemplate and Utemplate
     // here we allocate enough space for the larger of them to serve both
     //
