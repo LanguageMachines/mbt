@@ -1,3 +1,9 @@
+mbt (3.2.1-1) unstable; urgency=low
+
+  * New Release
+
+ -- Ko van der Sloot <Ko.vanderSloot@uvt.nl>  Mon, 22 Feb 2010 14:49:41 +0100
+
 mbt (3.2.0-pre1-1) unstable; urgency=low
 
   * New upstream SVN snapshot.
