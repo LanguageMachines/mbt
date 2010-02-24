@@ -4,7 +4,7 @@
 # $URL$
 
 AC_PREREQ(2.59)
-AC_INIT([Mbt], [3.2.1], [timbl@uvt.nl])
+AC_INIT([Mbt], [3.2.2], [timbl@uvt.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -161,6 +161,16 @@ if test "$pkgconfigpath" != "NONE"; then
   PKG_CHECK_MODULES([timbl], [timbl >= 6.2.0] )
   CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
   LIBS="$LIBS $timbl_LIBS"
+  AC_ARG_WITH(timblserver,
+       [  --with-timblserver=DIR       use timblserver installed in <DIR>; 
+               note that you can install Timbl in a non-default directory with
+               ./configure --prefix=<DIR> in the Timbl installation directory],
+       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
+       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
+  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
+  PKG_CHECK_MODULES([timblserver], [timblserver >= 1.0.0] )
+  CXXFLAGS="$CXXFLAGS $timblserver_CFLAGS"
+  LIBS="$LIBS $timblserver_LIBS"
 else
   AC_ARG_WITH(timbl,
        [  --with-timbl=DIR       use timbl installed in <DIR>;
@@ -175,6 +185,20 @@ else
   AC_CHECK_LIB([Timbl],timbl_present,,noTimbl=1)
   if test "$noTimbl" =  "1"; then
      AC_MSG_FAILURE( [libTimbl not found, please see usage of --with-timbl] )
+  fi
+  AC_ARG_WITH(timblserver,
+       [  --with-timblserver=DIR       use timblserver installed in <DIR>;
+      	  	note that you can install Timbl in a non-default directory with
+		./configure --prefix=<DIR> in the Timbl installation directory],
+       [CXXFLAGS="$CXXFLAGS -I$withval/include"
+        LIBS="-L$withval/lib $LIBS"],
+        [CXXFLAGS="$CXXFLAGS -I$prefix/include"
+        LIBS="-L$prefix/lib $LIBS"])
+
+  noTimblServer=0
+  AC_CHECK_LIB([TimblServer],timblserver_present,,noTimblServer=1)
+  if test "$noTimblServer" =  "1"; then
+     AC_MSG_FAILURE( [libTimblServer not found, please see usage of --with-timblserver] )
   fi
 fi
 
