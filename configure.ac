@@ -142,68 +142,34 @@ else
 fi
 
 PKG_PROG_PKG_CONFIG
-PKG_CHECK_MODULES([XML2], [libxml-2.0 >= 2.6.16] )
-CXXFLAGS="$CXXFLAGS $XML2_CFLAGS"
-LIBS="$LIBS $XML2_LIBS"
-
 # Checks for timbl library.
 
 # inspired by feh-1.3.4/configure.ac.  Tnx Tom Gilbert and feh hackers.
-if test "$pkgconfigpath" != "NONE"; then
+
 # ugly hack when PKG_CONFIG_PATH isn't defined.
 # couldn't get it to work otherwise
-  if test "x$PKG_CONFIG_PATH" = x; then
+if test "x$PKG_CONFIG_PATH" = x; then
      export PKG_CONFIG_PATH=""
-  fi
-  AC_ARG_WITH(timbl,
+fi
+AC_ARG_WITH(timbl,
        [  --with-timbl=DIR       use timbl installed in <DIR>; 
                note that you can install Timbl in a non-default directory with
                ./configure --prefix=<DIR> in the Timbl installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
 #  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-  PKG_CHECK_MODULES([timbl], [timbl >= 6.2.0] )
-  CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
-  LIBS="$LIBS $timbl_LIBS"
-  AC_ARG_WITH(timblserver,
+PKG_CHECK_MODULES([timbl], [timbl >= 6.2.0] )
+CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
+LIBS="$LIBS $timbl_LIBS"
+AC_ARG_WITH(timblserver,
        [  --with-timblserver=DIR       use timblserver installed in <DIR>; 
                note that you can install Timbl in a non-default directory with
                ./configure --prefix=<DIR> in the Timbl installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"])
 #  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-  PKG_CHECK_MODULES([timblserver], [timblserver >= 1.0.0] )
-  CXXFLAGS="$CXXFLAGS $timblserver_CFLAGS"
-  LIBS="$LIBS $timblserver_LIBS"
-else
-  AC_ARG_WITH(timbl,
-       [  --with-timbl=DIR       use timbl installed in <DIR>;
-      	  	note that you can install Timbl in a non-default directory with
-		./configure --prefix=<DIR> in the Timbl installation directory],
-       [CXXFLAGS="$CXXFLAGS -I$withval/include"
-        LIBS="-L$withval/lib $LIBS"],
-        [CXXFLAGS="$CXXFLAGS -I$prefix/include"
-        LIBS="-L$prefix/lib $LIBS"])
-
-  noTimbl=0
-  AC_CHECK_LIB([Timbl],timbl_present,,noTimbl=1)
-  if test "$noTimbl" =  "1"; then
-     AC_MSG_FAILURE( [libTimbl not found, please see usage of --with-timbl] )
-  fi
-  AC_ARG_WITH(timblserver,
-       [  --with-timblserver=DIR       use timblserver installed in <DIR>;
-      	  	note that you can install Timbl in a non-default directory with
-		./configure --prefix=<DIR> in the Timbl installation directory],
-       [CXXFLAGS="$CXXFLAGS -I$withval/include"
-        LIBS="-L$withval/lib $LIBS"],
-        [CXXFLAGS="$CXXFLAGS -I$prefix/include"
-        LIBS="-L$prefix/lib $LIBS"])
-
-  noTimblServer=0
-  AC_CHECK_LIB([TimblServer],timblserver_present,,noTimblServer=1)
-  if test "$noTimblServer" =  "1"; then
-     AC_MSG_FAILURE( [libTimblServer not found, please see usage of --with-timblserver] )
-  fi
-fi
+PKG_CHECK_MODULES([timblserver], [timblserver >= 1.0.0] )
+CXXFLAGS="$CXXFLAGS $timblserver_CFLAGS"
+LIBS="$LIBS $timblserver_LIBS"
 
 # Checks for library functions.
 AC_CHECK_FUNCS([strdup strerror])
