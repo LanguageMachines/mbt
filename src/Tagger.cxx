@@ -38,7 +38,7 @@
 #include <unistd.h> // for unlink()
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "timbl/SocketBasics.h"
+#include "timblserver/SocketBasics.h"
 #include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"

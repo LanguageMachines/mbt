@@ -34,8 +34,8 @@
 #include <cassert>
 
 #include "timbl/StringOps.h"
-#include "timbl/SocketBasics.h"
 #include "timbl/Tree.h"
+#include "timblserver/SocketBasics.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 

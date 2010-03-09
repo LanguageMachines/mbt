@@ -27,7 +27,7 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "timbl/LogStream.h"
+#include "timblserver/LogStream.h"
 
 extern LogStream default_log;
 extern LogStream *cur_log;
