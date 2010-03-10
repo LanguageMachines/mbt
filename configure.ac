@@ -3,8 +3,8 @@
 # $Id$
 # $URL$
 
-AC_PREREQ(2.59)
-AC_INIT([Mbt], [3.2.2], [timbl@uvt.nl])
+AC_PREREQ(2.61)
+AC_INIT([Mbt],[3.2.2],[timbl@uvt.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -22,19 +22,18 @@ else
   cxx_flags_were_set=false
 fi
 
-# Checks for programs.
-AC_PROG_CXX( [g++] )
-
 if $cxx_flags_were_set; then
   CXXFLAGS=$CXXFLAGS
 fi
 
+# Checks for programs.
+AC_PROG_CXX( [g++] )
+AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 
 # when running tests, use CXX
 AC_LANG([C++])
 
-#use libtool
-AC_PROG_LIBTOOL
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h sys/socket.h unistd.h])
@@ -173,6 +172,9 @@ LIBS="$LIBS $timblserver_LIBS"
 
 # Checks for library functions.
 AC_CHECK_FUNCS([strdup strerror])
+
+AC_C_CONST
+AC_TYPE_SIGNAL
 
 AC_OUTPUT([
   Makefile
