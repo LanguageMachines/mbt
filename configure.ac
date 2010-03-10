@@ -176,7 +176,7 @@ AC_CHECK_FUNCS([strdup strerror])
 AC_C_CONST
 AC_TYPE_SIGNAL
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
   Makefile
   mbt.pc
   src/Makefile
@@ -187,3 +187,5 @@ AC_OUTPUT([
   docs/Makefile
   example/Makefile
 ])
+
+AC_OUTPUT
