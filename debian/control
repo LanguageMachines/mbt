@@ -3,10 +3,10 @@ Section: science
 Priority: extra
 Maintainer: Joost van Baal <joostvb-mbt@ad1810.com>
 Uploaders: Ko van der Sloot <Ko.vanderSloot@uvt.nl>
-
-Build-Depends: cdbs, debhelper (>= 7), autotools-dev, timbl (>= 6.2.0)
+Build-Depends: cdbs, debhelper (>= 7), timbl (>= 6.2.0)
 Standards-Version: 3.8.0
 Homepage: http://ilk.uvt.nl/mbt/
+Vcs-Svn: https://svn.ilk.uvt.nl/svn/trunk/sources/Mbt3
 
 Package: mbt
 Architecture: any
