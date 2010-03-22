@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1998 - 2009
+  Copyright (c) 1998 - 2010
   ILK  -  Tilburg University
   CNTS -  University of Antwerp
  
@@ -38,17 +38,6 @@
 #include "timblserver/SocketBasics.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
-
-#if defined(PTHREADS)
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
-#include <unistd.h>
-
-#endif
 
 namespace Tagger {
   using namespace Hash;

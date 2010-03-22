@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1998 - 2009
+  Copyright (c) 1998 - 2010
   ILK  -  Tilburg University
   CNTS -  University of Antwerp
  
@@ -102,7 +102,7 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   // present yourself to the user
   //
   cout << "Memory Based Tagger Generator " << VERSION << endl
-       << "  (c) ILK and CNTS 1998 - 2009." << endl
+       << "  (c) ILK and CNTS 1998 - 2010." << endl
        << "  Induction of Linguistic Knowledge Research Group,"
        << " Tilburg University" << endl
        << "  Centre for Dutch Language and Speech, University of Antwerp" 
@@ -164,7 +164,7 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
 // present yourself to the user
 //
   cerr << "\nMemory Based Tagger " << VERSION << endl
-       << "  (c) ILK and CNTS 1998 - 2009.\n"
+       << "  (c) ILK and CNTS 1998 - 2010.\n"
        << "  Induction of Linguistic Knowledge Research Group,"
        << " Tilburg University" << endl
        << "  Centre for Dutch Language and Speech, University of Antwerp"

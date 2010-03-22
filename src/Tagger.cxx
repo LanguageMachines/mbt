@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1998 - 2009
+  Copyright (c) 1998 - 2010
   ILK  -  Tilburg University
   CNTS -  University of Antwerp
  
@@ -575,14 +575,6 @@ namespace Tagger {
 
 #if defined(PTHREADS)
 
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
   static pthread_mutex_t my_lock = PTHREAD_MUTEX_INITIALIZER;
   static int service_count = 0;
 
@@ -781,7 +773,7 @@ namespace Tagger {
     return false;
   }
 
-  int TaggerClass::ProcessSocket( int ){
+  int TaggerClass::ProcessSocket( ){
     return -1;
   }
 #endif  
