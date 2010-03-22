@@ -24,6 +24,7 @@
       Timbl@uvt.nl
 */
 
+#include <algorithm> 
 #include <fstream> 
 #include <iostream>
 #include <cerrno>
@@ -917,25 +918,11 @@ namespace Tagger {
     NpaxFileName = TestFileName + affix;
     return true;
   }
-  
-  inline void FreqSort( TagInfo *TI ){
-    TI->TF->FreqSort();
-  }
-  
+    
   void TaggerClass::ProcessTags( TagInfo *TI ){
     TI->Prune( FilterTreshold );
-    FreqSort( TI );
-    string tmpstr;
-    TagFreqList *pnt = TI->TF->Tags;
-    while ( pnt ){
-      tmpstr += pnt->tag;
-      pnt = pnt->next;
-      if ( pnt )
-	tmpstr += ";";
-    }
-    TI->StringRepr = tmpstr;
+    TI->CreateStringRepr();
   }
-  
   
   bool split_special( const string& Buffer, string& Word, string& Tag ){
     vector<string> subs;
@@ -972,15 +959,15 @@ namespace Tagger {
 	TaggedLexicon.Store( Word, Tag );
       }
     }
-    int LexSize = TaggedLexicon.NumOfEntries;
-    TagInfo **TagArray = TaggedLexicon.CreateSortedArray();
+    int LexSize = TaggedLexicon.numOfLexiconEntries();
+    vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
     if ( (out_file.open( LexFileName.c_str(), ios::out ), 
 	  out_file.good() ) ){
       cout << "  Creating lexicon: "  << LexFileName << " of " 
 	   << LexSize << " entries." << endl;
       for ( int i=0; i < LexSize; i++ )
-	out_file << TagArray[i]->Freq() << " " << TagArray[i]->Word
-		 << " " << TagArray[i]->TF->Tags << endl;
+	out_file << TagVect[i]->Freq() << " " << TagVect[i]->Word
+		 << " " << TagVect[i]->DisplayTagFreqs() << endl;
       out_file.close();
     }
     else {
@@ -988,13 +975,13 @@ namespace Tagger {
       exit(0);
     }
     for ( int i=0; i < LexSize; i++ )
-      ProcessTags( TagArray[i] );
+      ProcessTags( TagVect[i] );
     if ( (out_file.open( MTLexFileName.c_str(), ios::out ), 
 	  out_file.good() ) ){
       cout << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( int j=0; j < LexSize; j++ ){
-	out_file << TagArray[j]->Word << " " << TagArray[j]->StringRepr << endl;
-	MT_lexicon.Store(TagArray[j]->Word, TagArray[j]->StringRepr );
+	out_file << TagVect[j]->Word << " " << TagVect[j]->stringRep() << endl;
+	MT_lexicon.Store(TagVect[j]->Word, TagVect[j]->stringRep() );
       }
       out_file.close();
     }
@@ -1006,8 +993,8 @@ namespace Tagger {
 	  out_file.good() ) ){
       cout << "  Creating list of most frequent words: "  << TopNFileName << endl;
       for ( int k=0; k < LexSize && k < TopNumber; k++ ){
-	out_file << TagArray[k]->Word << endl;
-	kwordlist.Hash( TagArray[k]->Word );
+	out_file << TagVect[k]->Word << endl;
+	kwordlist.Hash( TagVect[k]->Word );
       }
       out_file.close();
     }
@@ -1021,9 +1008,9 @@ namespace Tagger {
 	int np_cnt = 0;
 	//	cout << "  Creating Npax file: "  << NpaxFileName;
 	for ( int l=0; l < LexSize; l++ ){
-	  if ( TagArray[l]->WordFreq > Npax ) continue;
-	  out_file << TagArray[l]->Word << endl;
-	  uwordlist.Hash( TagArray[l]->Word );
+	  if ( TagVect[l]->Freq() > Npax ) continue;
+	  out_file << TagVect[l]->Word << endl;
+	  uwordlist.Hash( TagVect[l]->Word );
 	  np_cnt++;
 	}
 	out_file.close();
@@ -1034,7 +1021,6 @@ namespace Tagger {
 	exit(0);
       } 
     }
-    delete [] TagArray;
   }
   
   void TaggerClass::ShowCats( ostream& os, vector<int>& Pat, int slots ){
@@ -1219,8 +1205,8 @@ namespace Tagger {
 	else {
 	  close( fd );
 	  unlink( tfn );
-	  KnownTree->WriteNamesFile( kTempFileName );
 	  free( tfn );
+	  KnownTree->WriteNamesFile( kTempFileName );
 	  tfn = strdup( ufn_template.c_str() );
 	  fd = mkstemp( tfn );
 	  string uTempFileName = tfn;
@@ -1233,6 +1219,7 @@ namespace Tagger {
 	  else {
 	    close( fd );
 	    unlink( tfn );
+	    free( tfn );
 	    unKnownTree->WriteNamesFile( uTempFileName );
 	    if ( old_style( uTempFileName ) 
 		 || old_style( kTempFileName ) ){

@@ -25,12 +25,14 @@
 */
 
 #include <algorithm>
+#include <map>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
 #include "timbl/StringOps.h"
+#include "timbl/Types.h"
 #include "mbt/TagLex.h"
 
 namespace Tagger {
@@ -39,113 +41,79 @@ namespace Tagger {
   
   TagInfo::TagInfo( const string& name, const string& tag ){
     Word = name;
-    WordFreq = 1;
-    TF = new TagFreq();
-    TF->Update( tag );
-    StringRepr = "";
+    WordFreq = 0;
+    Update( tag );
   }
   
   TagInfo::~TagInfo(){
-    delete TF;
   }
   
   void TagInfo::Update( const string& tag ){
-    WordFreq++;
-    TF->Update( tag );
-  }
-  
-  TagFreqList::~TagFreqList(){
-    if ( this->next )
-      delete this->next;
-  }
-  
-  void TagFreq::Update( const string& tag ){
-    TagFreqList *tmp, **pnt = &Tags;
-    while( *pnt ){
-      if ( strcmp( (*pnt)->tag.c_str(), tag.c_str() ) > 0 ){
-	tmp = *pnt;
-	*pnt = new TagFreqList( tag );
-	(*pnt)->next = tmp;
-	return;
-      }
-      else if ( strcmp( (*pnt)->tag.c_str(), tag.c_str() ) == 0 ){
-	(*pnt)->freq++;
-	return;
-      }
-      else {
-	pnt = &((*pnt)->next);
-      }
+    ++WordFreq;
+    map<string,int>::iterator it = TagFreqs.find( tag );
+    if ( it != TagFreqs.end() ){
+      ++it->second;
     }
-    *pnt = new TagFreqList( tag );
+    else {
+      TagFreqs[tag] = 1;
+    }
   }
   
-  void TagFreq::Prune( int Treshold, int TotalWords ){
-    double perc;
-    TagFreqList *tmp, **pnt = &Tags, *aside = NULL;
-    bool first = true;
-    while( *pnt ){
-      perc = ( (double)(*pnt)->freq * 100 ) / (double)TotalWords;
-      if ( perc < Treshold ){
-	tmp = *pnt;
-	*pnt = (*pnt)->next;
-	tmp->next = NULL;
-	if ( first ){
-	  first = false;
-	  aside = tmp;
-	}
-	else {
-	  delete tmp;
-	}
-      }
+  void TagInfo::Prune( int Treshold ){
+    map<string,int>::iterator it = TagFreqs.begin();
+    while ( it != TagFreqs.end() ){
+      double perc = ( (double)it->second * 100 ) / ( double)WordFreq;
+      if ( perc < Treshold )
+	TagFreqs.erase( it++ );
       else
-	pnt = &((*pnt)->next);
+	++it;
     }
-    if ( Tags == NULL )
-      Tags = aside;
-    else
-      delete aside;
   }
   
-  int cmp_freq( const TagFreqList *p1, const TagFreqList *p2 ){
-    return ( p2->freq < p1->freq );
-  }
-  
-  void TagFreq::FreqSort( ){
-    vector<TagFreqList *> TagsArray;
-    TagFreqList *pnt = Tags;
-    while ( pnt ){
-      TagsArray.push_back( pnt );
-      pnt = pnt->next;
+  string TagInfo::DisplayTagFreqs( )const {
+    string result;
+    map<string, int>::const_iterator it = TagFreqs.begin();
+    while ( it != TagFreqs.end() ){
+      result += it->first + ":" + toString(it->second) + " ";
+      ++it;
     }
-    if ( TagsArray.size() > 1 ) {
-      sort( TagsArray.begin(), TagsArray.end(), cmp_freq );
-      for ( unsigned int i = 0; i < TagsArray.size()-1; ++i ){
-	TagsArray[i]->next = TagsArray[i+1];
-      }
-      TagsArray[TagsArray.size()-1]->next = 0;
-    }
-    Tags = TagsArray[0];
+    return result;
   }
-  
+
+  struct FS {
+    FS( int f, string s ):freq(f), str(s) {};
+    int freq;
+    string str;
+  };
+
+  int cmpFreq( const FS& p1, const FS& p2 ){
+    return ( p2.freq < p1.freq );
+  }
+
+  void TagInfo::CreateStringRepr(){
+    vector<FS> FreqTags;
+    map<string,int>::const_iterator it = TagFreqs.begin();
+    while ( it != TagFreqs.end() ){
+      FreqTags.push_back( FS( it->second, it->first) );
+      ++it;
+    }
+    sort( FreqTags.begin(), FreqTags.end(), cmpFreq );
+    string tmpstr;
+    vector<FS>::const_iterator it2 = FreqTags.begin();
+    while ( it2 != FreqTags.end() ){
+      tmpstr += it2->str;
+      ++it2;
+      if ( it2 != FreqTags.end() )
+	tmpstr += ";";
+    }
+    StringRepr = tmpstr;
+  }
+
   ostream& operator<<( ostream& os, TagInfo *LI ){
     if ( LI ){
       os << " " << LI->Word << ":" << LI->WordFreq
-	 << " " << LI->TF << " " << LI->StringRepr;
+	 << " {" << LI->DisplayTagFreqs() << "} " << LI->StringRepr;
     }
-    return os;
-  }
-  
-  ostream& operator<<( ostream& os, TagFreqList *TFL ){
-    TagFreqList *pnt = TFL;
-    while ( pnt ) {
-      os << pnt->tag << ":" << pnt->freq << " ";
-      pnt = pnt->next;
-    }
-    return os;
-  }
-  
-  ostream& operator<<( ostream& os, TagFreq *TF ){ 
-    os << " { " << TF->Tags << "}";
     return os;
   }
   
@@ -174,31 +142,27 @@ namespace Tagger {
     return info;
   }
   
-  void StoreInArray( TagInfo *TI, void *arg ){
-    TagInfo **TA = (TagInfo **)arg;
-    static int Pos = 0;
-    TA[Pos++] = TI;
+  void StoreInVector( TagInfo *TI, void *arg ){
+    vector<TagInfo*> *vec = (vector<TagInfo*> *)arg;
+    vec->push_back( TI );
   }
   
-  int cmp_info( const void *p1, const void *p2 ){
-    TagInfo * const *t1, * const *t2;
-    t1 = (TagInfo * const *)p1;
-    t2 = (TagInfo * const *)p2;
-    int diff = (*t2)->Freq() - (*t1)->Freq();
+  int cmp_info( const TagInfo* t1, const TagInfo* t2 ){
+    int diff = t2->Freq() - t1->Freq();
     if ( diff == 0 ){
-      if ( compare_nocase( (*t2)->Word, (*t1)->Word ) )
-	diff = strcmp( (*t1)->Word.c_str(), (*t2)->Word.c_str() );
+      if ( compare_nocase( t2->Word, t1->Word ) )
+	return strcmp( t1->Word.c_str(), t2->Word.c_str() ) < 0;
       else
-	diff = strcmp( (*t2)->Word.c_str(), (*t1)->Word.c_str() );
+	return strcmp( t2->Word.c_str(), t1->Word.c_str() ) < 0;
     }
-    return diff;
+    return diff < 0;
   }
   
-  TagInfo **TagLex::CreateSortedArray(){
-    TagInfo **TagArray = new TagInfo *[NumOfEntries];
-    TagTree->ForEachDo( StoreInArray, (void *)TagArray );
-    qsort( TagArray, NumOfEntries, sizeof(TagInfo *), cmp_info );
-    return TagArray;
+  vector<TagInfo *> TagLex::CreateSortedVector(){
+    vector<TagInfo*> TagVec;
+    TagTree->ForEachDo( StoreInVector, (void *)&TagVec );
+    sort( TagVec.begin(), TagVec.end() , cmp_info );
+    return TagVec;
   }
   
   ostream& operator<<( ostream& os, TagLex *L ){

@@ -32,53 +32,38 @@
 namespace Tagger {
   using Tries::Trie;
 
-class TagFreqList {
-  friend std::ostream& operator<<( std::ostream&, TagFreqList * );
- public:
-  TagFreqList( const std::string& s ) { tag = s; freq=1; next = NULL; };
-  ~TagFreqList();
-  std::string tag;
-  int freq;
-  TagFreqList *next;
-};
-
-class TagFreq {
-  friend std::ostream& operator<<( std::ostream&, TagFreq * );
- public:
-  TagFreq( ) { Tags = NULL; };
-  ~TagFreq() { delete Tags; };
-  void Update( const std::string&  );
-  void Prune( int, int );
-  void FreqSort( );
-  TagFreqList *Tags;
-};
-
-// a Tagged Lexion. Stores strings , frequencies and assigned tags
-class TagInfo {
-  friend std::ostream& operator<<( std::ostream&, TagInfo * );
- public:
-  TagInfo( const std::string& , const std::string&  );
-  ~TagInfo();
-  void Update( const std::string&  );
-  int Freq() const { return WordFreq; };
-  void Prune( int perc ) { TF->Prune( perc, WordFreq ); };
-  std::string Word;
-  int WordFreq;
-  TagFreq *TF;
-  std::string StringRepr;
-};
-
-class TagLex {
-  friend std::ostream& operator<< ( std::ostream&, TagLex * );
- public:
-  TagLex();
-  ~TagLex();
-  TagInfo *Lookup( const std::string& s );
-  TagInfo *Store( const std::string&  , const std::string&  );
-  TagInfo **CreateSortedArray();
-  Trie<TagInfo> *TagTree;
-  int NumOfEntries;
-};
-
+  // a Tagged Lexion. Stores strings , frequencies and assigned tags
+  class TagInfo {
+    friend std::ostream& operator<<( std::ostream&, TagInfo * );
+  public:
+    TagInfo( const std::string& , const std::string& );
+    ~TagInfo();
+    void Update( const std::string& s );
+    void Prune( int perc );
+    int Freq() const { return WordFreq; };
+    std::string stringRep() { return StringRepr; };
+    void CreateStringRepr();
+    std::string DisplayTagFreqs() const;
+    std::string Word;
+  private:
+    int WordFreq;
+    std::string StringRepr;
+    std::map<std::string, int> TagFreqs;
+  };
+  
+  class TagLex {
+    friend std::ostream& operator<< ( std::ostream&, TagLex * );
+  public:
+    TagLex();
+    ~TagLex();
+    TagInfo *Lookup( const std::string& s );
+    TagInfo *Store( const std::string&  , const std::string&  );
+    std::vector<TagInfo *> CreateSortedVector();
+    int numOfLexiconEntries() const { return NumOfEntries; };
+  private:
+    Trie<TagInfo> *TagTree;
+    int NumOfEntries;
+  };
+  
 }
 #endif
