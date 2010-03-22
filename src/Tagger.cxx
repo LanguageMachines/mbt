@@ -923,14 +923,10 @@ namespace Tagger {
   }
   
   void TaggerClass::ProcessTags( TagInfo *TI ){
-    TagFreqList *pnt = TI->TF->Tags;
-    while ( pnt ){
-      pnt = pnt->next;
-    }
     TI->Prune( FilterTreshold );
     FreqSort( TI );
-    pnt = TI->TF->Tags;
     string tmpstr;
+    TagFreqList *pnt = TI->TF->Tags;
     while ( pnt ){
       tmpstr += pnt->tag;
       pnt = pnt->next;
