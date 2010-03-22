@@ -24,6 +24,7 @@
       Timbl@uvt.nl
 */
 
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -105,31 +106,25 @@ namespace Tagger {
       delete aside;
   }
   
-  int cmp_freq( const void *p1, const void *p2 ){
-    TagFreqList * const *t1 = (TagFreqList * const *)p1;
-    TagFreqList * const *t2 = (TagFreqList * const *)p2;
-    return ( (*t2)->freq - (*t1)->freq );
+  int cmp_freq( const TagFreqList *p1, const TagFreqList *p2 ){
+    return ( p2->freq < p1->freq );
   }
   
   void TagFreq::FreqSort( ){
-    static TagFreqList *TagsArray[MAX_TAGS];
+    vector<TagFreqList *> TagsArray;
     TagFreqList *pnt = Tags;
-    int i = 0;
-    while ( pnt && i < MAX_TAGS ){
-      TagsArray[i++] = pnt;
+    while ( pnt ){
+      TagsArray.push_back( pnt );
       pnt = pnt->next;
     }
-    if ( pnt ){
-      cerr << "To many tags, (MAX_TAGS limit = " << MAX_TAGS << ")" << endl;
-      exit(0);
+    if ( TagsArray.size() > 1 ) {
+      sort( TagsArray.begin(), TagsArray.end(), cmp_freq );
+      for ( unsigned int i = 0; i < TagsArray.size()-1; ++i ){
+	TagsArray[i]->next = TagsArray[i+1];
+      }
+      TagsArray[TagsArray.size()-1]->next = 0;
     }
-    else {
-      qsort( TagsArray, i, sizeof(TagFreqList *), cmp_freq );
-      for ( int j = 0; j < i-1; j++ )
-	TagsArray[j]->next = TagsArray[j+1];
-      TagsArray[i-1]->next = 0;
-      Tags = TagsArray[0];
-    }
+    Tags = TagsArray[0];
   }
   
   ostream& operator<<( ostream& os, TagInfo *LI ){

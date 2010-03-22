@@ -32,8 +32,6 @@
 namespace Tagger {
   using Tries::Trie;
 
-const int MAX_TAGS = 200;
-
 class TagFreqList {
   friend std::ostream& operator<<( std::ostream&, TagFreqList * );
  public:
