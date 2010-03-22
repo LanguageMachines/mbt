@@ -147,13 +147,18 @@ namespace Tagger {
     vec->push_back( TI );
   }
   
-  int cmp_info( const TagInfo* t1, const TagInfo* t2 ){
+  bool ascendingInfo( const TagInfo* t1, const TagInfo* t2 ){
+    //
+    // sort on decending frequency
+    // when same frequency, sort alphabetical
+    // but: sort Uppercase words before lowercase when equal (e.g Land/land)
+    //     
     int diff = t2->Freq() - t1->Freq();
     if ( diff == 0 ){
       if ( compare_nocase( t2->Word, t1->Word ) )
-	return strcmp( t1->Word.c_str(), t2->Word.c_str() ) < 0;
-      else
 	return strcmp( t2->Word.c_str(), t1->Word.c_str() ) < 0;
+      else
+	return strcmp( t1->Word.c_str(), t2->Word.c_str() ) < 0;
     }
     return diff < 0;
   }
@@ -161,7 +166,7 @@ namespace Tagger {
   vector<TagInfo *> TagLex::CreateSortedVector(){
     vector<TagInfo*> TagVec;
     TagTree->ForEachDo( StoreInVector, (void *)&TagVec );
-    sort( TagVec.begin(), TagVec.end() , cmp_info );
+    sort( TagVec.begin(), TagVec.end() , ascendingInfo );
     return TagVec;
   }
   
