@@ -39,16 +39,12 @@
 #include <unistd.h> // for unlink()
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "timblserver/SocketBasics.h"
+#include "timblserver/TimblServerAPI.h"
 #include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
-
-extern "C" {
-  int mbt_present(){ return 1; };
-}
 
 #if defined(PTHREADS)
 #include <pthread.h>
@@ -663,9 +659,9 @@ namespace Tagger {
       }
       int start;
       if ( logFile.empty() )
-	start = daemon( 1, 1 );
+	start = daemonize( 1, 1 );
       else
-	start = daemon( 0, 0 );
+	start = daemonize( 0, 0 );
       if ( start < 0 ){
 	LOG << "failed to daemonize error= " << strerror(errno) << endl;
 	exit(1);
