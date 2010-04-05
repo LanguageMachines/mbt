@@ -15,8 +15,8 @@ Vendor: ILK, http://ilk.uvt.nl/
 Source: http://ilk.uvt.nl/downloads/pub/software/mbt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-Requires: timbl, libxml2
-BuildRequires: gcc-c++, libxml2-devel, timbl
+Requires: timbl
+BuildRequires: gcc-c++, timbl
 
 %description
 
