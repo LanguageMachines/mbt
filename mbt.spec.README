@@ -1,0 +1,15 @@
+# $Id$
+# $URL$
+
+joostvb@virbalas.mdcc.cx:~% cat .rpmmacros
+%_topdir /home/joostvb/local/rpm
+
+joostvb@virbalas.mdcc.cx:~/local/rpm/RPMS% wget http://ilk.uvt.nl/packages/timbl-6.2.0-1.fc12.x86_64.rpm
+
+root@virbalas.mdcc.cx:~# rpm -i ~joostvb/local/rpm/RPMS/timbl-6.2.0-1.fc12.x86_64.rpm
+
+joostvb@virbalas.mdcc.cx:~/local/rpm/SPECS% rpmbuild -ba mbt.spec
+[...]
+Ecrit: /home/joostvb/local/rpm/SRPMS/mbt-3.2.1-1.src.rpm
+Ecrit: /home/joostvb/local/rpm/RPMS/x86_64/mbt-3.2.1-1.x86_64.rpm
+
