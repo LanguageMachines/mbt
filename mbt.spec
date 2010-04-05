@@ -52,6 +52,7 @@ be of use to you.
 %clean
 %{__rm} -rf %{buildroot}
 
+# FIXME mbt > 3.2.1 won't install Makefile.am
 %files
 %defattr(-, root, root, 0755)
 %doc AUTHORS ChangeLog NEWS README TODO
@@ -60,6 +61,7 @@ be of use to you.
 %{_libdir}/libMbt*
 %{_bindir}/Mbt*
 %{_includedir}/%{name}/*.h
+%{_includedir}/%{name}/Makefile.am
 %{_libdir}/pkgconfig/mbt.pc
 
 %changelog
