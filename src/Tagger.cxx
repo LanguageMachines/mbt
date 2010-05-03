@@ -1642,11 +1642,12 @@ namespace Tagger {
   
   void prefixWithAbsolutePath( string& fileName, 
 			       const string& prefix ) {
-    //      cout << fileName << endl;
-    if ( fileName[0] != '/' && fileName[1] != ':') {
+    //    cout << fileName << endl;
+    if ( ( fileName[0] != '/' && fileName[1] != ':' )
+	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
       fileName = prefix + fileName;
     }
-    //      cout << fileName << endl;
+    //    cout << fileName << endl;
   }
   
   bool TaggerClass::readsettings( string& fname ){
