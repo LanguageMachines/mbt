@@ -63,7 +63,7 @@ string MbtAPI::Tag( const std::string& inp ){
     return Tagger::Tag( tagger, inp );
   else {
     cerr << "No tagger initialized yet...." << endl;
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 }
 

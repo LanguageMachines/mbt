@@ -29,6 +29,6 @@
 
 int main(int argc, char *argv[]) {
   MbtAPI::GenerateTagger( argc, argv );   
-  exit(1);
+  exit(EXIT_SUCCESS);
 }
 

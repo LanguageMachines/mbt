@@ -577,7 +577,7 @@ namespace Tagger {
 
   void StopServerFun( int Signal ){
     if ( Signal == SIGINT ){
-      exit(1);
+      exit(EXIT_FAILURE);
     }
     signal( SIGINT, StopServerFun );
   }
@@ -654,7 +654,7 @@ namespace Tagger {
 	else {
 	  cerr << "unable to create logfile: " << logFile << endl;
 	  cerr << "not started" << endl;
-	  exit(1);
+	  exit(EXIT_FAILURE);
 	}
       }
       int start;
@@ -664,7 +664,7 @@ namespace Tagger {
 	start = daemonize( 0, 0 );
       if ( start < 0 ){
 	LOG << "failed to daemonize error= " << strerror(errno) << endl;
-	exit(1);
+	exit(EXIT_FAILURE);
       };
       if ( !pidFile.empty() ){
 	// we have a liftoff!
@@ -674,7 +674,7 @@ namespace Tagger {
 	if ( !pid_file ){
 	  LOG << "unable to create pidfile:"<< pidFile << endl;
 	  LOG << "TimblServer NOT Started" << endl;
-	  exit(1);
+	  exit(EXIT_FAILURE);
 	}
 	else {
 	  pid_t pid = getpid();
@@ -687,7 +687,7 @@ namespace Tagger {
       if ( pthread_attr_init(&attr) ||
 	   pthread_attr_setdetachstate( &attr, PTHREAD_CREATE_DETACHED ) ){
 	LOG << "Threads: couldn't set attributes" << endl;
-	exit(0);
+	exit(EXIT_FAILURE);
       }
       //
       // setup Signal handling to abort the server.
@@ -704,11 +704,11 @@ namespace Tagger {
       ServerSocket server;
       if ( !server.connect( portnumstr ) ){
 	LOG << "failed to start Server: " << server.getMessage() << endl;
-	exit(0);
+	exit(EXIT_FAILURE);
       }
       if ( !server.listen( Max_Connections ) < 0 ){
 	LOG << "server: listen failed " << strerror( errno ) << endl;
-	exit(0);
+	exit(EXIT_FAILURE);
       };
       
       while(true){ // waiting for connections loop
@@ -718,7 +718,7 @@ namespace Tagger {
 	    continue;
 	  else {
 	    LOG << "Server: Accept Error: " << server.getMessage() << endl;
-	    exit(0);
+	    exit(EXIT_FAILURE);
 	  }
 	}
 	LOG << "Accepting Connection " << newSock->getSockId()
@@ -941,13 +941,13 @@ namespace Tagger {
 	     !lex_file.good() ) ){
 	cerr << "couldn't open tagged lexicon file `"
 	     << filename << "'" << endl;
-	exit(1);
+	exit(EXIT_FAILURE);
       }
       cout << "Constructing a tagger from: " << filename << endl;
     }
     else {
       cerr << "couldn't open inputfile " << filename << endl;
-      exit(0);
+      exit(EXIT_FAILURE);
     }
     string Word, Tag;
     while ( getline( lex_file, Buffer ) ){ 
@@ -968,7 +968,7 @@ namespace Tagger {
     }
     else {
       cerr << "couldn't open lexiconfile " << LexFileName << endl;
-      exit(0);
+      exit(EXIT_FAILURE);
     }
     for ( int i=0; i < LexSize; i++ )
       ProcessTags( TagVect[i] );
@@ -983,7 +983,7 @@ namespace Tagger {
     }
     else {
       cerr << "couldn't create file: " << MTLexFileName << endl;
-      exit(0);
+      exit(EXIT_FAILURE);
     }
     if ( (out_file.open( TopNFileName.c_str(), ios::out ), 
 	  out_file.good() ) ){
@@ -996,7 +996,7 @@ namespace Tagger {
     }
     else {
       cerr << "couldn't open file: " << TopNFileName << endl;
-      exit(0);
+      exit(EXIT_FAILURE);
     } 
     if ( DoNpax ){
       if ( (out_file.open( NpaxFileName.c_str(), ios::out ), 
@@ -1014,7 +1014,7 @@ namespace Tagger {
       }
       else {
 	cerr << "couldn't open file: " << NpaxFileName << endl;
-	exit(0);
+	exit(EXIT_FAILURE);
       } 
     }
   }
@@ -1231,7 +1231,7 @@ namespace Tagger {
 	      LOG << "unable to proceed" << endl;
 	      unlink( uTempFileName.c_str() );
 	      unlink( kTempFileName.c_str() );
-	      exit(0);
+	      exit(EXIT_FAILURE);
 	    }
 	    else {
 	      unlink( kTempFileName.c_str() );
@@ -1342,7 +1342,7 @@ namespace Tagger {
     if ( !answer ){
       cerr << "A classifying problem prevented continuing. Sorry!"
 	   << endl;
-      exit(1);
+      exit(EXIT_FAILURE);
     }
     else {
       distance_array.resize( mySentence->No_Words() );
@@ -1406,7 +1406,7 @@ namespace Tagger {
       if ( !answer ){
 	cerr << "A classifying problem prevented continuing. Sorry!"
 	     << endl;
-	exit(1);
+	exit(EXIT_FAILURE);
 	return false;
       }
       else {
@@ -1726,7 +1726,7 @@ namespace Tagger {
 	cerr << "Server mode NOT supported in this version!\n"
 	     << "You must rebuild Mbt with MAKE_SERVER=YES in the Makefile\n"
 	     << "sorry..." << endl;
-	exit(1);
+	exit(EXIT_FAILURE);
 #endif
 	break;
       case 't':
@@ -1789,7 +1789,7 @@ namespace Tagger {
       // cout << SettingsFilePath << endl;
       if( !readsettings( SettingsFileName ) ){
 	cerr << "Cannot read settingsfile " << SettingsFileName << endl;
-	exit(1);
+	exit(EXIT_FAILURE);
       }
       Opts.Delete( 's' );
     };
@@ -1872,7 +1872,7 @@ namespace Tagger {
       cerr << "Server mode NOT supported in this version!\n"
 	   << "You must rebuild Mbt with MAKE_SERVER=YES in the Makefile\n"
 	   << "sorry..." << endl;
-      exit(1);
+      exit(EXIT_FAILURE);
 #endif
       Opts.Delete( 'S' );
     };
@@ -1893,7 +1893,7 @@ namespace Tagger {
       if ( input_kind == ENRICHED ){
 	cerr << "Option -T conflicts with ENRICHED format from settingsfile "
 	     << "unable to continue" << endl;
-	exit(1);
+	exit(EXIT_FAILURE);
       }
       input_kind = TAGGED; // there is a tagged test file specified
       Opts.Delete( 'T' );
@@ -1917,7 +1917,7 @@ namespace Tagger {
     if ( servermode && input_kind == ENRICHED ){
       cerr << "Servermode doesn't support enriched inputformat!" << endl
 	   << "bailing out, sorry " << endl;
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
   
@@ -2045,7 +2045,7 @@ namespace Tagger {
 	   << "    Timbl options: '" << knownstr << "'" << endl;
       TimblAPI *UKtree = new TimblAPI( knownstr );
       if ( !UKtree->Valid() )
-	exit(1);
+	exit(EXIT_FAILURE);
       cout << "    Algorithm = " << to_string(UKtree->Algo())
 	   << endl << endl;
       if ( !piped_input ){
@@ -2085,7 +2085,7 @@ namespace Tagger {
 	   << "    Timbl options: '" << unknownstr << "'" << endl;
       TimblAPI *UKtree = new TimblAPI( unknownstr );
       if ( !UKtree->Valid() )
-	exit(1);
+	exit(EXIT_FAILURE);
       cout << "    Algorithm = " << to_string(UKtree->Algo()) 
 	   << endl << endl;
       if ( !piped_input ){
@@ -2127,7 +2127,7 @@ namespace Tagger {
 	   !out_file.good() ) ){
       cerr << "couldn't create Settings-File `"
 	   << SettingsFileName << "'" << endl;
-      exit(1);
+      exit(EXIT_FAILURE);
     }
     else {
       if ( input_kind == ENRICHED )
