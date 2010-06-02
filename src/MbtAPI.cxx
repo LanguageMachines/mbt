@@ -101,13 +101,13 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   // 
   // present yourself to the user
   //
-  cout << "Memory Based Tagger Generator " << VERSION << endl
-       << "  (c) ILK and CNTS 1998 - 2010." << endl
-       << "  Induction of Linguistic Knowledge Research Group,"
-       << " Tilburg University" << endl
-       << "  Centre for Dutch Language and Speech, University of Antwerp" 
+  cerr << "Mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2010." << endl
+       << "Memory Based Tagger Generator" << endl
+       << "Induction of Linguistic Knowledge Research Group,"
+       << "Tilburg University" << endl
+       << "CLiPS Computational Linguistics Group, University of Antwerp"
        << endl << endl
-       << "  Based on Timbl version " << TimblAPI::VersionInfo() 
+       << "Based on Timbl version " << TimblAPI::VersionInfo() 
        << endl << endl;
   // test for the right number of arguments
   //
@@ -163,14 +163,13 @@ void run_usage( char *progname ){
 bool MbtAPI::RunTagger( int argc, char **argv ){
 // present yourself to the user
 //
-  cerr << "\nMemory Based Tagger " << VERSION << endl
-       << "  (c) ILK and CNTS 1998 - 2010.\n"
-       << "  Induction of Linguistic Knowledge Research Group,"
-       << " Tilburg University" << endl
-       << "  Centre for Dutch Language and Speech, University of Antwerp"
+  cerr << "Mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2010." << endl
+       << "Memory Based Tagger " << endl
+       << "Tilburg University" << endl
+       << "CLiPS Computational Linguistics Group, University of Antwerp"
        << endl << endl
-  << "  Based on Timbl version " << TimblAPI::VersionInfo() 
-    << endl;
+       << "Based on Timbl version " << TimblAPI::VersionInfo() 
+       << endl << endl;
   // test for the right number of arguments
   //
   if(argc<3) {
