@@ -12,6 +12,10 @@ URL: http://ilk.uvt.nl/mbt/
 Packager: Joost van Baal <joostvb-mbt@ad1810.com>
 Vendor: ILK, http://ilk.uvt.nl/
 
+# rpm and src.rpm should end up in
+# zeus:/var/www/ilk/packages.
+# orig source available from
+# zeus:/var/www/ilk/downloads/pub/software/mbt-3.2.2.tar.gz
 Source: http://ilk.uvt.nl/downloads/pub/software/mbt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -66,6 +70,5 @@ be of use to you.
 
 %changelog
 * Mon Apr 5 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.1-1
-- Initial release.
-
+- Initial unpublished release.
 
