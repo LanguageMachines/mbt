@@ -8,6 +8,12 @@ joostvb@virbalas.mdcc.cx:~/local/rpm/RPMS% wget http://ilk.uvt.nl/packages/timbl
 
 root@virbalas.mdcc.cx:~# rpm -i ~joostvb/local/rpm/RPMS/timbl-6.2.0-1.fc12.x86_64.rpm
 
+joostvb@virbalas.mdcc.cx:~/local/rpm/SOURCES% wget  http://ilk.uvt.nl/downloads/pub/software/mbt-3.2.2.tar.gz 
+
+joostvb@bruhat:~/svn/svn.ilk.uvt.nl/Mbt3% scp mbt.spec virbalas:local/rpm/SPECS/
+
+rpmbuild -bi : do not remove buildroot
+
 joostvb@virbalas.mdcc.cx:~/local/rpm/SPECS% rpmbuild -ba mbt.spec
 [...]
 Ecrit: /home/joostvb/local/rpm/SRPMS/mbt-3.2.1-1.src.rpm

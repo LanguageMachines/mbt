@@ -20,10 +20,9 @@ Source: http://ilk.uvt.nl/downloads/pub/software/mbt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 Requires: timbl
-BuildRequires: gcc-c++, timbl
+BuildRequires: gcc-c++, timbl, timblserver
 
 %description
-
 MBT is used for natural language processing; it is a memory-based
 tagger-generator and tagger in one. The tagger-generator part can generate a
 sequence tagger on the basis of a training set of tagged sequences; the tagger
@@ -56,7 +55,6 @@ be of use to you.
 %clean
 %{__rm} -rf %{buildroot}
 
-# FIXME mbt > 3.2.1 won't install Makefile.am
 %files
 %defattr(-, root, root, 0755)
 %doc AUTHORS ChangeLog NEWS README TODO
@@ -65,12 +63,12 @@ be of use to you.
 %{_libdir}/libMbt*
 %{_bindir}/Mbt*
 %{_includedir}/%{name}/*.h
-%{_includedir}/%{name}/Makefile.am
 %{_libdir}/pkgconfig/mbt.pc
 
 %changelog
 * Wed Aug 18 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2-1
 - New stable upstream release, 2010-06-02
+  + Now needs new timblserver for building
 * Mon Apr 5 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.1-1
 - Initial unpublished release.
 
