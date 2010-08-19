@@ -41,6 +41,10 @@ erreur: Mauvais status de sortie pour /var/tmp/rpm-tmp.WZFi04 (%install)
 
 joostvb@virbalas.mdcc.cx:~/lo...al/rpm/SOURCES/mbt-3.2.2% make
 
+
+/bin/sh ../libtool --tag=CXX   --mode=link g++  -O2 -g -DPTHREADS -DUSE_LOGSTREAMS -I/usr/include/libxml2   -I/usr/include/libxml2   -version-info 0:0:0  -o libMbt.la -rpath /home/joostvb/local/rpm/BUILDROOT/mbt-3.2.2.99.1-1.x86_64/usr/lib64 MbtAPI.lo Pattern.lo TagLex.lo Sentence.lo Tagger.lo  -lpthread -lTimbl -lxml2   -lTimblServer -lTimbl -lxml2  
+
+
 libtool: link: ranlib .libs/libMbt.a
 /bin/sed: can't read /home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la: No such file or directory
 libtool: link: `/home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la' is not a valid libtool archive
@@ -62,15 +66,34 @@ http://www.gnu.org/software/libtool/manual/libtool.html
 joostvb@bruhat:/usr.../local/src/mbt/mbt-3.1.3% ./configure --prefix=/tmp/mbt
 joostvb@bruhat:/usr.../local/src/mbt/mbt-3.1.3% make
 
-/bin/bash ../libtool --tag=CXX   --mode=compile g++ -DHAVE_CONFIG_H -I. -I..  -I../include   -g -O2 -DPTHREADS -DUSE_LOGSTREAMS -W -Wall -I/usr/include/libxml2   -MT MbtAPI.lo -MD -MP -MF .deps/MbtAPI.Tpo -c -o MbtAPI.lo MbtAPI.cxx
- g++ -DHAVE_CONFIG_H -I. -I.. -I../include -g -O2 -DPTHREADS -DUSE_LOGSTREAMS -W -Wall -I/usr/include/libxml2 -MT MbtAPI.lo -MD -MP -MF .deps/MbtAPI.Tpo -c MbtAPI.cxx  -fPIC -DPIC -o .libs/MbtAPI.o
-In file included from MbtAPI.cxx:33:
-../include/mbt/Logging.h:30:29: error: timbl/LogStream.h: No such file or directory
+/bin/bash ../libtool --tag=CXX   --mode=link g++  -g -O2 -DPTHREADS -DUSE_LOGSTREAMS -I/usr/include/libxml2   -I/usr/include/libxml2   -version-info 0:0:0  -o libMbt.la -rpath /tmp/mbt/lib MbtAPI.lo Pattern.lo TagLex.lo Sentence.lo Tagger.lo  -lpthread -lTimbl -lxml2   -lTimblServer -lTimbl -lxml2  
 
-inderdaad, timbl 6.3.0-1 shipt geen /usr/include/timbl/LogStream.h
 
-oudere timbl's wellicht wel.
 
+libtool: link: g++ -shared -nostdlib /usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../../../lib/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.4.5/crtbeginS.o  .libs/MbtAPI.o .libs/Pattern.o .libs/TagLex.o .libs/Sentence.o .libs/Tagger.o   -lpthread /usr/lib/libTimblServer.so /usr/lib/libTimbl.so /usr/lib/libxml2.so -L/usr/lib/gcc/x86_64-linux-gnu/4.4.5 -L/usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../.. -lstdc++ -lm -lc -lgcc_s /usr/lib/gcc/x86_64-linux-gnu/4.4.5/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../../../lib/crtn.o    -pthread -Wl,-soname -Wl,libMbt.so.0 -o .libs/libMbt.so.0.0.0
+
+
+
+
+joostvb@bruhat:/usr...l/src/mbt/mbt-3.2.2.99.1% make install
+
+joostvb@bruhat:/tmp/mbt% ./bin/Mbt 2>&1 | head -2
+Mbt 3.2.2.99.1 (c) ILK and CLiPS 1998 - 2010.
+Memory Based Tagger 
+joostvb@bruhat:/tmp/mbt% 
+
+joostvb@bruhat:/usr...l/src/mbt/mbt-3.2.2.99.1% grep ependency_l src/libMbt.la
+# Linker flags that can not go in dependency_libs.
+dependency_libs=' -lpthread /usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../../../lib/libTimblServer.la /usr/lib/libTimbl.la /usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../../../lib/libTimbl.la /usr/lib/libxml2.la /usr/lib/gcc/x86_64-linux-gnu/4.4.5/../../../../lib/libxml2.la'
+
+
+it seems (libtool: link: )
+ ar cru .libs/libMbt.a  MbtAPI.o Pattern.o TagLex.o Sentence.o Tagger.o
+creates .libs/libMbt.a
+
+r: insert file in archive
+c: create archive
+u: only update
 
 
 
