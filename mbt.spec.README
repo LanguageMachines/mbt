@@ -57,4 +57,20 @@ ltmain.sh genereert libMbt.la
 
 http://www.gnu.org/software/libtool/manual/libtool.html
 
+----------
+
+joostvb@bruhat:/usr.../local/src/mbt/mbt-3.1.3% ./configure --prefix=/tmp/mbt
+joostvb@bruhat:/usr.../local/src/mbt/mbt-3.1.3% make
+
+/bin/bash ../libtool --tag=CXX   --mode=compile g++ -DHAVE_CONFIG_H -I. -I..  -I../include   -g -O2 -DPTHREADS -DUSE_LOGSTREAMS -W -Wall -I/usr/include/libxml2   -MT MbtAPI.lo -MD -MP -MF .deps/MbtAPI.Tpo -c -o MbtAPI.lo MbtAPI.cxx
+ g++ -DHAVE_CONFIG_H -I. -I.. -I../include -g -O2 -DPTHREADS -DUSE_LOGSTREAMS -W -Wall -I/usr/include/libxml2 -MT MbtAPI.lo -MD -MP -MF .deps/MbtAPI.Tpo -c MbtAPI.cxx  -fPIC -DPIC -o .libs/MbtAPI.o
+In file included from MbtAPI.cxx:33:
+../include/mbt/Logging.h:30:29: error: timbl/LogStream.h: No such file or directory
+
+inderdaad, timbl 6.3.0-1 shipt geen /usr/include/timbl/LogStream.h
+
+oudere timbl's wellicht wel.
+
+
+
 
