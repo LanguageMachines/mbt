@@ -19,3 +19,42 @@ joostvb@virbalas.mdcc.cx:~/local/rpm/SPECS% rpmbuild -ba mbt.spec
 Ecrit: /home/joostvb/local/rpm/SRPMS/mbt-3.2.1-1.src.rpm
 Ecrit: /home/joostvb/local/rpm/RPMS/x86_64/mbt-3.2.1-1.x86_64.rpm
 
+FIXME
+-----
+
+joostvb@virbalas.mdcc.cx:~/local/rpm/SPECS% rpmbuild -ba mbt.spec
+[...]
+
+libtool: link: g++ -shared -nostdlib /usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.4.4/crtbeginS.o  .libs/MbtAPI.o .libs/Pattern.o .libs/TagLex.o .libs/Sentence.o .libs/Tagger.o   -Wl,-rpath -Wl,/usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64 -Wl,-rpath -Wl,/usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64 -lpthread /usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64/libTimblServer.so /usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64/libTimbl.so -lxml2 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.4 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../.. -lstdc++ -lm -lc -lgcc_s /usr/lib/gcc/x86_64-redhat-linux/4.4.4/crtendS.o /usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64/crtn.o    -pthread -Wl,-soname -Wl,libMbt.so.0 -o .libs/libMbt.so.0.0.0
+libtool: link: (cd ".libs" && rm -f "libMbt.so.0" && ln -s "libMbt.so.0.0.0" "libMbt.so.0")
+libtool: link: (cd ".libs" && rm -f "libMbt.so" && ln -s "libMbt.so.0.0.0" "libMbt.so")
+libtool: link: ar cru .libs/libMbt.a  MbtAPI.o Pattern.o TagLex.o Sentence.o Tagger.o
+libtool: link: ranlib .libs/libMbt.a
+/bin/sed: can't read /home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la: No such file or directory
+libtool: link: `/home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la' is not a valid libtool archive
+make[1]: *** [libMbt.la] Erreur 1
+make[1]: quittant le répertoire « /home/joostvb/local/rpm/BUILD/mbt-3.2.2/src »
+make: *** [install-recursive] Erreur 1
+erreur: Mauvais status de sortie pour /var/tmp/rpm-tmp.WZFi04 (%install)
+
+
+
+joostvb@virbalas.mdcc.cx:~/lo...al/rpm/SOURCES/mbt-3.2.2% make
+
+libtool: link: ranlib .libs/libMbt.a
+/bin/sed: can't read /home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la: No such file or directory
+libtool: link: `/home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la' is not a valid libtool archive
+make[2]: *** [libMbt.la] Erreur 1
+
+
+do 19 13:20 < joostvb> dependency_libs=' -lpthread 
+/usr/lib/gcc/x86_64-redhat-linux/4.4.4/../../../../lib64/libTimblServer.la 
+/home/joostvb/local/rpm/BUILDROOT/timbl-6.3.0-1.x86_64/usr/lib64/libTimbl.la 
+                       [...]
+do 19 13:20 < joostvb> in mbt-3.2.2/src/libMbt.la
+
+ltmain.sh genereert libMbt.la
+
+http://www.gnu.org/software/libtool/manual/libtool.html
+
+
