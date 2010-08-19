@@ -1,3 +1,15 @@
+mbt version 3.2.2.99.1, 2010-08-19
+
+- SVN snapshot release.
+- Fix reference to header file which breaks build on
+  some platforms.
+
+
+mbt version 3.2.2, 2010-06
+
+-
+
+
 mbt version 3.2.1, 2010-02-22
 
 - new release 
