@@ -3,7 +3,7 @@
 
 Summary: Memory Based Tagger
 Name: mbt
-Version: 3.2.2
+Version: 3.2.2.99.1
 Release: 1
 License: GPL
 Group: Applications/System
@@ -66,7 +66,10 @@ be of use to you.
 %{_libdir}/pkgconfig/mbt.pc
 
 %changelog
+* Thu Aug 19 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2.99.1
+- New upstream SVN snapshot release
 * Wed Aug 18 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2-1
+- Unpublished release.
 - New stable upstream release, 2010-06-02
   + Now needs new timblserver for building
 * Mon Apr 5 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.1-1
