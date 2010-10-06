@@ -1,8 +1,8 @@
 Source: mbt
 Section: science
 Priority: extra
-Maintainer: Joost van Baal <joostvb-mbt@ad1810.com>
-Uploaders: Ko van der Sloot <Ko.vanderSloot@uvt.nl>
+Maintainer: Ko van der Sloot <Ko.vanderSloot@uvt.nl>
+Uploaders: Joost van Baal <joostvb-mbt@ad1810.com>
 Build-Depends: cdbs, debhelper (>= 7), timbl (>= 6.2.0)
 Standards-Version: 3.8.0
 Homepage: http://ilk.uvt.nl/mbt/
