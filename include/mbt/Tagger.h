@@ -70,6 +70,7 @@ namespace Tagger {
     friend std::string Tag( TaggerClass *, const std::string& );
   public:
     TaggerClass( );
+    TaggerClass( const TaggerClass& );
     ~TaggerClass();
     bool InitTagging();
     bool InitLearning();
@@ -88,7 +89,7 @@ namespace Tagger {
     bool ServerMode() const { return servermode; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
   private:
-    sentence *mySentence;
+    sentence mySentence;
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;
     std::string Timbl_Options;
@@ -100,7 +101,7 @@ namespace Tagger {
     std::string pidFile;
     int nwords;
     bool initialized;
-    StringHash *TheLex;
+    StringHash TheLex;
     BeamData *Beam;
     input_kind_type input_kind;
     bool piped_input;

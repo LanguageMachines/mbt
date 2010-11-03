@@ -75,8 +75,6 @@ namespace Tagger {
     cur_log->setstamp( StampMessage );
     KnownTree = NULL;
     unKnownTree = NULL;
-    mySentence = new sentence();
-    TheLex = new StringHash();
     TimblOptStr = "+vS -FColumns K: -a IGTREE +D U: -a IB1 ";
     FilterTreshold = 5;
     Npax = 5;
@@ -123,6 +121,62 @@ namespace Tagger {
     distrib_flag = false;
     klistflag= false;
     servermode = false;
+    Sock = 0;
+  }
+
+  TaggerClass::TaggerClass( const TaggerClass& in ){
+    KnownTree = in.KnownTree;
+    unKnownTree = in.unKnownTree;
+    TimblOptStr = in.TimblOptStr;
+    FilterTreshold = in.FilterTreshold;
+    Npax = in.Npax;
+    TopNumber = in.TopNumber;
+    DoSort = in.DoSort;
+    DoTop = in.DoTop;
+    DoNpax = in.DoNpax;
+    KeepIntermediateFiles = in.KeepIntermediateFiles;
+
+    KtmplStr = in.KtmplStr;
+    UtmplStr = in.UtmplStr;
+    L_option_name = in.L_option_name;
+    EosMark = in.EosMark;
+
+    Ktemplate = in.Ktemplate;
+    Utemplate = in.Utemplate;
+    
+    portnumstr = in.portnumstr;
+    Max_Conn_Str = in.Max_Conn_Str;
+    Max_Connections = in.Max_Connections;
+
+    UnknownTreeName = in.UnknownTreeName;
+    KnownTreeName = in.KnownTreeName;
+    LexFileName = in.LexFileName;
+    MTLexFileName = in.MTLexFileName;
+    TopNFileName = in.TopNFileName;
+    NpaxFileName = in.NpaxFileName;
+    TestFileName = in.TestFileName;
+    OutputFileName = in.OutputFileName;
+    SettingsFileName = in.SettingsFileName;
+    SettingsFilePath = in.SettingsFilePath;
+  
+    initialized = in.initialized;
+    Beam_Size = in.Beam_Size;
+    Beam = 0;
+    piped_input = in.piped_input;
+    input_kind = in.input_kind;
+    lexflag = in.lexflag;
+    knowntreeflag = in.knowntreeflag;
+    unknowntreeflag = in.unknowntreeflag;
+    knowntemplateflag = in.knowntemplateflag;
+    unknowntemplateflag = in.unknowntemplateflag;
+    knownoutfileflag = in.knownoutfileflag;
+    unknownoutfileflag = in.unknownoutfileflag;
+    reverseflag = in.reverseflag;
+    dumpflag = in.dumpflag;
+    distance_flag = in.distance_flag;
+    distrib_flag = in.distrib_flag;
+    klistflag = in.klistflag;
+    servermode = in.servermode;
     Sock = 0;
   }
 
@@ -414,8 +468,6 @@ namespace Tagger {
     else
       delete Sock;
     delete Beam;
-    delete mySentence;    
-    delete TheLex;
   }
   
   bool TaggerClass::InitBeaming( unsigned int no_words ){
@@ -601,12 +653,12 @@ namespace Tagger {
     //
     string tagged_sentence;
     while ( go_on &&
-	    ( mySentence->reset( EosMark ), mySentence->read( Sock, input_kind ) )) {
+	    ( mySentence.reset( EosMark ), mySentence.read( Sock, input_kind ) )) {
       if ( Tag( tagged_sentence ) ){
 	// show the results of 1 sentence
 	go_on = Sock->write( tagged_sentence );
 	// increase the counter of processed words
-	no_words += mySentence->No_Words();
+	no_words += mySentence.No_Words();
       }
       else {
 	// probably empty sentence??
@@ -877,7 +929,7 @@ namespace Tagger {
   void TaggerClass::ShowCats( ostream& os, vector<int>& Pat, int slots ){
     os << "Pattern : ";
     for( int slot=0; slot < slots; slot++){
-      os << indexlex( Pat[slot], *TheLex )<< " ";
+      os << indexlex( Pat[slot], TheLex )<< " ";
     }
     os << endl;
   }
@@ -890,16 +942,16 @@ namespace Tagger {
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     string line;
     for( int f=0; f < slots; f++ ){
-      line += indexlex( TestPat[f], *TheLex );
+      line += indexlex( TestPat[f], TheLex );
       line += " ";
     }
-    for (vector<string>::iterator it = mySentence->getWord(word)->extraFeatures.begin(); it != mySentence->getWord(word)->extraFeatures.end(); it++)
+    for (vector<string>::iterator it = mySentence.getWord(word)->extraFeatures.begin(); it != mySentence.getWord(word)->extraFeatures.end(); it++)
     {
       line += *it;
       line += " ";
     }
     if ( input_kind == TAGGED )
-      line += mySentence->gettag(word);
+      line += mySentence.gettag(word);
     else
       line += "??";
     if ( IsActive(DBG) ){
@@ -909,7 +961,7 @@ namespace Tagger {
     //
     if ( dumpflag ){
       for( int slot=0; slot < slots; slot++){
-	cout << indexlex( TestPat[slot], *TheLex );
+	cout << indexlex( TestPat[slot], TheLex );
       }
       cout << endl;
     }
@@ -1118,10 +1170,8 @@ namespace Tagger {
   TaggerClass *TaggerClass::clone( Socket *sock ){
     TaggerClass *ta = new TaggerClass( *this );
     ta->Sock = sock;
-    ta->mySentence = new sentence(); // we need our own testing structures
     ta->TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     ta->Beam = NULL; // own Beaming data
-    ta->TheLex = new StringHash();
     return ta;
   }
   
@@ -1200,19 +1250,19 @@ namespace Tagger {
       exit(EXIT_FAILURE);
     }
     else {
-      distance_array.resize( mySentence->No_Words() );
-      distribution_array.resize( mySentence->No_Words() );
+      distance_array.resize( mySentence.No_Words() );
+      distribution_array.resize( mySentence.No_Words() );
       if ( distance_flag )
 	distance_array[0] = distance;
       if ( distrib_flag )
 	distribution_array[0] = distribution->DistToString();
       if ( IsActive( DBG ) ){
-	LOG << "BeamData::InitPaths( "; mySentence->print(LOG); 
+	LOG << "BeamData::InitPaths( "; mySentence.print(LOG); 
 	LOG << " , " << answer << " , " << distribution << " )" << endl;
       }
-      Beam->InitPaths( *TheLex, answer, distribution );
+      Beam->InitPaths( TheLex, answer, distribution );
       if ( IsActive( DBG ) ){
-	Beam->Print( LOG, 0, *TheLex );
+	Beam->Print( LOG, 0, TheLex );
       }
     }
   }
@@ -1223,8 +1273,8 @@ namespace Tagger {
     if ( Beam->paths[beam_cnt][i_word-1] == EMPTY_PATH ){
       return false;
     }
-    else if ( mySentence->nextpat( &Action, TestPat,
-				   kwordlist, *TheLex,
+    else if ( mySentence.nextpat( &Action, TestPat,
+				   kwordlist, TheLex,
 				   i_word, Beam->paths[beam_cnt] ) ){
       // Now make a testpattern for Timbl to process.
       string teststring = pat_to_string( Action, i_word );
@@ -1266,9 +1316,9 @@ namespace Tagger {
 	  if ( distrib_flag )
 	    distribution_array[i_word] = distribution->DistToString();
 	}
-	Beam->NextPath( *TheLex, answer, distribution, beam_cnt ); 
+	Beam->NextPath( TheLex, answer, distribution, beam_cnt ); 
 	if ( IsActive( DBG ) )
-	  Beam->PrintBest( LOG, *TheLex );
+	  Beam->PrintBest( LOG, TheLex );
       }
       return true;
     }
@@ -1279,8 +1329,8 @@ namespace Tagger {
   }
 
   string Tag( TaggerClass *tagger, const string& inp ){
-    tagger->mySentence->reset( tagger->EosMark );
-    tagger->mySentence->Fill( inp, false );
+    tagger->mySentence.reset( tagger->EosMark );
+    tagger->mySentence.Fill( inp, false );
     string tag;
     if ( tagger )
       tagger->Tag( tag );
@@ -1290,35 +1340,35 @@ namespace Tagger {
   bool TaggerClass::Tag( string& tag ){
     tag = "";
     if ( !initialized ||
-	 !InitBeaming( mySentence->No_Words() ) ){
+	 !InitBeaming( mySentence.No_Words() ) ){
       cerr << "ouch" << initialized << endl;
       return false;
     }
-    mySentence->print(DBG);
+    mySentence.print(DBG);
     
-    if ( mySentence->init_windowing(&Ktemplate,&Utemplate, 
-				    MT_lexicon, *TheLex ) ) {
+    if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
+				    MT_lexicon, TheLex ) ) {
       // here the word window is looked up in the dictionary and the values
       // of the features are stored in the testpattern
       MatchAction Action = Unknown;
-      if ( mySentence->nextpat( &Action, TestPat, 
-				kwordlist, *TheLex,
+      if ( mySentence.nextpat( &Action, TestPat, 
+				kwordlist, TheLex,
 				0 )){ 
 
-	DBG << "Start: " << mySentence->getword( 0 ) << endl;
+	DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	InitTest( Action );
-	for ( int iword=1; iword < mySentence->No_Words(); iword++ ){
+	for ( int iword=1; iword < mySentence.No_Words(); iword++ ){
 	  // clear best_array
-	  DBG << endl << "Next: " << mySentence->getword( iword ) << endl;
+	  DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	  Beam->ClearBest();
 	  for ( int beam_count=0; beam_count < Beam_Size; beam_count++ ){
 	    if ( !NextBest( iword, beam_count ) )
 	      break;
 	  }
-	  Beam->Shift( mySentence->No_Words(), iword );
+	  Beam->Shift( mySentence.No_Words(), iword );
 	  if ( IsActive( DBG ) ){
 	    LOG << "after shift:" << endl;
-	    Beam->Print( LOG, iword, *TheLex );
+	    Beam->Print( LOG, iword, TheLex );
 	  }
 	}
       } // end one sentence
@@ -1333,14 +1383,14 @@ namespace Tagger {
     string result;
     string tagstring;
     //now some output
-    for ( int Wcnt=0; Wcnt < mySentence->No_Words(); ++Wcnt ){
+    for ( int Wcnt=0; Wcnt < mySentence.No_Words(); ++Wcnt ){
       // lookup the assigned category
-      tagstring = indexlex( Beam->paths[0][Wcnt], *TheLex );
+      tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       // now we do the appropriate output, depending on known/unknown
       // words and the availability of a "correct tag".
       //
-      result += mySentence->getword(Wcnt);
-      if ( mySentence->known(Wcnt) ){
+      result += mySentence.getword(Wcnt);
+      if ( mySentence.known(Wcnt) ){
 	if ( input_kind == UNTAGGED )
 	  result += "/";
 	else
@@ -1355,8 +1405,8 @@ namespace Tagger {
       // output the correct tag if possible
       //
       if ( input_kind == ENRICHED ){
-	result = result + mySentence->getenr(Wcnt) + "\t" 
-	  + mySentence->gettag(Wcnt) + "\t" + tagstring;
+	result = result + mySentence.getenr(Wcnt) + "\t" 
+	  + mySentence.gettag(Wcnt) + "\t" + tagstring;
 	if ( distance_flag )
 	  result += " " + toString( distance_array[Wcnt] );
 	if ( distrib_flag )
@@ -1364,7 +1414,7 @@ namespace Tagger {
 	result += "\n";
       }
       else if ( input_kind == TAGGED ){
-	result = result + mySentence->gettag(Wcnt) + "\t" + tagstring;
+	result = result + mySentence.gettag(Wcnt) + "\t" + tagstring;
 	if ( distance_flag )
 	  result += " " + toString( distance_array[Wcnt] );
 	if ( distrib_flag )
@@ -1375,7 +1425,7 @@ namespace Tagger {
 	result = result + tagstring + " ";
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
-      result = result + mySentence->Eos() + "\n";
+      result = result + mySentence.Eos() + "\n";
     return result;
   }
   
@@ -1385,19 +1435,19 @@ namespace Tagger {
     string result;
     string tagstring;
     //now some output
-    for ( int Wcnt=0; Wcnt < mySentence->No_Words(); Wcnt++ ){
-      tagstring = indexlex( Beam->paths[0][Wcnt], *TheLex );
-      if ( mySentence->known(Wcnt) ){
+    for ( int Wcnt=0; Wcnt < mySentence.No_Words(); Wcnt++ ){
+      tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
+      if ( mySentence.known(Wcnt) ){
 	no_known++;
 	if ( input_kind != UNTAGGED ){
-	  if ( mySentence->gettag(Wcnt) == tagstring )
+	  if ( mySentence.gettag(Wcnt) == tagstring )
 	    no_correct_known++;
 	}
       }
       else {
 	no_unknown++;
 	if ( input_kind != UNTAGGED ){
-	  if ( mySentence->gettag(Wcnt) == tagstring )
+	  if ( mySentence.gettag(Wcnt) == tagstring )
 	    no_correct_unknown++;
 	}
       }
@@ -1416,14 +1466,14 @@ namespace Tagger {
     //
     int HartBeat = 0;
     while ( go_on && 
-	    (mySentence->reset( EosMark), mySentence->read(infile, input_kind ) ) ){
-      if ( mySentence->No_Words() == 0 )
+	    (mySentence.reset( EosMark), mySentence.read(infile, input_kind ) ) ){
+      if ( mySentence.No_Words() == 0 )
 	continue;
       string tagged_sentence;
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
       }
-      if ( mySentence->getword(0) == EosMark ){
+      if ( mySentence.getword(0) == EosMark ){
 	// only possible for ENRICHED!
 	outfile << EosMark << endl;
 	continue;
@@ -1435,7 +1485,7 @@ namespace Tagger {
 		    no_correct_unknown );
 	outfile << tagged_sentence;
 	// increase the counter of processed words
-	no_words += mySentence->No_Words();
+	no_words += mySentence.No_Words();
       }
       else {
 	  // probably empty sentence??
@@ -1834,44 +1884,44 @@ namespace Tagger {
     // loop as long as you get sentences
     //
     int HartBeat = 0;
-    while ( (mySentence->reset( EosMark), mySentence->read( infile, input_kind ) )){
-      if ( mySentence->No_Words() == 0 )
+    while ( (mySentence.reset( EosMark), mySentence.read( infile, input_kind ) )){
+      if ( mySentence.No_Words() == 0 )
 	continue;
-      //      mySentence->print( cerr );
-      if ( mySentence->getword(0) == EosMark ){
+      //      mySentence.print( cerr );
+      if ( mySentence.getword(0) == EosMark ){
 	// only possible for ENRICHED!
 	continue;
       }
       if ( HartBeat++ % 100 == 0 ){
 	cout << "."; cout.flush();
       }
-      if ( mySentence->init_windowing( &Ktemplate,&Utemplate, 
-				       MT_lexicon, *TheLex ) ) {
+      if ( mySentence.init_windowing( &Ktemplate,&Utemplate, 
+				       MT_lexicon, TheLex ) ) {
 	// we initialize the windowing procedure, this entails lexical lookup
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
 	int thisTagCode;
-	while( mySentence->nextpat( &Action, TestPat, 
-				    kwordlist, *TheLex,
+	while( mySentence.nextpat( &Action, TestPat, 
+				    kwordlist, TheLex,
 				    swcn ) ){ 
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if((uwordlist.Lookup(mySentence->getword(swcn)))==0){
+	    if((uwordlist.Lookup(mySentence.getword(swcn)))==0){
 	      skip = true;
 	    }
 	  }
 	  if ( !skip )
 	    for( int f=0; f < nslots; f++){
-	      outfile << indexlex( TestPat[f], *TheLex ) << " ";
+	      outfile << indexlex( TestPat[f], TheLex ) << " ";
 	    }
-	  thisTagCode = TheLex->Hash( mySentence->gettag(swcn) );
+	  thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
 	  if ( !skip ){
-	    for (vector<string>::iterator it = mySentence->getWord(swcn)->extraFeatures.begin(); it != mySentence->getWord(swcn)->extraFeatures.end(); it++)
+	    for (vector<string>::iterator it = mySentence.getWord(swcn)->extraFeatures.begin(); it != mySentence.getWord(swcn)->extraFeatures.end(); it++)
 	      outfile << *it << " ";
-	    outfile << mySentence->gettag( swcn ) << '\n';
+	    outfile << mySentence.gettag( swcn ) << '\n';
 	  }
-	  mySentence->assign_tag(thisTagCode, swcn ); 
+	  mySentence.assign_tag(thisTagCode, swcn ); 
 	  ++swcn;
 	  ++no_words;
 	}
