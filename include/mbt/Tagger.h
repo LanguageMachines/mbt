@@ -125,15 +125,15 @@ namespace Tagger {
     void create_lexicons( const std::string& filename );
     int ProcessFile( std::istream&, std::ostream& );
     int ProcessSocket();
-    void ProcessTags( TagInfo *TI );
-    void InitTest( MatchAction Action );
+    void ProcessTags( TagInfo * );
+    void InitTest( MatchAction );
     bool NextBest( int, int );
     std::string get_result();
     void statistics( int& no_known,
 		     int& no_unknown,
 		     int& no_correct_known, 
 		     int& no_correct_unknown );
-    std::string pat_to_string( int slots, int word );
+    std::string pat_to_string( MatchAction, int );
 
     std::string TimblOptStr;
     int FilterTreshold;
@@ -173,7 +173,7 @@ namespace Tagger {
     
     bool servermode;
     Sockets::Socket *Sock;
-    std::vector<int> *TestPat; 
+    std::vector<int> TestPat; 
   };
 
   int MakeTagger( Timbl::TimblOpts& );

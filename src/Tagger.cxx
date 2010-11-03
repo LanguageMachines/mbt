@@ -105,7 +105,6 @@ namespace Tagger {
     SettingsFileName = "";
     SettingsFilePath = "";
   
-    TestPat = new vector<int>;
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
@@ -415,7 +414,6 @@ namespace Tagger {
     else
       delete Sock;
     delete Beam;
-    delete TestPat;
     delete mySentence;    
     delete TheLex;
   }
@@ -884,10 +882,15 @@ namespace Tagger {
     os << endl;
   }
   
-  string TaggerClass::pat_to_string( int slots, int word ){
+  string TaggerClass::pat_to_string( MatchAction action, int word ){
+    int slots;
+    if ( action == Unknown )
+      slots = Utemplate.totalslots() - Utemplate.skipfocus;
+    else
+      slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     string line;
     for( int f=0; f < slots; f++ ){
-      line += indexlex( (*TestPat)[f], *TheLex );
+      line += indexlex( TestPat[f], *TheLex );
       line += " ";
     }
     for (vector<string>::iterator it = mySentence->getWord(word)->extraFeatures.begin(); it != mySentence->getWord(word)->extraFeatures.end(); it++)
@@ -900,13 +903,13 @@ namespace Tagger {
     else
       line += "??";
     if ( IsActive(DBG) ){
-      ShowCats( LOG, *TestPat, slots );
+      ShowCats( LOG, TestPat, slots );
     }
     // dump if desired
     //
     if ( dumpflag ){
       for( int slot=0; slot < slots; slot++){
-	cout << indexlex( (*TestPat)[slot], *TheLex );
+	cout << indexlex( TestPat[slot], *TheLex );
       }
       cout << endl;
     }
@@ -1107,7 +1110,7 @@ namespace Tagger {
     // the testpattern is of the form given in Ktemplate and Utemplate
     // here we allocate enough space for the larger of them to serve both
     //
-    TestPat->reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
+    TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     initialized = true;
     return true;
   }
@@ -1116,8 +1119,7 @@ namespace Tagger {
     TaggerClass *ta = new TaggerClass( *this );
     ta->Sock = sock;
     ta->mySentence = new sentence(); // we need our own testing structures
-    ta->TestPat = new vector<int>;
-    ta->TestPat->reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
+    ta->TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     ta->Beam = NULL; // own Beaming data
     ta->TheLex = new StringHash();
     return ta;
@@ -1169,11 +1171,7 @@ namespace Tagger {
   void TaggerClass::InitTest( MatchAction Action ){
     int nslots;
     // Now make a testpattern for Timbl to process.
-    if ( Action == Unknown )
-      nslots = Utemplate.totalslots() - Utemplate.skipfocus;
-    else
-      nslots = Ktemplate.totalslots() - Ktemplate.skipfocus;
-    string teststring = pat_to_string( nslots, 0 );
+    string teststring = pat_to_string( Action, 0 );
     //    cerr << "test string = " << teststring << endl;
     const ValueDistribution *distribution;
     const TargetValue *answer;
@@ -1225,16 +1223,11 @@ namespace Tagger {
     if ( Beam->paths[beam_cnt][i_word-1] == EMPTY_PATH ){
       return false;
     }
-    else if ( mySentence->nextpat( &Action, *TestPat,
+    else if ( mySentence->nextpat( &Action, TestPat,
 				   kwordlist, *TheLex,
 				   i_word, Beam->paths[beam_cnt] ) ){
       // Now make a testpattern for Timbl to process.
-      int nslots;
-      if ( Action == Unknown )
-	nslots = Utemplate.totalslots() - Utemplate.skipfocus;
-      else 
-	nslots = Ktemplate.totalslots() - Ktemplate.skipfocus;
-      string teststring = pat_to_string( nslots, i_word );
+      string teststring = pat_to_string( Action, i_word );
       // process teststring to predict a category, using the 
       // appropriate tree
       //
@@ -1308,7 +1301,7 @@ namespace Tagger {
       // here the word window is looked up in the dictionary and the values
       // of the features are stored in the testpattern
       MatchAction Action = Unknown;
-      if ( mySentence->nextpat( &Action, *TestPat, 
+      if ( mySentence->nextpat( &Action, TestPat, 
 				kwordlist, *TheLex,
 				0 )){ 
 
@@ -1818,7 +1811,7 @@ namespace Tagger {
     // the testpattern is of the form given in Ktemplate and Utemplate
     // here we allocate enough space for the larger of them to serve both
     //
-    TestPat->reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
+    TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     return true;
   }
   
@@ -1859,7 +1852,7 @@ namespace Tagger {
 	// of the features are stored in the testpattern
 	int swcn = 0;
 	int thisTagCode;
-	while( mySentence->nextpat( &Action, *TestPat, 
+	while( mySentence->nextpat( &Action, TestPat, 
 				    kwordlist, *TheLex,
 				    swcn ) ){ 
 	  bool skip = false;
@@ -1870,7 +1863,7 @@ namespace Tagger {
 	  }
 	  if ( !skip )
 	    for( int f=0; f < nslots; f++){
-	      outfile << indexlex( (*TestPat)[f], *TheLex ) << " ";
+	      outfile << indexlex( TestPat[f], *TheLex ) << " ";
 	    }
 	  thisTagCode = TheLex->Hash( mySentence->gettag(swcn) );
 	  if ( !skip ){
