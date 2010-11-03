@@ -63,7 +63,6 @@ namespace Tagger {
   using namespace Sockets;
 
   const string UNKSTR   = "UNKNOWN";
-  const int EMPTY_PATH = -1000000;
   
   Lexicon MT_lexicon;
   StringHash kwordlist;
@@ -71,116 +70,6 @@ namespace Tagger {
   
   class BeamData;
   
-  class TaggerClass{
-    friend string Tag( TaggerClass *, const string& );
-  public:
-    TaggerClass( );
-    ~TaggerClass();
-    bool InitTagging();
-    bool InitLearning();
-    bool InitBeaming( unsigned int );
-    TaggerClass *clone( Socket * );
-    int Run( );
-    bool Tag( string& );
-    bool RunServer();
-    void DoChild();
-    int CreateKnown();
-    int CreateUnknown();
-    void CreateSettingsFile();
-    bool set_default_filenames();
-    void parse_create_args( TimblOpts& Opts );
-    void parse_run_args( TimblOpts& Opts );
-    bool ServerMode() const { return servermode; };
-    void ShowCats( ostream& os, vector<int>& Pat, int slots );
-  private:
-    sentence *mySentence;
-    TimblAPI *KnownTree;
-    TimblAPI *unKnownTree;
-    string Timbl_Options;
-    string knownstr;
-    string unknownstr;
-    string uwf;
-    string kwf;
-    string logFile;
-    string pidFile;
-    int nwords;
-    bool initialized;
-    StringHash *TheLex;
-    BeamData *Beam;
-    input_kind_type input_kind;
-    bool piped_input;
-    bool lexflag;
-    bool knowntreeflag;
-    bool unknowntreeflag;
-    bool knowntemplateflag;
-    bool unknowntemplateflag;
-    bool knownoutfileflag;
-    bool unknownoutfileflag;
-    bool reverseflag;
-    bool dumpflag;
-    bool distance_flag;
-    bool distrib_flag;
-    bool klistflag;
-    int Beam_Size;
-    vector<double> distance_array;
-    vector<string> distribution_array;
-
-    int makedataset( istream& infile, bool do_known );
-    bool readsettings( string& fname );
-    void create_lexicons( const string& filename );
-    int ProcessFile( istream&, ostream& );
-    int ProcessSocket();
-    void ProcessTags( TagInfo *TI );
-    void InitTest( MatchAction Action );
-    bool NextBest( int, int );
-    string get_result();
-    void statistics( int& no_known,
-		     int& no_unknown,
-		     int& no_correct_known, 
-		     int& no_correct_unknown );
-    string pat_to_string( int slots, int word );
-
-    string TimblOptStr;
-    int FilterTreshold;
-    int Npax;
-    int TopNumber;
-    bool DoSort;
-    bool DoTop;
-    bool DoNpax;
-    bool KeepIntermediateFiles;
-
-    string KtmplStr;
-    string UtmplStr;
-    string l_option_name;
-    string K_option_name;
-    string U_option_name;
-    string r_option_name;
-    string L_option_name;
-    string EosMark;
-    
-    string portnumstr;
-    string Max_Conn_Str;
-    int Max_Connections;
-
-    PatTemplate Ktemplate;
-    PatTemplate Utemplate;
-  
-    string UnknownTreeName;
-    string KnownTreeName;
-    string LexFileName;
-    string MTLexFileName;
-    string TopNFileName;
-    string NpaxFileName;
-    string TestFileName;
-    string OutputFileName;
-    string SettingsFileName;
-    string SettingsFilePath;
-    
-    bool servermode;
-    Socket *Sock;
-    vector<int> *TestPat; 
-  };
-
   TaggerClass::TaggerClass( ){
     cur_log->setlevel( LogNormal );
     cur_log->setstamp( StampMessage );
@@ -243,38 +132,6 @@ namespace Tagger {
     return true;
   }
 
-  class n_best_tuple {
-  public:
-    n_best_tuple(){ path = EMPTY_PATH; tag = EMPTY_PATH; prob = 0.0; }
-    void clean(){ path = EMPTY_PATH; tag = EMPTY_PATH; prob = 0.0; };
-    int path;
-    int tag;
-    double prob;
-  };
-
-  class BeamData {
-  public:
-    BeamData();
-    ~BeamData();
-    bool Init( int, unsigned int );
-    void InitPaths( StringHash&, 
-		    const TargetValue *,
-		    const ValueDistribution * );
-    void NextPath( StringHash&,
-		   const TargetValue *,
-		   const ValueDistribution*, 
-		   int ); 
-    void ClearBest();
-    void Shift( int, int );
-    void Print( ostream& os, int i_word, StringHash& TheLex );
-    void PrintBest( ostream& os, StringHash& TheLex );
-    int size;
-    int **paths;
-    int **temppaths;
-    double *path_prob;
-    n_best_tuple **n_best_array;
-  };
-  
   BeamData::BeamData(){
     size = 0;
     paths = 0;

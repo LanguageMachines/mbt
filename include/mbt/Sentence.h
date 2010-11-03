@@ -27,6 +27,7 @@
 #define SENTENCE_H
 
 #include "timbl/Tree.h"
+#include "timblserver/SocketBasics.h"
 
 namespace Tagger {
   using Hash::Lexicon;

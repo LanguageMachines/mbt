@@ -40,6 +40,7 @@ class MbtAPI {
   static bool RunTagger( int, char** );
   MbtAPI( const std::string& );
   MbtAPI( const std::string&, LogStream& );
+  MbtAPI( Timbl::TimblOpts& );
   ~MbtAPI();
   std::string Tag( const std::string& );
  private:
