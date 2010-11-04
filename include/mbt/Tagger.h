@@ -75,7 +75,7 @@ namespace Tagger {
     bool InitTagging();
     bool InitLearning();
     bool InitBeaming( unsigned int );
-    TaggerClass *clone( Sockets::Socket * );
+    TaggerClass *clone( Sockets::Socket * ) const;
     int Run( );
     bool Tag( std::string& );
     bool RunServer();
@@ -87,6 +87,7 @@ namespace Tagger {
     void parse_create_args( Timbl::TimblOpts& Opts );
     void parse_run_args( Timbl::TimblOpts& Opts );
     bool ServerMode() const { return servermode; };
+    void Set_Max_Connections( int m ){ Max_Connections = m; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
   private:
     sentence mySentence;
@@ -129,6 +130,9 @@ namespace Tagger {
     void ProcessTags( TagInfo * );
     void InitTest( MatchAction );
     bool NextBest( int, int );
+    const Timbl::TargetValue *Classify( MatchAction, const std::string&, 
+					const Timbl::ValueDistribution *distribution, 
+					double& );
     std::string get_result();
     void statistics( int& no_known,
 		     int& no_unknown,
@@ -179,10 +183,14 @@ namespace Tagger {
 
   int MakeTagger( Timbl::TimblOpts& );
   int RunTagger( Timbl::TimblOpts& );
+  void RunServer( Timbl::TimblOpts& );
   TaggerClass *CreateTagger( Timbl::TimblOpts& );
   bool setLog( LogStream& );
   void RemoveTagger( TaggerClass * );
   std::string Tag( TaggerClass*, const std::string& );
+
+  void *tag_child( void *arg );
+  void StopServerFun( int );
 }
 
 #endif

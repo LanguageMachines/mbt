@@ -161,8 +161,8 @@ void run_usage( char *progname ){
 }
 
 bool MbtAPI::RunTagger( int argc, char **argv ){
-// present yourself to the user
-//
+  // present yourself to the user
+  //
   cerr << "Mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2010." << endl
        << "Memory Based Tagger " << endl
        << "Tilburg University" << endl
@@ -189,6 +189,31 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
       timediff = 1;
     cerr << "  Time used: " << timediff << endl;
     cerr << "  Words/sec: " << nw/(timediff) << endl;
+    return true;
+  }
+}
+
+bool MbtAPI::RunServer( int argc, char **argv ){
+  // present yourself to the user
+  //
+  cerr << "Mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2010." << endl
+       << "Memory Based Tagger Server" << endl
+       << "Tilburg University" << endl
+       << "CLiPS Computational Linguistics Group, University of Antwerp"
+       << endl << endl
+       << "Based on Timbl version " << TimblAPI::VersionInfo() 
+       << endl << endl;
+  // test for the right number of arguments
+  //
+  if(argc<3) {
+    run_usage( argv[0] );
+    return false;
+  }
+  else {
+    // get all the commandline options in an TimblOpts structure
+    //
+    TimblOpts Opts( argc, argv );
+    Tagger::RunServer( Opts );
     return true;
   }
 }

@@ -55,10 +55,10 @@ class PatTemplate {
   PatTemplate();
   ~PatTemplate(){;}
 
-  int totalslots();
-  int word_totalslots();
+  int totalslots() const;
+  int word_totalslots() const;
   bool set( const std::string& );
-  size_t sprint( std::string& );
+  size_t sprint( std::string& ) const;
 };
 
 #endif

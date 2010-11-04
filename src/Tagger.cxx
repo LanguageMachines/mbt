@@ -1167,7 +1167,7 @@ namespace Tagger {
     return true;
   }
 
-  TaggerClass *TaggerClass::clone( Socket *sock ){
+  TaggerClass *TaggerClass::clone( Socket *sock ) const {
     TaggerClass *ta = new TaggerClass( *this );
     ta->Sock = sock;
     ta->TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
@@ -1218,32 +1218,44 @@ namespace Tagger {
   static pthread_mutex_t unknown_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
+  const TargetValue *TaggerClass::Classify( MatchAction Action, 
+				      const string& teststring, 
+				      const ValueDistribution *distribution,
+				      double& distance ){
+    const TargetValue *answer = 0;
+    if ( Action == Known ){
+#if defined(PTHREADS)  
+      if ( servermode )
+	pthread_mutex_lock( &known_lock );
+#endif
+      answer = KnownTree->Classify( teststring, distribution, distance );
+#if defined(PTHREADS)  
+      if ( servermode )
+	pthread_mutex_unlock( &known_lock );
+#endif
+    }
+    else {
+#if defined(PTHREADS)  
+      if ( servermode )
+	pthread_mutex_lock( &unknown_lock );
+#endif
+      answer = unKnownTree->Classify( teststring, distribution, distance );
+#if defined(PTHREADS)  
+      if ( servermode )
+	pthread_mutex_unlock( &unknown_lock );
+#endif
+    }
+    return answer;
+  }
+
   void TaggerClass::InitTest( MatchAction Action ){
     int nslots;
     // Now make a testpattern for Timbl to process.
     string teststring = pat_to_string( Action, 0 );
     //    cerr << "test string = " << teststring << endl;
     const ValueDistribution *distribution;
-    const TargetValue *answer;
     double distance;
-    if ( Action == Known ){
-#if defined(PTHREADS)
-      pthread_mutex_lock( &known_lock );
-#endif
-      answer = KnownTree->Classify( teststring, distribution, distance );
-#if defined(PTHREADS)
-      pthread_mutex_unlock( &known_lock );
-#endif
-    }
-    else {
-#if defined(PTHREADS)
-      pthread_mutex_lock( &unknown_lock );
-#endif
-      answer = unKnownTree->Classify( teststring, distribution, distance );
-#if defined(PTHREADS)
-      pthread_mutex_unlock( &unknown_lock );
-#endif
-    }
+    const TargetValue *answer = Classify( Action, teststring, distribution, distance );
     if ( !answer ){
       cerr << "A classifying problem prevented continuing. Sorry!"
 	   << endl;
@@ -1282,27 +1294,10 @@ namespace Tagger {
       // appropriate tree
       //
       //      cerr << "teststring '" << teststring << "'" << endl;
-      const TargetValue *answer;
       const ValueDistribution *distribution;
       double distance;
-      if ( Action == Known ){
-#if defined(PTHREADS)
-	pthread_mutex_lock( &known_lock );
-#endif
-	answer = KnownTree->Classify( teststring, distribution, distance );
-#if defined(PTHREADS)
-	pthread_mutex_unlock( &known_lock );
-#endif
-      }
-      else {
-#if defined(PTHREADS)
-	pthread_mutex_lock( &unknown_lock );
-#endif
-	answer = unKnownTree->Classify( teststring, distribution, distance );
-#if defined(PTHREADS)
-	pthread_mutex_unlock( &unknown_lock );
-#endif
-      }
+      const TargetValue *answer = Classify( Action, teststring, 
+					    distribution, distance );
       if ( !answer ){
 	cerr << "A classifying problem prevented continuing. Sorry!"
 	     << endl;

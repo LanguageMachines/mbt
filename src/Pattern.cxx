@@ -178,7 +178,7 @@ bool PatTemplate::set( const string& tempstr ){
   return true;
 }
 
-size_t PatTemplate::sprint( string& targetstring) {
+size_t PatTemplate::sprint( string& targetstring) const {
   int j=0;
   for( int i=0; i<numprefix; ++i ){
     targetstring[j]='p';
@@ -227,15 +227,13 @@ size_t PatTemplate::sprint( string& targetstring) {
   return targetstring.length();
 }
 
-int PatTemplate::totalslots()
-{
+int PatTemplate::totalslots() const {
   return ( numslots + numprefix + numsuffix + 
 	   hyphen + capital + numeric + word_totalslots());
 }
 
 
-int PatTemplate::word_totalslots()
-{
+int PatTemplate::word_totalslots() const {
   // Compensate for the 'f'
   // (hm, what if 'F' or 'W'?).
   //
