@@ -87,8 +87,8 @@ namespace Tagger {
     void parse_create_args( Timbl::TimblOpts& Opts );
     void parse_run_args( Timbl::TimblOpts& Opts );
     bool ServerMode() const { return servermode; };
-    void Set_Max_Connections( int m ){ Max_Connections = m; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
+    int ProcessSocket();
   private:
     sentence mySentence;
     Timbl::TimblAPI *KnownTree;
@@ -126,7 +126,6 @@ namespace Tagger {
     bool readsettings( std::string& fname );
     void create_lexicons( const std::string& filename );
     int ProcessFile( std::istream&, std::ostream& );
-    int ProcessSocket();
     void ProcessTags( TagInfo * );
     void InitTest( MatchAction );
     bool NextBest( int, int );
@@ -189,7 +188,6 @@ namespace Tagger {
   void RemoveTagger( TaggerClass * );
   std::string Tag( TaggerClass*, const std::string& );
 
-  void *tag_child( void *arg );
   void StopServerFun( int );
 }
 
