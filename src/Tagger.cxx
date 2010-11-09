@@ -39,7 +39,6 @@
 #include <unistd.h> // for unlink()
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "timblserver/TimblServerAPI.h"
 #include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
@@ -60,7 +59,6 @@ namespace Tagger {
   using namespace std;
   using namespace Hash;
   using namespace Timbl;
-  using namespace Sockets;
 
   const string UNKSTR   = "UNKNOWN";
   
@@ -89,9 +87,6 @@ namespace Tagger {
     L_option_name = "";
     EosMark = "<utt>";
     
-    portnumstr = "";
-    Max_Conn_Str = "10";
-
     UnknownTreeName = "";
     KnownTreeName = "";  
     LexFileName = "";
@@ -121,7 +116,6 @@ namespace Tagger {
     distrib_flag = false;
     klistflag= false;
     servermode = false;
-    Sock = 0;
   }
 
   TaggerClass::TaggerClass( const TaggerClass& in ){
@@ -144,10 +138,6 @@ namespace Tagger {
     Ktemplate = in.Ktemplate;
     Utemplate = in.Utemplate;
     
-    portnumstr = in.portnumstr;
-    Max_Conn_Str = in.Max_Conn_Str;
-    Max_Connections = in.Max_Connections;
-
     UnknownTreeName = in.UnknownTreeName;
     KnownTreeName = in.KnownTreeName;
     LexFileName = in.LexFileName;
@@ -177,7 +167,6 @@ namespace Tagger {
     distrib_flag = in.distrib_flag;
     klistflag = in.klistflag;
     servermode = in.servermode;
-    Sock = 0;
   }
 
   bool setLog( LogStream& os ){
@@ -461,12 +450,10 @@ namespace Tagger {
   }
   
   TaggerClass::~TaggerClass(){
-    if ( Sock == 0 ){
+    if ( !servermode ){
       delete KnownTree;
       delete unKnownTree;
     }
-    else
-      delete Sock;
     delete Beam;
   }
   
@@ -477,211 +464,30 @@ namespace Tagger {
     return Beam->Init( Beam_Size, no_words );
   }
 
-#if defined(PTHREADS)
-
-  static pthread_mutex_t my_lock = PTHREAD_MUTEX_INITIALIZER;
-  static int service_count = 0;
-
-  void StopServerFun( int Signal ){
-    if ( Signal == SIGINT ){
-      exit(EXIT_FAILURE);
-    }
-    signal( SIGINT, StopServerFun );
-  }
-  
-  // ***** This is the routine that is executed from a new thread **********
-  void *tag_child( void *arg ){
-    TaggerClass *tagger = (TaggerClass *)arg;
-    tagger->DoChild();
-    delete tagger;
-    return NULL;
-  }
-
-  void TaggerClass::DoChild(){
-    // process the test material
-    // and do the timing
-    //
-    // use a mutex to update the global service counter
-    //
-    pthread_mutex_lock( &my_lock );
-    service_count++;
-    int nw = 0;
-    if ( service_count > Max_Connections ){
-      Sock->write( "Maximum connections exceeded\n" );
-      Sock->write( "try again later...\n" );
-      pthread_mutex_unlock( &my_lock );
-      cerr << "Thread " << pthread_self() << " refused " << endl;
-    }
-    else {
-      // Greeting message for the client
-      //
-      pthread_mutex_unlock( &my_lock );
-      time_t timebefore, timeafter;
-      time( &timebefore );
-      // report connection to the server terminal
-      //
-      LOG << "Thread " << pthread_self() << ", Socket number = "
-	  << Sock->getSockId() << ", started at: " 
-	  << asctime( localtime( &timebefore) );
-      Sock->write( "Welcome to the Mbt server.\n" );
-      nw = ProcessSocket();
-      time( &timeafter );
-      LOG << "Thread " << pthread_self() << ", terminated at: " 
-	  << asctime( localtime( &timeafter ) );
-      LOG << "Total time used in this thread: " << timeafter - timebefore 
-	  << " sec, " << nw << " words processed " << endl;
-    }
-    // exit this thread
-    //
-    pthread_mutex_lock( &my_lock );
-    service_count--;
-    LOG << "Socket Total = " << service_count << endl;
-    pthread_mutex_unlock( &my_lock );
-  }
-  
-  bool TaggerClass::RunServer(){
-    if ( initialized ){
-      Max_Connections = stringTo<int>( Max_Conn_Str );
-      if ( Max_Connections < 1 ){
-	cerr << "Error in -C option, setting Max_Connections to 10" << endl;
-	Max_Connections = 10;
-      }
-      cerr << "Trying to Start a Server on port: " << portnumstr << endl
-	   << "maximum # of simultanious connections: " << Max_Connections
-	   << endl;
-
-      if ( !logFile.empty() ){
-	ostream *tmp = new ofstream( logFile.c_str() );
-	if ( tmp && tmp->good() ){
-	  cerr << "switching logging to file " << logFile << endl;
-	  cur_log->associate( *tmp );
-	  cur_log->message( "MbtServer:" );
-	  LOG << "Started logging " << endl;	
-	}
-	else {
-	  cerr << "unable to create logfile: " << logFile << endl;
-	  cerr << "not started" << endl;
-	  exit(EXIT_FAILURE);
-	}
-      }
-      int start;
-      if ( logFile.empty() )
-	start = daemonize( 1, 1 );
-      else
-	start = daemonize( 0, 0 );
-      if ( start < 0 ){
-	LOG << "failed to daemonize error= " << strerror(errno) << endl;
-	exit(EXIT_FAILURE);
-      };
-      if ( !pidFile.empty() ){
-	// we have a liftoff!
-	// signal it to the world
-	unlink( pidFile.c_str() ) ;
-	ofstream pid_file( pidFile.c_str() ) ;
-	if ( !pid_file ){
-	  LOG << "unable to create pidfile:"<< pidFile << endl;
-	  LOG << "TimblServer NOT Started" << endl;
-	  exit(EXIT_FAILURE);
-	}
-	else {
-	  pid_t pid = getpid();
-	  pid_file << pid << endl;
-	}
-      }
-
-      // set the attributes
-      pthread_attr_t attr;
-      if ( pthread_attr_init(&attr) ||
-	   pthread_attr_setdetachstate( &attr, PTHREAD_CREATE_DETACHED ) ){
-	LOG << "Threads: couldn't set attributes" << endl;
-	exit(EXIT_FAILURE);
-      }
-      //
-      // setup Signal handling to abort the server.
-      signal( SIGINT, StopServerFun );
-      
-      pthread_t chld_thr;
-
-      // start up server
-      // 
-      LOG << "Started Server on port: " << portnumstr << endl
-	  << "maximum # of simultanious connections: " << Max_Connections
-	  << endl;
-      
-      ServerSocket server;
-      if ( !server.connect( portnumstr ) ){
-	LOG << "failed to start Server: " << server.getMessage() << endl;
-	exit(EXIT_FAILURE);
-      }
-      if ( !server.listen( Max_Connections ) < 0 ){
-	LOG << "server: listen failed " << strerror( errno ) << endl;
-	exit(EXIT_FAILURE);
-      };
-      
-      while(true){ // waiting for connections loop
-	ServerSocket *newSock = new ServerSocket();
-	if ( !server.accept( *newSock ) ){
-	  if( errno == EINTR )
-	    continue;
-	  else {
-	    LOG << "Server: Accept Error: " << server.getMessage() << endl;
-	    exit(EXIT_FAILURE);
-	  }
-	}
-	LOG << "Accepting Connection " << newSock->getSockId()
-	    << " from remote host: " << newSock->getClientName() << endl;
-	
-	// create a new thread to process the incoming request 
-	// (The thread will terminate itself when done processing
-	// and release its socket handle)
-	//
-	TaggerClass *child = clone( newSock );
-	pthread_create( &chld_thr, &attr, tag_child, child );
-	// the server is now free to accept another socket request 
-      }
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-
-  int TaggerClass::ProcessSocket(){
-    bool go_on = true;
+  int TaggerClass::ProcessLines( istream &is, ostream& os ){
     int no_words=0;    
-    // loop as long as you get sentences
+    // loop as long as you get non empty sentences
     //
     string tagged_sentence;
-    while ( go_on &&
-	    ( mySentence.reset( EosMark ), mySentence.read( Sock, input_kind ) )) {
+    while ( is &&
+	    ( mySentence.reset( EosMark ), mySentence.read( is, input_kind, true ) )) {
+      //      LOG << "read a sentence " << mySentence << endl;
+      if ( mySentence.size() == 0 )
+	break;
       if ( Tag( tagged_sentence ) ){
+	//	LOG << "tagged a sentence " << tagged_sentence << endl;
 	// show the results of 1 sentence
-	go_on = Sock->write( tagged_sentence );
+	os << tagged_sentence << endl;
 	// increase the counter of processed words
-	no_words += mySentence.No_Words();
-      }
-      else {
-	// probably empty sentence??
+	no_words += mySentence.size();
       }
     } // end of while looping over sentences
     
-    cerr << endl << endl << "Done:" << endl
+    cerr << endl << "Done:" << endl
 	 << "  " << no_words << " words processed." << endl;
     return no_words;
   }
   
-
-#else
-  bool TaggerClass::RunServer(){
-    cerr << "Sorry: Servermode not available. " << endl;
-    return false;
-  }
-
-  int TaggerClass::ProcessSocket( ){
-    return -1;
-  }
-#endif  
-
   void get_weightsfile_name( string& opts, string& name ){
     name = "";
     string::size_type pos = opts.find( "-w" );
@@ -1167,11 +973,11 @@ namespace Tagger {
     return true;
   }
 
-  TaggerClass *TaggerClass::clone( Socket *sock ) const {
+  TaggerClass *TaggerClass::clone() const {
     TaggerClass *ta = new TaggerClass( *this );
-    ta->Sock = sock;
     ta->TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     ta->Beam = NULL; // own Beaming data
+    ta->servermode = true;
     return ta;
   }
   
@@ -1262,14 +1068,14 @@ namespace Tagger {
       exit(EXIT_FAILURE);
     }
     else {
-      distance_array.resize( mySentence.No_Words() );
-      distribution_array.resize( mySentence.No_Words() );
+      distance_array.resize( mySentence.size() );
+      distribution_array.resize( mySentence.size() );
       if ( distance_flag )
 	distance_array[0] = distance;
       if ( distrib_flag )
 	distribution_array[0] = distribution->DistToString();
       if ( IsActive( DBG ) ){
-	LOG << "BeamData::InitPaths( "; mySentence.print(LOG); 
+	LOG << "BeamData::InitPaths( " << mySentence << endl; 
 	LOG << " , " << answer << " , " << distribution << " )" << endl;
       }
       Beam->InitPaths( TheLex, answer, distribution );
@@ -1335,11 +1141,11 @@ namespace Tagger {
   bool TaggerClass::Tag( string& tag ){
     tag = "";
     if ( !initialized ||
-	 !InitBeaming( mySentence.No_Words() ) ){
+	 !InitBeaming( mySentence.size() ) ){
       cerr << "ouch" << initialized << endl;
       return false;
     }
-    mySentence.print(DBG);
+    DBG << mySentence;
     
     if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
 				    MT_lexicon, TheLex ) ) {
@@ -1352,7 +1158,7 @@ namespace Tagger {
 
 	DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	InitTest( Action );
-	for ( int iword=1; iword < mySentence.No_Words(); iword++ ){
+	for ( int iword=1; iword < mySentence.size(); iword++ ){
 	  // clear best_array
 	  DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	  Beam->ClearBest();
@@ -1360,7 +1166,7 @@ namespace Tagger {
 	    if ( !NextBest( iword, beam_count ) )
 	      break;
 	  }
-	  Beam->Shift( mySentence.No_Words(), iword );
+	  Beam->Shift( mySentence.size(), iword );
 	  if ( IsActive( DBG ) ){
 	    LOG << "after shift:" << endl;
 	    Beam->Print( LOG, iword, TheLex );
@@ -1378,7 +1184,7 @@ namespace Tagger {
     string result;
     string tagstring;
     //now some output
-    for ( int Wcnt=0; Wcnt < mySentence.No_Words(); ++Wcnt ){
+    for ( int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
       // lookup the assigned category
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       // now we do the appropriate output, depending on known/unknown
@@ -1430,7 +1236,7 @@ namespace Tagger {
     string result;
     string tagstring;
     //now some output
-    for ( int Wcnt=0; Wcnt < mySentence.No_Words(); Wcnt++ ){
+    for ( int Wcnt=0; Wcnt < mySentence.size(); Wcnt++ ){
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       if ( mySentence.known(Wcnt) ){
 	no_known++;
@@ -1462,7 +1268,7 @@ namespace Tagger {
     int HartBeat = 0;
     while ( go_on && 
 	    (mySentence.reset( EosMark), mySentence.read(infile, input_kind ) ) ){
-      if ( mySentence.No_Words() == 0 )
+      if ( mySentence.size() == 0 )
 	continue;
       string tagged_sentence;
       if ( ++HartBeat % 100 == 0 ) {
@@ -1480,7 +1286,7 @@ namespace Tagger {
 		    no_correct_unknown );
 	outfile << tagged_sentence;
 	// increase the counter of processed words
-	no_words += mySentence.No_Words();
+	no_words += mySentence.size();
       }
       else {
 	  // probably empty sentence??
@@ -1562,13 +1368,6 @@ namespace Tagger {
 	dumpflag=true;
 	cerr << "  Dumpflag ON" << endl;
 	break;
-      case 'C': {
-	sscanf( SetBuffer, "C %s", value );
-	Max_Conn_Str = value;
-	cerr << "  Maximum number of connections  set to '" 
-	     << Max_Conn_Str << "'" << endl;
-	break;
-      }
       case 'e': {
 	sscanf( SetBuffer, "e %s", value );
 	EosMark = value;
@@ -1613,16 +1412,10 @@ namespace Tagger {
 	reverseflag = true;
 	break;
       case 'S':
-#if defined( PTHREADS)
-	sscanf( SetBuffer, "S %s", value );
-	portnumstr = value;
-	servermode = true; // We're going into Server MODE!
-#else
-	cerr << "Server mode NOT supported in this version!\n"
-	     << "You must rebuild Mbt with MAKE_SERVER=YES in the Makefile\n"
+	cerr << "Server mode NOT longer supported in this version!\n"
+	     << "use MbtServer instead\n" 
 	     << "sorry..." << endl;
 	exit(EXIT_FAILURE);
-#endif
 	break;
       case 't':
 	sscanf(SetBuffer,"t %s", value );
@@ -1688,10 +1481,6 @@ namespace Tagger {
       }
       Opts.Delete( 's' );
     };
-    if ( Opts.Find( string("logfile"), value, mood ) ){
-      logFile = value;
-      Opts.Delete( string("logfile") );
-    };
     if ( Opts.Find( 'B', value, mood ) ){
       int dum_beam = stringTo<int>(value);
       if (dum_beam>1)
@@ -1699,10 +1488,6 @@ namespace Tagger {
       else
 	Beam_Size = 1;
       Opts.Delete( 'B' );
-    };
-    if ( Opts.Find( 'C', value, mood ) ){
-      Max_Conn_Str = value;
-      Opts.Delete( 'C' );
     };
     if ( Opts.Find( 'd', value, mood ) ){
       dumpflag=true;
@@ -1750,26 +1535,16 @@ namespace Tagger {
       TimblOptStr = value;
       Opts.Delete( 'O' );
     };
-    if ( Opts.Find( "pidfile", value, mood ) ){
-      pidFile = value;
-      Opts.Delete( "pidfile" );
-    };
     if ( Opts.Find( 'r', value, mood ) ){
       r_option_name = value;
       reverseflag = true;
       Opts.Delete( 'r' );
     }
     if ( Opts.Find( 'S', value, mood ) ){
-#if defined(PTHREADS)
-      portnumstr = value;
-      servermode = true;
-#else
-      cerr << "Server mode NOT supported in this version!\n"
-	   << "You must rebuild Mbt with MAKE_SERVER=YES in the Makefile\n"
+      cerr << "Server mode NOT longer supported in this version!\n"
+	   << "You must use MbtServer instead\n"
 	   << "sorry..." << endl;
       exit(EXIT_FAILURE);
-#endif
-      Opts.Delete( 'S' );
     };
     if ( Opts.Find( 't', value, mood ) ){
       TestFileName = value;
@@ -1833,12 +1608,7 @@ namespace Tagger {
     tagger.parse_run_args( Opts );
     tagger.set_default_filenames();
     tagger.InitTagging();
-    int result = -1;
-    if ( tagger.ServerMode() )
-      result = tagger.RunServer();
-    else {
-      result = tagger.Run();
-    }
+    int result = tagger.Run();
     return result;
   }
 
@@ -1880,9 +1650,9 @@ namespace Tagger {
     //
     int HartBeat = 0;
     while ( (mySentence.reset( EosMark), mySentence.read( infile, input_kind ) )){
-      if ( mySentence.No_Words() == 0 )
+      if ( mySentence.size() == 0 )
 	continue;
-      //      mySentence.print( cerr );
+      // cerr << mySentence << endl;
       if ( mySentence.getword(0) == EosMark ){
 	// only possible for ENRICHED!
 	continue;

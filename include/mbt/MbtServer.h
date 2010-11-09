@@ -30,7 +30,7 @@ namespace Tagger {
   class MbtServer {
     friend class TaggerClass;
   public:
-    LogStream myLog;
+    LogStream cur_log;
     bool doDebug() { return debug; };
     TaggerClass *theExp(){ return exp; };
     virtual ~MbtServer();

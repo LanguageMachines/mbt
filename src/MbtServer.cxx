@@ -1,9 +1,3 @@
-// #include <fstream> 
-// #include <iostream>
-//#include <cstdio>
-//#include <cstdlib>
-//#include <cctype>
-//#include <ctime>
 #include <csignal>
 #include <cerrno>
 #include <string>
@@ -11,6 +5,7 @@
 #include "config.h"
 #include "timbl/TimblAPI.h"
 #include "timblserver/TimblServerAPI.h"
+#include "timblserver/FdStream.h"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
 #include "mbt/MbtServer.h"
@@ -19,6 +14,9 @@
 
 using namespace std;
 using namespace Timbl;
+
+#define SLOG (*Log(theServer->cur_log))
+#define SDBG (*Dbg(theServer->cur_log))
 
 namespace Tagger {
 
@@ -30,7 +28,8 @@ namespace Tagger {
     return exp;
   }
 
-  MbtServer::MbtServer( Timbl::TimblOpts& opts ): myLog("MbtServer"){
+  MbtServer::MbtServer( Timbl::TimblOpts& opts ): cur_log("MbtServer", 
+							  StampMessage ){
     debug = false;
     maxConn = 25;
     serverPort = -1;
@@ -44,7 +43,7 @@ namespace Tagger {
 	cerr << "-S option, portnumber invalid: " << serverPort << endl;
 	exit(1);
       }
-      //      opts.delete( "S" );
+      opts.Delete( "S" );
     }
     else {
       cerr << "missing -S<port> option" << endl;
@@ -52,15 +51,15 @@ namespace Tagger {
     }
     if ( opts.Find( "pidfile", val ) ) {
       pidFile = val;
-      //      opts.delete( "pidfile" );
+      opts.Delete( "pidfile" );
     }
     if ( opts.Find( "logfile", val ) ) {
       logFile = val;
-      //      opts.delete( "logfile" );
+      opts.Delete( "logfile" );
     }
     if ( opts.Find( "daemonize", val ) ) {
       doDaemon = ( val != "no" && val != "NO" && val != "false" && val != "FALSE" );
-      //      opts.delete( "daemonize" );
+      opts.Delete( "daemonize" );
     }
     
     exp = createServerPimpl( opts );
@@ -104,25 +103,34 @@ namespace Tagger {
       time( &timebefore );
       // report connection to the server terminal
       //
-      LOG << "Thread " << pthread_self() << ", Socket number = "
+      SLOG << "Thread " << pthread_self() << ", Socket number = "
 	  << Sock->getSockId() << ", started at: " 
 	  << asctime( localtime( &timebefore) );
-      Sock->write( "Welcome to the Mbt server.\n" );
-      nw = args->experiment->ProcessSocket();
+      fdistream is( Sock->getSockId() );
+      fdostream os( Sock->getSockId() );
+      os << "Welcome to the Mbt server." << endl;
+      nw = args->experiment->ProcessLines( is, os );
       time( &timeafter );
-      LOG << "Thread " << pthread_self() << ", terminated at: " 
+      SLOG << "Thread " << pthread_self() << ", terminated at: " 
 	  << asctime( localtime( &timeafter ) );
-      LOG << "Total time used in this thread: " << timeafter - timebefore 
-	  << " sec, " << nw << " words processed " << endl;
+      SLOG << "Total time used in this thread: " << timeafter - timebefore 
+	   << " sec, " << nw << " words processed " << endl;
     }
     // exit this thread
     //
     pthread_mutex_lock( &my_lock );
     service_count--;
-    LOG << "Socket Total = " << service_count << endl;
+    SLOG << "Socket Total = " << service_count << endl;
     pthread_mutex_unlock( &my_lock );
     delete Sock;
   }
+
+  void StopServerFun( int Signal ){
+    if ( Signal == SIGINT ){
+      exit(EXIT_FAILURE);
+    }
+    signal( SIGINT, StopServerFun );
+  }  
   
   void MbtServer::RunClassicServer(){
     cerr << "Trying to Start a Server on port: " << serverPort << endl
@@ -132,8 +140,8 @@ namespace Tagger {
       ostream *tmp = new ofstream( logFile.c_str() );
       if ( tmp && tmp->good() ){
 	cerr << "switching logging to file " << logFile << endl;
-	cur_log->associate( *tmp );
-	cur_log->message( "MbtServer:" );
+	cur_log.associate( *tmp );
+	cur_log.message( "MbtServer:" );
 	LOG << "Started logging " << endl;	
       }
       else {
@@ -215,7 +223,7 @@ namespace Tagger {
       // and release its socket handle)
       //
       childArgs *args = new childArgs();
-      args->experiment = exp->clone( newSock );
+      args->experiment = exp->clone( );
       args->Mother = this;
       args->maxC = maxConn;
       args->socket = newSock;

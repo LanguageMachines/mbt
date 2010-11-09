@@ -75,7 +75,7 @@ namespace Tagger {
     bool InitTagging();
     bool InitLearning();
     bool InitBeaming( unsigned int );
-    TaggerClass *clone( Sockets::Socket * ) const;
+    TaggerClass *clone() const;
     int Run( );
     bool Tag( std::string& );
     bool RunServer();
@@ -88,7 +88,7 @@ namespace Tagger {
     void parse_run_args( Timbl::TimblOpts& Opts );
     bool ServerMode() const { return servermode; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
-    int ProcessSocket();
+    int ProcessLines( std::istream&, std::ostream& );
   private:
     sentence mySentence;
     Timbl::TimblAPI *KnownTree;
@@ -98,8 +98,6 @@ namespace Tagger {
     std::string unknownstr;
     std::string uwf;
     std::string kwf;
-    std::string logFile;
-    std::string pidFile;
     int nwords;
     bool initialized;
     StringHash TheLex;
@@ -158,8 +156,6 @@ namespace Tagger {
     std::string EosMark;
     
     std::string portnumstr;
-    std::string Max_Conn_Str;
-    int Max_Connections;
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
@@ -176,7 +172,6 @@ namespace Tagger {
     std::string SettingsFilePath;
     
     bool servermode;
-    Sockets::Socket *Sock;
     std::vector<int> TestPat; 
   };
 
