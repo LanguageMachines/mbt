@@ -76,6 +76,11 @@ namespace Tagger {
       delete Words[i];
   }
 
+  ostream& operator<<( ostream& os, const sentence& s ){
+    s.print( os );
+    return os;
+  }
+
   string sentence::getenr( unsigned int index ){
     string result;
     if ( index < no_words ){
@@ -506,6 +511,7 @@ namespace Tagger {
       }
       //      cerr << "Eos = " << eos << endl;
     }  while ( linebuffer.length() == 0 && infile );
+    //    cerr << "done reading '" << linebuffer << "'" << endl;
     if ( linebuffer.length() > 0 )
       return Fill( linebuffer, tagged );
     else

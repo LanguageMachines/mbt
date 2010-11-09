@@ -61,6 +61,7 @@ namespace Tagger {
   // A sentence (used when windowing).
   //
   class sentence {
+    friend std::ostream& operator<< ( std::ostream& , const sentence& );
   public:
     sentence();
     ~sentence();
@@ -99,5 +100,6 @@ namespace Tagger {
     bool read( Sockets::Socket*, bool tagged );
   };
 
+  std::ostream& operator<<( std::ostream& os, const sentence& s );
 }
 #endif
