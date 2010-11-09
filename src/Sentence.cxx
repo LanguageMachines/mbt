@@ -112,7 +112,7 @@ namespace Tagger {
 	os << Words[i]->the_word << ", ";
       os << Words[no_words-1]->the_word;
     }
-    os << "'" << endl;
+    os << "'";
   }
   
   void sentence::reset( const string& EosMark ){
@@ -435,6 +435,7 @@ namespace Tagger {
     Word = "";
     if ( is ){
       is >> ws >> Word;
+      //      cerr << "getWord got '" << Word << "'" << endl;
       if ( InternalEosMark == "EL" || InternalEosMark == "NL" ){
 	int ch;
 	while( isspace((ch=is.peek())) && ch != '\n' ) ch = is.get();
@@ -468,23 +469,45 @@ namespace Tagger {
   }
 
 
-  bool sentence::read( istream &infile, input_kind_type kind ){
+  bool sentence::read( istream &infile, input_kind_type kind, bool lineMode ){
     if ( kind == TAGGED ||
-	 kind == UNTAGGED )
-      return read( infile, kind == TAGGED );
+	 kind == UNTAGGED ){
+      if ( lineMode )
+	return readLine( infile, kind == TAGGED );
+      else
+	return read( infile, kind == TAGGED );
+    }
     else
       return read( infile );
   }
 
+  bool sentence::readLine( istream &infile, bool tagged ){
+    // read a sentence from a stream
+    // every sentence is limited to one line
+    // be aware of \r\n problems
+    string linebuffer = "";
+    if ( getline( infile, linebuffer ) ){
+      if ( linebuffer.length() > 0 ){
+	if ( linebuffer[linebuffer.length()-1] == '\r' ){
+	  linebuffer.erase( linebuffer.length()-1 );
+	}
+	if ( linebuffer.length() > 0 ){
+	  return Fill( linebuffer, tagged );
+	}
+      }
+    }
+    return false;
+  }
+  
   bool sentence::read( istream &infile, bool tagged ){
-    // read a whole sentence either from file
-    // A sentence can be delimited either by a period, an Eos marker
-    // or EOF.
+    // read a whole sentence from a stream
+    // A sentence can be delimited either by an Eos marker or EOF.
     
     string linebuffer = "";
     string Word;
     // get the word from the file
     //
+    //    cerr << "start read" << endl;
     word_stat eos ;
     do {
       eos = READ_MORE;

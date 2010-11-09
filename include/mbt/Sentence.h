@@ -68,7 +68,6 @@ namespace Tagger {
 
     void reset( const std::string& );    
     bool Fill( const std::string&, bool );
-    void print( std::ostream & ) const;
     bool init_windowing( PatTemplate *, PatTemplate *, Lexicon&, StringHash& );
     bool nextpat( MatchAction *, std::vector<int>&, StringHash& , StringHash&,
 		  unsigned int, int * = 0 );
@@ -78,10 +77,10 @@ namespace Tagger {
     word *getWord( unsigned int i ) const { return Words[i]; };
     const std::string& gettag( int i ) const { return Words[i]->word_tag; };
     std::string getenr( unsigned int i );
-    int No_Words() const { return no_words; };
+    unsigned int size() const { return no_words; };
     bool known( unsigned int );
     std::string Eos() const;
-    bool read( std::istream &, input_kind_type );
+    bool read( std::istream &, input_kind_type, bool=false );
     bool read( Sockets::Socket* , input_kind_type );
   private:
     int UTAG;
@@ -95,9 +94,11 @@ namespace Tagger {
     void add( const std::string&, const std::vector<std::string>&,
 	      const std::string& );
     void add( const std::string&, const std::string& );
+    bool readLine( std::istream &, bool );
     bool read( std::istream &, bool );
     bool read( std::istream & );
     bool read( Sockets::Socket*, bool tagged );
+    void print( std::ostream & ) const;
   };
 
   std::ostream& operator<<( std::ostream& os, const sentence& s );
