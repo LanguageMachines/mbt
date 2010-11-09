@@ -27,7 +27,6 @@
 #define SENTENCE_H
 
 #include "timbl/Tree.h"
-#include "timblserver/SocketBasics.h"
 
 namespace Tagger {
   using Hash::Lexicon;
@@ -81,7 +80,6 @@ namespace Tagger {
     bool known( unsigned int );
     std::string Eos() const;
     bool read( std::istream &, input_kind_type, bool=false );
-    bool read( Sockets::Socket* , input_kind_type );
   private:
     int UTAG;
     std::vector<word *> Words;
@@ -97,7 +95,6 @@ namespace Tagger {
     bool readLine( std::istream &, bool );
     bool read( std::istream &, bool );
     bool read( std::istream & );
-    bool read( Sockets::Socket*, bool tagged );
     void print( std::ostream & ) const;
   };
 

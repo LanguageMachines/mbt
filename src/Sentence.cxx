@@ -35,14 +35,12 @@
 
 #include "timbl/StringOps.h"
 #include "timbl/Tree.h"
-#include "timblserver/SocketBasics.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 
 namespace Tagger {
   using namespace Hash;
   using namespace Timbl;
-  using namespace Sockets;
   using namespace std;
  
   const string Separators = "\t \n";
@@ -392,44 +390,6 @@ namespace Tagger {
     else
       return false;
   }
-
-#if defined( PTHREADS)
-  bool sentence::read( Socket *sock, input_kind_type kind ){
-    if ( kind == ENRICHED ){
-      cerr << "Sorry Enriched inputformat not supported in servermode" << endl;
-      return false;
-    }
-    else
-      return read( sock, kind == TAGGED );
-  }
-
-  bool sentence::read( Socket *sock, bool tagged ){
-    // read a line from the socket; we assume that the input
-    // is formatted by the client to one sentence per line
-    // the client should also do the tokenization!
-    
-    string line;
-    // Read input
-    if ( sock->read( line ) ) {
-      if ( line.length() > 0 )
-	return Fill( line, tagged );
-      else
-	return false;
-    }
-    else
-      return false;
-  }  
-#else
-  bool sentence::read( Socket*, input_kind_type ){
-    cerr << "Sorry, not implemented..." << endl;
-    abort();
-  }
-
-  bool sentence::read( Socket*, bool ){
-    cerr << "Sorry, not implemented..." << endl;
-    abort();
-  }  
-#endif
 
   word_stat sentence::get_word( istream& is, string& Word ){
     Word = "";
