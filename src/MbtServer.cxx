@@ -1,7 +1,7 @@
 #include <csignal>
 #include <cerrno>
 #include <string>
-#include <unistd.h> // for unlink()
+#include <cstdio> // for remove()
 #include "config.h"
 #include "timbl/TimblAPI.h"
 #include "timblserver/TimblServerAPI.h"
@@ -162,7 +162,7 @@ namespace Tagger {
     if ( !pidFile.empty() ){
       // we have a liftoff!
       // signal it to the world
-      unlink( pidFile.c_str() ) ;
+      remove( pidFile.c_str() ) ;
       ofstream pid_file( pidFile.c_str() ) ;
       if ( !pid_file ){
 	LOG << "unable to create pidfile:"<< pidFile << endl;
@@ -225,6 +225,7 @@ namespace Tagger {
       childArgs *args = new childArgs();
       args->experiment = exp->clone( );
       args->Mother = this;
+      args->experiment->setLog( this->cur_log );
       args->maxC = maxConn;
       args->socket = newSock;
       pthread_create( &chld_thr, &attr, tagChild, (void *)args );

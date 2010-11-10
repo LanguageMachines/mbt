@@ -57,8 +57,8 @@ namespace Tagger {
 		   int ); 
     void ClearBest();
     void Shift( int, int );
-    void Print( std::ostream& os, int i_word, Timbl::StringHash& TheLex );
-    void PrintBest( std::ostream& os, Timbl::StringHash& TheLex );
+    void Print( std::ostream& os, int i_word, StringHash& TheLex );
+    void PrintBest( std::ostream& os, StringHash& TheLex );
     int size;
     int **paths;
     int **temppaths;
@@ -88,8 +88,12 @@ namespace Tagger {
     void parse_run_args( Timbl::TimblOpts& Opts );
     bool ServerMode() const { return servermode; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
+    bool setLog( LogStream& );
     int ProcessLines( std::istream&, std::ostream& );
+    void read_lexicon( const std::string& );
+    void read_listfile( const std::string&, StringHash * );
   private:
+    LogStream *cur_log;
     sentence mySentence;
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;
@@ -101,6 +105,8 @@ namespace Tagger {
     int nwords;
     bool initialized;
     StringHash TheLex;
+    StringHash *kwordlist;
+    StringHash *uwordlist;
     BeamData *Beam;
     input_kind_type input_kind;
     bool piped_input;
@@ -159,6 +165,7 @@ namespace Tagger {
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
+    Lexicon *MT_lexicon;
   
     std::string UnknownTreeName;
     std::string KnownTreeName;
@@ -179,7 +186,6 @@ namespace Tagger {
   int RunTagger( Timbl::TimblOpts& );
   void RunServer( Timbl::TimblOpts& );
   TaggerClass *CreateTagger( Timbl::TimblOpts& );
-  bool setLog( LogStream& );
   void RemoveTagger( TaggerClass * );
   std::string Tag( TaggerClass*, const std::string& );
 

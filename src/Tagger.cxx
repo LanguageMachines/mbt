@@ -36,7 +36,6 @@
 #include <csignal>
 #include <cassert>
 
-#include <unistd.h> // for unlink()
 #include "config.h"
 #include "timbl/TimblAPI.h"
 #include "mbt/TagLex.h"
@@ -62,13 +61,10 @@ namespace Tagger {
 
   const string UNKSTR   = "UNKNOWN";
   
-  Lexicon MT_lexicon;
-  StringHash kwordlist;
-  StringHash uwordlist;
-  
   class BeamData;
   
   TaggerClass::TaggerClass( ){
+    cur_log = new LogStream( cerr );
     cur_log->setlevel( LogNormal );
     cur_log->setstamp( StampMessage );
     KnownTree = NULL;
@@ -101,6 +97,9 @@ namespace Tagger {
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
+    MT_lexicon = new Lexicon();
+    kwordlist = new StringHash();
+    uwordlist = new StringHash();
     piped_input = true;
     input_kind = UNTAGGED;
     lexflag = false;
@@ -152,6 +151,8 @@ namespace Tagger {
     initialized = in.initialized;
     Beam_Size = in.Beam_Size;
     Beam = 0;
+    MT_lexicon = in.MT_lexicon;
+    kwordlist = in.kwordlist;
     piped_input = in.piped_input;
     input_kind = in.input_kind;
     lexflag = in.lexflag;
@@ -169,7 +170,7 @@ namespace Tagger {
     servermode = in.servermode;
   }
 
-  bool setLog( LogStream& os ){
+  bool TaggerClass::setLog( LogStream& os ){
     cur_log = new LogStream( os, "mbt-" );
     return true;
   }
@@ -690,7 +691,7 @@ namespace Tagger {
       cout << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( int j=0; j < LexSize; j++ ){
 	out_file << TagVect[j]->Word << " " << TagVect[j]->stringRep() << endl;
-	MT_lexicon.Store(TagVect[j]->Word, TagVect[j]->stringRep() );
+	MT_lexicon->Store(TagVect[j]->Word, TagVect[j]->stringRep() );
       }
       out_file.close();
     }
@@ -703,7 +704,7 @@ namespace Tagger {
       cout << "  Creating list of most frequent words: "  << TopNFileName << endl;
       for ( int k=0; k < LexSize && k < TopNumber; k++ ){
 	out_file << TagVect[k]->Word << endl;
-	kwordlist.Hash( TagVect[k]->Word );
+	kwordlist->Hash( TagVect[k]->Word );
       }
       out_file.close();
     }
@@ -719,7 +720,7 @@ namespace Tagger {
 	for ( int l=0; l < LexSize; l++ ){
 	  if ( TagVect[l]->Freq() > Npax ) continue;
 	  out_file << TagVect[l]->Word << endl;
-	  uwordlist.Hash( TagVect[l]->Word );
+	  uwordlist->Hash( TagVect[l]->Word );
 	  np_cnt++;
 	}
 	out_file.close();
@@ -774,13 +775,13 @@ namespace Tagger {
     return line;
   }
   
-  void read_lexicon( const string& FileName ){
+  void TaggerClass::read_lexicon( const string& FileName ){
     string wordbuf;
     string valbuf;
     int no_words=0;
     ifstream lexfile( FileName.c_str(), ios::in);  
     while ( lexfile >> wordbuf >> valbuf ){
-      MT_lexicon.Store( wordbuf, valbuf );
+      MT_lexicon->Store( wordbuf, valbuf );
       no_words++;
       lexfile >> ws;
     }
@@ -814,12 +815,12 @@ namespace Tagger {
   //
   // File should contain one word per line.
   //
-  void read_listfile( const string& FileName, StringHash& words ){
+  void TaggerClass::read_listfile( const string& FileName, StringHash *words ){
     string wordbuf;
     int no_words=0;
     ifstream wordfile( FileName.c_str(), ios::in);  
     while( wordfile >> wordbuf ) {
-      words.Hash( wordbuf );
+      words->Hash( wordbuf );
       ++no_words;
     }
     LOG << "  Read frequent words list from: " << FileName << " ("
@@ -918,7 +919,7 @@ namespace Tagger {
 	}
 	else {
 	  close( fd );
-	  unlink( tfn );
+	  remove( tfn );
 	  free( tfn );
 	  KnownTree->WriteNamesFile( kTempFileName );
 	  tfn = strdup( ufn_template.c_str() );
@@ -928,11 +929,11 @@ namespace Tagger {
 	    LOG << "Could not open temporaryfile: " << uTempFileName 
 		<< " (" << strerror(errno) << ")" << endl;
 	    LOG << "this might not be a problem, so we go on..." << endl;
-	    unlink( kTempFileName.c_str() );
+	    remove( kTempFileName.c_str() );
 	  }
 	  else {
 	    close( fd );
-	    unlink( tfn );
+	    remove( tfn );
 	    free( tfn );
 	    unKnownTree->WriteNamesFile( uTempFileName );
 	    if ( old_style( uTempFileName ) 
@@ -947,13 +948,13 @@ namespace Tagger {
 		    << "'" << endl;
 	      }
 	      LOG << "unable to proceed" << endl;
-	      unlink( uTempFileName.c_str() );
-	      unlink( kTempFileName.c_str() );
+	      remove( uTempFileName.c_str() );
+	      remove( kTempFileName.c_str() );
 	      exit(EXIT_FAILURE);
 	    }
 	    else {
-	      unlink( kTempFileName.c_str() );
-	      unlink( uTempFileName.c_str() );
+	      remove( kTempFileName.c_str() );
+	      remove( uTempFileName.c_str() );
 	    }
 	  }
 	}
@@ -1092,7 +1093,7 @@ namespace Tagger {
       return false;
     }
     else if ( mySentence.nextpat( &Action, TestPat,
-				   kwordlist, TheLex,
+				   *kwordlist, TheLex,
 				   i_word, Beam->paths[beam_cnt] ) ){
       // Now make a testpattern for Timbl to process.
       string teststring = pat_to_string( Action, i_word );
@@ -1148,12 +1149,12 @@ namespace Tagger {
     DBG << mySentence;
     
     if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
-				    MT_lexicon, TheLex ) ) {
+				    *MT_lexicon, TheLex ) ) {
       // here the word window is looked up in the dictionary and the values
       // of the features are stored in the testpattern
       MatchAction Action = Unknown;
       if ( mySentence.nextpat( &Action, TestPat, 
-				kwordlist, TheLex,
+				*kwordlist, TheLex,
 				0 )){ 
 
 	DBG << "Start: " << mySentence.getword( 0 ) << endl;
@@ -1661,18 +1662,18 @@ namespace Tagger {
 	cout << "."; cout.flush();
       }
       if ( mySentence.init_windowing( &Ktemplate,&Utemplate, 
-				       MT_lexicon, TheLex ) ) {
+				       *MT_lexicon, TheLex ) ) {
 	// we initialize the windowing procedure, this entails lexical lookup
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
 	int thisTagCode;
 	while( mySentence.nextpat( &Action, TestPat, 
-				    kwordlist, TheLex,
+				    *kwordlist, TheLex,
 				    swcn ) ){ 
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if((uwordlist.Lookup(mySentence.getword(swcn)))==0){
+	    if((uwordlist->Lookup(mySentence.getword(swcn)))==0){
 	      skip = true;
 	    }
 	  }
@@ -1736,7 +1737,7 @@ namespace Tagger {
 	UKtree->SaveWeights( kwf );
       delete UKtree;
       if ( !KeepIntermediateFiles ){
-	unlink(K_option_name.c_str());
+	remove(K_option_name.c_str());
 	cout << "    Deleted intermediate file: " << K_option_name << endl;
       }
     }
@@ -1776,7 +1777,7 @@ namespace Tagger {
 	UKtree->SaveWeights( uwf );
       delete UKtree;
       if ( !KeepIntermediateFiles ){
-	unlink(U_option_name.c_str());
+	remove(U_option_name.c_str());
 	cout << "    Deleted intermediate file: " << U_option_name << endl;
       }
     }
