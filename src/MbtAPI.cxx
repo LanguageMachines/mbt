@@ -30,8 +30,9 @@
 #include "timbl/TimblAPI.h"
 #include "config.h"
 #include "mbt/Logging.h"
-#include "mbt/MbtAPI.h"
 #include "mbt/Tagger.h"
+#include "mbt/MbtServer.h"
+#include "mbt/MbtAPI.h"
 
 using std::ostream;
 using std::cout;
@@ -43,14 +44,14 @@ MbtAPI::MbtAPI( const std::string& opts ){
   // get all the commandline options in an TimblOpts structure
   //
   TimblOpts Opts( opts );
-  tagger = Tagger::CreateTagger( Opts );
+  tagger = TaggerClass::StartTagger( Opts );
 }
 
 MbtAPI::MbtAPI( const std::string& opts, LogStream& ls ){
   // get all the commandline options in an TimblOpts structure
   //
   TimblOpts Opts( opts );
-  tagger = Tagger::CreateTagger( Opts );
+  tagger = TaggerClass::StartTagger( Opts );
   tagger->setLog( ls );
 }
 
@@ -60,7 +61,7 @@ MbtAPI::~MbtAPI(){
 
 string MbtAPI::Tag( const std::string& inp ){
   if ( tagger )
-    return Tagger::Tag( tagger, inp );
+    return tagger->Tag( inp );
   else {
     cerr << "No tagger initialized yet...." << endl;
     exit(EXIT_FAILURE);
@@ -120,7 +121,7 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
     cerr << "options " << Opts << endl;
     time_t timebefore, timeafter, timediff;
     time(&timebefore);
-    int nw = Tagger::MakeTagger( Opts );   
+    int nw = TaggerClass::CreateTagger( Opts );   
     time(&timeafter);
     timediff = timeafter - timebefore;
     if ( timediff == 0 )
@@ -182,7 +183,8 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
     TimblOpts Opts( argc, argv );
     time_t timebefore, timeafter, timediff;
     time(&timebefore);
-    int nw = Tagger::RunTagger( Opts );
+    TaggerClass *tagger = TaggerClass::StartTagger( Opts );
+    int nw = tagger->Run();
     time(&timeafter);
     timediff = timeafter - timebefore;
     if ( timediff == 0 )

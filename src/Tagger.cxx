@@ -114,7 +114,7 @@ namespace Tagger {
     distance_flag = false;
     distrib_flag = false;
     klistflag= false;
-    servermode = false;
+    cloned = false;
   }
 
   TaggerClass::TaggerClass( const TaggerClass& in ){
@@ -167,7 +167,7 @@ namespace Tagger {
     distance_flag = in.distance_flag;
     distrib_flag = in.distrib_flag;
     klistflag = in.klistflag;
-    servermode = in.servermode;
+    cloned = true;
   }
 
   bool TaggerClass::setLog( LogStream& os ){
@@ -451,7 +451,7 @@ namespace Tagger {
   }
   
   TaggerClass::~TaggerClass(){
-    if ( !servermode ){
+    if ( !cloned ){
       delete KnownTree;
       delete unKnownTree;
     }
@@ -475,7 +475,8 @@ namespace Tagger {
       //      LOG << "read a sentence " << mySentence << endl;
       if ( mySentence.size() == 0 )
 	break;
-      if ( Tag( tagged_sentence ) ){
+      tagged_sentence = Tag();
+      if ( !tagged_sentence.empty() ) {
 	//	LOG << "tagged a sentence " << tagged_sentence << endl;
 	// show the results of 1 sentence
 	os << tagged_sentence << endl;
@@ -565,7 +566,7 @@ namespace Tagger {
   bool TaggerClass::set_default_filenames( ){
     //
     // and use them to setup the defaults...
-    if( KtmplStr[0] ) {
+    if( !KtmplStr.empty() ) {
       if ( Ktemplate.set( KtmplStr ) )
 	knowntemplateflag = true;
       else {
@@ -574,7 +575,7 @@ namespace Tagger {
 	return false;
       }
     }
-    if( UtmplStr[0] ) {
+    if ( !UtmplStr.empty() ) {
       if ( Utemplate.set( UtmplStr ) )
 	unknowntemplateflag = true;
       else {
@@ -828,7 +829,7 @@ namespace Tagger {
   }
   
   bool TaggerClass::InitTagging( ){
-    if ( !servermode ){
+    if ( !cloned ){
       if ( !cur_log->set_single_threaded_mode() ){
 // 	LOG << "PROBLEM setting to single threaded Failed" << endl;
 // 	LOG << "Tagging might be slower than hoped for" << endl;
@@ -907,57 +908,6 @@ namespace Tagger {
 	    LOG << "\n  Read unknown weights from " << uwf << endl;
 	}
 	LOG << "  case-base for unknown word read" << endl;
-	string kfn_template = "/tmp/knownXXXXXX";
-	string ufn_template = "/tmp/unknownXXXXXX";
-	char *tfn = strdup( kfn_template.c_str() );
-	int fd = mkstemp( tfn );
-	string kTempFileName = tfn;
-	if (fd==-1) {
-	  LOG << "Could not open temporaryfile: " << kTempFileName 
-	      << " (" << strerror(errno) << ")" << endl;
-	  LOG << "this might not be a problem, so we go on..." << endl;
-	}
-	else {
-	  close( fd );
-	  remove( tfn );
-	  free( tfn );
-	  KnownTree->WriteNamesFile( kTempFileName );
-	  tfn = strdup( ufn_template.c_str() );
-	  fd = mkstemp( tfn );
-	  string uTempFileName = tfn;
-	  if ( fd == -1 ){
-	    LOG << "Could not open temporaryfile: " << uTempFileName 
-		<< " (" << strerror(errno) << ")" << endl;
-	    LOG << "this might not be a problem, so we go on..." << endl;
-	    remove( kTempFileName.c_str() );
-	  }
-	  else {
-	    close( fd );
-	    remove( tfn );
-	    free( tfn );
-	    unKnownTree->WriteNamesFile( uTempFileName );
-	    if ( old_style( uTempFileName ) 
-		 || old_style( kTempFileName ) ){
-	      LOG << "Timbl InstanceBases seem to be in old style format" 
-		  << endl;
-	      LOG << "please consider converting them" << endl;
-	      if ( !r_option_name.empty() ){
-		LOG << "use 'convert " << r_option_name << " " << KnownTreeName
-		     << "'" << endl;
-		LOG << "and 'convert " << r_option_name << " " << UnknownTreeName
-		    << "'" << endl;
-	      }
-	      LOG << "unable to proceed" << endl;
-	      remove( uTempFileName.c_str() );
-	      remove( kTempFileName.c_str() );
-	      exit(EXIT_FAILURE);
-	    }
-	    else {
-	      remove( kTempFileName.c_str() );
-	      remove( uTempFileName.c_str() );
-	    }
-	  }
-	}
       }
     }
     LOG << "  Sentence delimiter set to '" << EosMark << "'" << endl;
@@ -978,7 +928,7 @@ namespace Tagger {
     TaggerClass *ta = new TaggerClass( *this );
     ta->TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     ta->Beam = NULL; // own Beaming data
-    ta->servermode = true;
+    ta->cloned = true;
     return ta;
   }
   
@@ -1032,23 +982,23 @@ namespace Tagger {
     const TargetValue *answer = 0;
     if ( Action == Known ){
 #if defined(PTHREADS)  
-      if ( servermode )
+      if ( cloned )
 	pthread_mutex_lock( &known_lock );
 #endif
       answer = KnownTree->Classify( teststring, distribution, distance );
 #if defined(PTHREADS)  
-      if ( servermode )
+      if ( cloned )
 	pthread_mutex_unlock( &known_lock );
 #endif
     }
     else {
 #if defined(PTHREADS)  
-      if ( servermode )
+      if ( cloned )
 	pthread_mutex_lock( &unknown_lock );
 #endif
       answer = unKnownTree->Classify( teststring, distribution, distance );
 #if defined(PTHREADS)  
-      if ( servermode )
+      if ( cloned )
 	pthread_mutex_unlock( &unknown_lock );
 #endif
     }
@@ -1129,34 +1079,31 @@ namespace Tagger {
       return false;
     }
   }
-
-  string Tag( TaggerClass *tagger, const string& inp ){
-    tagger->mySentence.reset( tagger->EosMark );
-    tagger->mySentence.Fill( inp, false );
-    string tag;
-    if ( tagger )
-      tagger->Tag( tag );
-    return tag;
+  
+  string TaggerClass::Tag( const string& inp ){
+    mySentence.reset( EosMark );
+    mySentence.fill( inp, false );
+    return Tag();
   }
 
-  bool TaggerClass::Tag( string& tag ){
-    tag = "";
+  string TaggerClass::Tag(){
+    string tag = "";
     if ( !initialized ||
 	 !InitBeaming( mySentence.size() ) ){
       cerr << "ouch" << initialized << endl;
-      return false;
+      return tag;
     }
     DBG << mySentence;
     
     if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
-				    *MT_lexicon, TheLex ) ) {
+				   *MT_lexicon, TheLex ) ) {
       // here the word window is looked up in the dictionary and the values
       // of the features are stored in the testpattern
       MatchAction Action = Unknown;
       if ( mySentence.nextpat( &Action, TestPat, 
-				*kwordlist, TheLex,
-				0 )){ 
-
+			       *kwordlist, TheLex,
+			       0 )){ 
+	
 	DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	InitTest( Action );
 	for ( int iword=1; iword < mySentence.size(); iword++ ){
@@ -1175,10 +1122,8 @@ namespace Tagger {
 	}
       } // end one sentence
       tag = get_result();
-      return true;
     }
-    else
-      return false;
+    return tag;
   }
   
   string TaggerClass::get_result(){
@@ -1280,7 +1225,8 @@ namespace Tagger {
 	outfile << EosMark << endl;
 	continue;
       }
-      if ( Tag( tagged_sentence ) ){
+      tagged_sentence = Tag();
+      if ( !tagged_sentence.empty() ){
 	// show the results of 1 sentence
 	statistics( no_known, no_unknown,
 		    no_correct_known, 
@@ -1585,14 +1531,14 @@ namespace Tagger {
       }
       Opts.Delete( 'v' );
     };
-    if ( servermode && input_kind == ENRICHED ){
+    if ( cloned && input_kind == ENRICHED ){
       cerr << "Servermode doesn't support enriched inputformat!" << endl
 	   << "bailing out, sorry " << endl;
       exit(EXIT_FAILURE);
     }
   }
   
-  TaggerClass *CreateTagger( TimblOpts& Opts ){
+  TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts ){
     TaggerClass *tagger = new TaggerClass;
     tagger->parse_run_args( Opts );
     tagger->set_default_filenames();
@@ -1604,19 +1550,10 @@ namespace Tagger {
     delete tagger;
   }
 
-  int RunTagger( TimblOpts& Opts ){
-    TaggerClass tagger;
-    tagger.parse_run_args( Opts );
-    tagger.set_default_filenames();
-    tagger.InitTagging();
-    int result = tagger.Run();
-    return result;
-  }
-
   bool TaggerClass::InitLearning( ){
     // if not supplied on command line, make a default
-    // name for both output files (conactenation of datafile 
-    // and pattern string
+    // name for both output files (concatenation of datafile 
+    // and pattern string)
     //
     create_lexicons( TestFileName );
     if ( TimblOptStr.empty() )
@@ -1906,7 +1843,7 @@ namespace Tagger {
     }
   }
   
-  int MakeTagger( TimblOpts& Opts ){
+  int TaggerClass::CreateTagger( TimblOpts& Opts ){
     TaggerClass tagger;
     tagger.parse_create_args( Opts );
     tagger.set_default_filenames();

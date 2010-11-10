@@ -452,7 +452,7 @@ namespace Tagger {
 	  linebuffer.erase( linebuffer.length()-1 );
 	}
 	if ( linebuffer.length() > 0 ){
-	  return Fill( linebuffer, tagged );
+	  return fill( linebuffer, tagged );
 	}
       }
     }
@@ -496,7 +496,7 @@ namespace Tagger {
     }  while ( linebuffer.length() == 0 && infile );
     //    cerr << "done reading '" << linebuffer << "'" << endl;
     if ( linebuffer.length() > 0 )
-      return Fill( linebuffer, tagged );
+      return fill( linebuffer, tagged );
     else
       return false;
   }
@@ -533,7 +533,7 @@ namespace Tagger {
     return no_words > 0;
   }
   
-  bool sentence::Fill( const string& line, bool tagged ){
+  bool sentence::fill( const string& line, bool tagged ){
     string token,  tagtoken;
     bool result = true;
 

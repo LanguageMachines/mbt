@@ -38,7 +38,7 @@ class MbtAPI {
  public:
   static bool GenerateTagger( int, char** );
   static bool RunTagger( int, char** );
-  static bool RunServer( int argc, char **argv );
+  static bool RunServer( int, char ** );
   MbtAPI( const std::string& );
   MbtAPI( const std::string&, LogStream& );
   ~MbtAPI();

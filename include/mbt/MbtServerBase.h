@@ -26,6 +26,8 @@
 #ifndef MBTSERVER_H
 #define MBTSERVER_H
 
+#include "timblserver/SocketBasics.h"
+
 namespace Tagger {
   class MbtServer {
     friend class TaggerClass;
@@ -59,5 +61,6 @@ namespace Tagger {
     //    std::map<std::string, std::string> serverConfig;
   };
 
+  void RunServer( Timbl::TimblOpts& );
 }
 #endif

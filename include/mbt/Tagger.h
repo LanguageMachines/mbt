@@ -67,7 +67,6 @@ namespace Tagger {
   };
   
   class TaggerClass{
-    friend std::string Tag( TaggerClass *, const std::string& );
   public:
     TaggerClass( );
     TaggerClass( const TaggerClass& );
@@ -77,21 +76,21 @@ namespace Tagger {
     bool InitBeaming( unsigned int );
     TaggerClass *clone() const;
     int Run( );
-    bool Tag( std::string& );
-    bool RunServer();
-    void DoChild();
+    std::string Tag( const std::string& );
     int CreateKnown();
     int CreateUnknown();
     void CreateSettingsFile();
     bool set_default_filenames();
     void parse_create_args( Timbl::TimblOpts& Opts );
     void parse_run_args( Timbl::TimblOpts& Opts );
-    bool ServerMode() const { return servermode; };
+    bool isClone() const { return cloned; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
     bool setLog( LogStream& );
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
+    static TaggerClass *StartTagger( Timbl::TimblOpts& );
+    static int CreateTagger( Timbl::TimblOpts& );
   private:
     LogStream *cur_log;
     sentence mySentence;
@@ -131,6 +130,7 @@ namespace Tagger {
     void create_lexicons( const std::string& filename );
     int ProcessFile( std::istream&, std::ostream& );
     void ProcessTags( TagInfo * );
+    std::string Tag();
     void InitTest( MatchAction );
     bool NextBest( int, int );
     const Timbl::TargetValue *Classify( MatchAction, const std::string&, 
@@ -161,8 +161,6 @@ namespace Tagger {
     std::string L_option_name;
     std::string EosMark;
     
-    std::string portnumstr;
-
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
     Lexicon *MT_lexicon;
@@ -178,18 +176,11 @@ namespace Tagger {
     std::string SettingsFileName;
     std::string SettingsFilePath;
     
-    bool servermode;
+    bool cloned;
     std::vector<int> TestPat; 
   };
 
-  int MakeTagger( Timbl::TimblOpts& );
-  int RunTagger( Timbl::TimblOpts& );
-  void RunServer( Timbl::TimblOpts& );
-  TaggerClass *CreateTagger( Timbl::TimblOpts& );
   void RemoveTagger( TaggerClass * );
-  std::string Tag( TaggerClass*, const std::string& );
-
-  void StopServerFun( int );
 }
 
 #endif

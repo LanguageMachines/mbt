@@ -66,7 +66,6 @@ namespace Tagger {
     ~sentence();
 
     void reset( const std::string& );    
-    bool Fill( const std::string&, bool );
     bool init_windowing( PatTemplate *, PatTemplate *, Lexicon&, StringHash& );
     bool nextpat( MatchAction *, std::vector<int>&, StringHash& , StringHash&,
 		  unsigned int, int * = 0 );
@@ -80,6 +79,7 @@ namespace Tagger {
     bool known( unsigned int );
     std::string Eos() const;
     bool read( std::istream &, input_kind_type, bool=false );
+    bool fill( const std::string&, bool );
   private:
     int UTAG;
     std::vector<word *> Words;
