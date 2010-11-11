@@ -1,3 +1,117 @@
+2010-11-11 12:01  sloot
+
+	* [r6810] ., .cvsignore, Makefile.am, configure.ac,
+	  include/mbt/MbtServerBase.h, init, m4, src/MbtServer.cxx,
+	  src/MbtServerBase.cxx: more cleanup
+
+2010-11-11 11:32  sloot
+
+	* [r6809] configure.ac, include/mbt/Makefile.am,
+	  include/mbt/MbtAPI.h, src/Makefile.am, src/MbtAPI.cxx,
+	  src/Tagger.cxx: cleaning up
+
+2010-11-10 15:49  sloot
+
+	* [r6794] include/mbt/Makefile.am, include/mbt/MbtAPI.h,
+	  include/mbt/MbtServer.h, include/mbt/MbtServerBase.h,
+	  include/mbt/Sentence.h, include/mbt/Tagger.h, src/Makefile.am,
+	  src/MbtAPI.cxx, src/MbtServer.cxx, src/MbtServerBase.cxx,
+	  src/Sentence.cxx, src/Tagger.cxx: cleanup, renaming etc.
+
+2010-11-10 08:58  sloot
+
+	* [r6787] include/mbt/Tagger.h, src/MbtAPI.cxx, src/MbtServer.cxx,
+	  src/Tagger.cxx: 't ontrafelen continues
+
+2010-11-09 16:42  sloot
+
+	* [r6783] include/mbt/MbtServer.h, include/mbt/Tagger.h,
+	  src/MbtServer.cxx, src/Tagger.cxx: moved most server stuff to
+	  MbtServer
+
+2010-11-09 16:41  sloot
+
+	* [r6782] include/mbt/Sentence.h, src/Sentence.cxx: last checkin
+	  contained a lot of "to be removed" stuff
+	  now it IS removed ;)
+
+2010-11-09 16:38  sloot
+
+	* [r6781] include/mbt/Sentence.h, src/Sentence.cxx: some cleanup.
+	  replaced Socket reading by a special readLines thingy
+
+2010-11-09 13:30  sloot
+
+	* [r6774] include/mbt/Sentence.h, src/Sentence.cxx: added output
+	  operator
+
+2010-11-04 16:35  sloot
+
+	* [r6742] include/mbt/MbtServer.h, src/MbtServer.cxx: oesp badley
+	  needed
+
+2010-11-04 16:34  sloot
+
+	* [r6741] include/mbt/Tagger.h: next step
+
+2010-11-04 15:46  sloot
+
+	* [r6740] include/mbt/Makefile.am: more progress
+
+2010-11-04 15:40  sloot
+
+	* [r6739] include/mbt/MbtAPI.h, include/mbt/Pattern.h,
+	  include/mbt/Tagger.h, src/Makefile.am, src/MbtAPI.cxx,
+	  src/Pattern.cxx, src/Tagger.cxx: started to separate server from
+	  other stuff
+	  work in progress…
+
+2010-11-03 16:57  sloot
+
+	* [r6729] include/mbt/Tagger.h, src/Tagger.cxx: step by step,
+	  little by little
+
+2010-11-03 16:04  sloot
+
+	* [r6728] include/mbt/Tagger.h, src/Tagger.cxx: cleanup
+
+2010-11-03 09:58  sloot
+
+	* [r6723] include/mbt/MbtAPI.h: hmpff
+
+2010-11-03 09:55  sloot
+
+	* [r6722] include/mbt/MbtAPI.h, include/mbt/Sentence.h,
+	  include/mbt/Tagger.h, src/Tagger.cxx: start reshuffling code.
+
+2010-10-06 08:27  sloot
+
+	* [r6380] debian/changelog: hmpff
+
+2010-10-06 08:22  sloot
+
+	* [r6378] debian/changelog, debian/control: getting ready for 3.2.2
+	  release
+
+2010-08-19 16:02  joostvb
+
+	* [r5770] mbt.spec.README: recorded idea for fix (yet left to
+	  implement)
+
+2010-08-19 15:40  joostvb
+
+	* [r5769] mbt.spec.README: recording current status of libtool
+	  investigations
+
+2010-08-19 14:57  joostvb
+
+	* [r5765] mbt.spec: new upstream
+
+2010-08-19 14:51  joostvb
+
+	* [r5764] ChangeLog, NEWS, bootstrap, configure.ac: svn snapshot
+	  release: ship this fix for compile problems
+
 2010-08-19 14:04  joostvb
 
 	* [r5761] mbt.spec.README: recording build failures on various
