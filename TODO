@@ -1,2 +1,3 @@
-* let us know
+* Whenever LogStream is moved from TimblServer to Timbl, the last dependency
+  on TimblServer can be undone.
 
