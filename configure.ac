@@ -44,18 +44,6 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
 
-dnl ------ server mode
-AC_ARG_ENABLE(server,[  --enable-server[=PREFIX]  enable server mode])
-if test "$enable_server" -a "$enable_server" = "no"; then
-AC_MSG_WARN([not building servermode] )
-else
-    if test "$enable_server" != "no"; then
-        LIBS="$LIBS -lpthread"
-        CXXFLAGS="$CXXFLAGS -DPTHREADS -DUSE_LOGSTREAMS"
-    fi
-fi
-dnl
-
 PKG_PROG_PKG_CONFIG
 # Checks for timbl library.
 
@@ -76,6 +64,7 @@ AC_ARG_WITH(timbl,
 PKG_CHECK_MODULES([timbl], [timbl >= 6.2.3] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
+
 AC_ARG_WITH(timblserver,
        [  --with-timblserver=DIR       use timblserver installed in <DIR>; 
                note that you can install Timbl in a non-default directory with
@@ -98,8 +87,6 @@ AC_CONFIG_FILES([
   src/Makefile
   include/Makefile
   include/mbt/Makefile
-  init/Makefile
-  init/mbt
   docs/Makefile
   example/Makefile
 ])

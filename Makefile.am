@@ -3,7 +3,7 @@
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
-SUBDIRS = src include docs example init
+SUBDIRS = src include docs example
 
 EXTRA_DIST = bootstrap AUTHORS TODO NEWS mbt.pc
 
