@@ -211,7 +211,7 @@ namespace Tagger {
 	   (n_best_array = new n_best_tuple*[Size]) == 0 ||
 	   (paths = new int*[Size]) == 0 ||
 	   (temppaths = new int*[Size]) == 0 ){
-	cerr << "not enough memory for N-best search tables " << endl;
+	throw runtime_error( "Beam: not enough memory for N-best search tables" );
 	return false;
       }
       else {
@@ -219,7 +219,7 @@ namespace Tagger {
 	  paths[q] = 0;
 	  temppaths[q] = 0;
 	  if ( (n_best_array[q] = new n_best_tuple) == 0 ){
-	    cerr << "not enough memory for N-best search tables " << endl;
+	    throw runtime_error( "Beam: not enough memory for N-best search tables" );
 	    return false;
 	  }
 	}
@@ -234,7 +234,7 @@ namespace Tagger {
     for ( int q=0; q < Size; q++ ){
       if ( (paths[q] = new int[noWords]) == 0 ||
 	   (temppaths[q] = new int[noWords]) == 0 ){
-	cerr << "not enough memory for N-best search tables " << endl;
+	throw runtime_error( "Beam: not enough memory for N-best search tables" );
 	return false;
       }
     }
@@ -971,36 +971,31 @@ namespace Tagger {
   }
 
 #if defined(PTHREADS)  
-  static pthread_mutex_t known_lock = PTHREAD_MUTEX_INITIALIZER;
-  static pthread_mutex_t unknown_lock = PTHREAD_MUTEX_INITIALIZER;
+  static pthread_mutex_t timbl_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
   const TargetValue *TaggerClass::Classify( MatchAction Action, 
-				      const string& teststring, 
-				      const ValueDistribution *distribution,
-				      double& distance ){
+					    const string& teststring, 
+					    const ValueDistribution *distribution,
+					    double& distance ){
     const TargetValue *answer = 0;
+#if defined(PTHREADS)  
+    if ( cloned )
+      pthread_mutex_lock( &timbl_lock );
+#endif
     if ( Action == Known ){
-#if defined(PTHREADS)  
-      if ( cloned )
-	pthread_mutex_lock( &known_lock );
-#endif
       answer = KnownTree->Classify( teststring, distribution, distance );
-#if defined(PTHREADS)  
-      if ( cloned )
-	pthread_mutex_unlock( &known_lock );
-#endif
     }
     else {
-#if defined(PTHREADS)  
-      if ( cloned )
-	pthread_mutex_lock( &unknown_lock );
-#endif
       answer = unKnownTree->Classify( teststring, distribution, distance );
+    }
 #if defined(PTHREADS)  
-      if ( cloned )
-	pthread_mutex_unlock( &unknown_lock );
+    if ( cloned )
+      pthread_mutex_unlock( &timbl_lock );
 #endif
+    if ( !answer ){
+      throw runtime_error( "Tagger: A classifying problem prevented continuing. Sorry!" );
+      exit(EXIT_FAILURE);
     }
     return answer;
   }
@@ -1009,30 +1004,22 @@ namespace Tagger {
     int nslots;
     // Now make a testpattern for Timbl to process.
     string teststring = pat_to_string( Action, 0 );
-    //    cerr << "test string = " << teststring << endl;
     const ValueDistribution *distribution;
     double distance;
     const TargetValue *answer = Classify( Action, teststring, distribution, distance );
-    if ( !answer ){
-      cerr << "A classifying problem prevented continuing. Sorry!"
-	   << endl;
-      exit(EXIT_FAILURE);
+    distance_array.resize( mySentence.size() );
+    distribution_array.resize( mySentence.size() );
+    if ( distance_flag )
+      distance_array[0] = distance;
+    if ( distrib_flag )
+      distribution_array[0] = distribution->DistToString();
+    if ( IsActive( DBG ) ){
+      LOG << "BeamData::InitPaths( " << mySentence << endl; 
+      LOG << " , " << answer << " , " << distribution << " )" << endl;
     }
-    else {
-      distance_array.resize( mySentence.size() );
-      distribution_array.resize( mySentence.size() );
-      if ( distance_flag )
-	distance_array[0] = distance;
-      if ( distrib_flag )
-	distribution_array[0] = distribution->DistToString();
-      if ( IsActive( DBG ) ){
-	LOG << "BeamData::InitPaths( " << mySentence << endl; 
-	LOG << " , " << answer << " , " << distribution << " )" << endl;
-      }
-      Beam->InitPaths( TheLex, answer, distribution );
-      if ( IsActive( DBG ) ){
-	Beam->Print( LOG, 0, TheLex );
-      }
+    Beam->InitPaths( TheLex, answer, distribution );
+    if ( IsActive( DBG ) ){
+      Beam->Print( LOG, 0, TheLex );
     }
   }
   
@@ -1055,27 +1042,18 @@ namespace Tagger {
       double distance;
       const TargetValue *answer = Classify( Action, teststring, 
 					    distribution, distance );
-      if ( !answer ){
-	cerr << "A classifying problem prevented continuing. Sorry!"
-	     << endl;
-	exit(EXIT_FAILURE);
-	return false;
+      if ( beam_cnt == 0 ){
+	if ( distance_flag )
+	  distance_array[i_word] = distance;
+	if ( distrib_flag )
+	  distribution_array[i_word] = distribution->DistToString();
       }
-      else {
-	if ( beam_cnt == 0 ){
-	  if ( distance_flag )
-	    distance_array[i_word] = distance;
-	  if ( distrib_flag )
-	    distribution_array[i_word] = distribution->DistToString();
-	}
-	Beam->NextPath( TheLex, answer, distribution, beam_cnt ); 
-	if ( IsActive( DBG ) )
-	  Beam->PrintBest( LOG, TheLex );
-      }
+      Beam->NextPath( TheLex, answer, distribution, beam_cnt ); 
+      if ( IsActive( DBG ) )
+	Beam->PrintBest( LOG, TheLex );
       return true;
     }
     else {
-      cerr << "skipping to next sentence" << endl;
       return false;
     }
   }
@@ -1090,7 +1068,7 @@ namespace Tagger {
     string tag = "";
     if ( !initialized ||
 	 !InitBeaming( mySentence.size() ) ){
-      cerr << "ouch" << initialized << endl;
+      throw runtime_error( "Tagger not initialized" );
       return tag;
     }
     DBG << mySentence;
