@@ -1,0 +1,70 @@
+.TH Mbt 1 "2010 november 17"
+
+.SH NAME
+MBT - Memory Based Tagger
+.SH SYNOPSYS
+Mbt [options]
+
+.SH DESCRIPTION
+to do
+
+.SH OPTIONS
+
+.BR -s " settingsfile"
+
+Or...
+
+.BR -l " <lexiconfile>"
+
+.BR -r " <ambitagfile>"
+
+.BR -k " <known words case base>"
+
+.BR -u " <unknown words case base>"
+
+.BR -e " <sentence delimiter> (default '<utt>')"
+
+.BR -E " <enriched tagged testfile>"
+
+.BR -t " <testfile>" 
+
+.BR -T " <tagged testfile> (default is untagged stdin)"
+
+.BR -o " <outputfile> (default stdout)"
+
+.BR -O "Timbl options"
+.RS
+ (Note: there is NO SPACE between O and the options)
+  <options>   options to use for Both Known and Unknown Words Case Base
+  K: <options>   options to use for Known Words Case Base
+  U: <options>   options to use for Unknown Words Case Base
+  valid Timbl options: a d k m q v w x -
+.RE
+
+.BR -B " <beamsize for search> (default = 1)"
+
+.BR -v " di"
+.RS
+ add distance to output
+.RE
+
+.BR -v " db"
+.RS
+ add distribution to output
+.RE
+
+.BR -L " <file with list of frequent words>"
+
+.SH BUGS
+possibly
+
+.SH AUTHORS
+Ko van der Sloot Timbl@uvt.nl
+
+Antal van den Bosch Timbl@uvt.nl
+
+.SH SEE ALSO
+.BR Timbl (1)
+.BR MbtServer (1)
+
+
