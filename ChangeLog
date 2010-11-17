@@ -1,3 +1,15 @@
+2010-11-11 16:32  sloot
+
+	* [r6832] NEWS, bootstrap, src/MbtAPI.cxx: more props
+
+2010-11-11 15:14  sloot
+
+	* [r6824] TODO: todo
+
+2010-11-11 12:48  sloot
+
+	* [r6812] ChangeLog: updated
+
 2010-11-11 12:01  sloot
 
 	* [r6810] ., .cvsignore, Makefile.am, configure.ac,

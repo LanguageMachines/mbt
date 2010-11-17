@@ -28,7 +28,7 @@
 #define MBT_API_H
 
 #include "timbl/TimblAPI.h"
-#include "timblserver/LogStream.h"
+#include "timbl/LogStream.h"
 #include "mbt/Tagger.h"
 
 using namespace Timbl;

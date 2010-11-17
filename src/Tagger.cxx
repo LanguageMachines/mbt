@@ -1001,10 +1001,9 @@ namespace Tagger {
   }
 
   void TaggerClass::InitTest( MatchAction Action ){
-    int nslots;
     // Now make a testpattern for Timbl to process.
     string teststring = pat_to_string( Action, 0 );
-    const ValueDistribution *distribution;
+    const ValueDistribution *distribution = 0;
     double distance;
     const TargetValue *answer = Classify( Action, teststring, distribution, distance );
     distance_array.resize( mySentence.size() );
@@ -1038,7 +1037,7 @@ namespace Tagger {
       // appropriate tree
       //
       //      cerr << "teststring '" << teststring << "'" << endl;
-      const ValueDistribution *distribution;
+      const ValueDistribution *distribution = 0;
       double distance;
       const TargetValue *answer = Classify( Action, teststring, 
 					    distribution, distance );
@@ -1084,7 +1083,7 @@ namespace Tagger {
 	
 	DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	InitTest( Action );
-	for ( int iword=1; iword < mySentence.size(); iword++ ){
+	for ( unsigned int iword=1; iword < mySentence.size(); iword++ ){
 	  // clear best_array
 	  DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	  Beam->ClearBest();
@@ -1108,7 +1107,7 @@ namespace Tagger {
     string result;
     string tagstring;
     //now some output
-    for ( int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
+    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
       // lookup the assigned category
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       // now we do the appropriate output, depending on known/unknown
@@ -1160,7 +1159,7 @@ namespace Tagger {
     string result;
     string tagstring;
     //now some output
-    for ( int Wcnt=0; Wcnt < mySentence.size(); Wcnt++ ){
+    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); Wcnt++ ){
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       if ( mySentence.known(Wcnt) ){
 	no_known++;
