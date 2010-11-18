@@ -44,7 +44,7 @@
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
 
-#if defined(PTHREADS)
+#if defined(HAVE_PTHREAD)
 #include <pthread.h>
 #endif
 
@@ -970,7 +970,7 @@ namespace Tagger {
     return result;
   }
 
-#if defined(PTHREADS)  
+#if defined(HAVE_PTHREAD)
   static pthread_mutex_t timbl_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
@@ -979,7 +979,7 @@ namespace Tagger {
 					    const ValueDistribution *distribution,
 					    double& distance ){
     const TargetValue *answer = 0;
-#if defined(PTHREADS)  
+#if defined(HAVE_PTHREAD)
     if ( cloned )
       pthread_mutex_lock( &timbl_lock );
 #endif
@@ -989,7 +989,7 @@ namespace Tagger {
     else {
       answer = unKnownTree->Classify( teststring, distribution, distance );
     }
-#if defined(PTHREADS)  
+#if defined(HAVE_PTHREAD)
     if ( cloned )
       pthread_mutex_unlock( &timbl_lock );
 #endif
