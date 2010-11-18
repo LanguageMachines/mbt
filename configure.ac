@@ -65,18 +65,15 @@ PKG_CHECK_MODULES([timbl], [timbl >= 6.3.0] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
-AC_ARG_WITH(timblserver,
-       [  --with-timblserver=DIR       use timblserver installed in <DIR>; 
-               note that you can install Timbl in a non-default directory with
-               ./configure --prefix=<DIR> in the Timbl installation directory],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"])
-#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([timblserver], [timblserver >= 1.0.0] )
-CXXFLAGS="$CXXFLAGS $timblserver_CFLAGS"
-LIBS="$LIBS $timblserver_LIBS"
-
 # Checks for library functions.
 AC_CHECK_FUNCS([strdup strerror])
+
+ACX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
+if test x"$acx_pthread_ok" = xyes; then
+   LIBS="$PTHREAD_LIBS $LIBS" \
+   CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS" \
+   CXX="$PTHREAD_CC"
+fi
 
 AC_C_CONST
 AC_TYPE_SIGNAL
