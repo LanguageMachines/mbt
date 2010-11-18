@@ -1,0 +1,94 @@
+.TH Mbtg 1 "2010 november 18"
+
+.SH NAME
+MBTG - Memory Based Tagger generator
+.SH SYNOPSYS
+Mbtg -T <filename> -s <setting filename>
+
+or
+
+Mbtg [options]
+
+
+.SH DESCRIPTION
+This programs generates, based on a tagged corpus, all the files needed to be able to tag a text with 
+.B Mbt
+.
+
+.SH OPTIONS
+
+.BR -T " <tagged training corpus file>"
+
+or
+
+.BR -E " <enriched tagged training corpus file>"
+
+All further options have reasonable defaults, so using them is only
+needed for the experienced user. See the Mbt manual for more details.
+
+.BR -s " settingsfile"
+.RS
+.B Mbtg
+creates this file, which can be used to run 
+.B Mbt
+with minimal effort. (like Mbt -s settings -T somefile)
+.RE
+
+.BR -p " pattern"
+.RS
+The pattern for known words (default ddfa)
+.RE
+
+.BR -P " pattern"
+.RS
+The pattern for unknown words (default dFapsss)
+.RE
+
+.BR -% " <number>"
+.RS
+Filter Treshold for ambitag construction (default 5%)
+.RE
+
+.BR -l " <lexiconfile>"
+
+.BR -L " <file with list of frequent words>"
+
+.BR -r " <ambitagfile>"
+
+.BR -k " <known words case base>"
+
+.BR -u " <unknown words case base>"
+
+.BR -K " <known words instances file>"
+
+.BR -U " <unknown words instances file>"
+
+.BR -e " <sentence delimiter> (default '<utt>')"
+
+.B -X
+.RS
+keep the intermediate files
+.RE
+
+.BR -O "Timbl options"
+.RS
+ (Note: there is NO SPACE between O and the options)
+  <options>   options to use for Both Known and Unknown Words Case Base
+  K: <options>   options to use for Known Words Case Base
+  U: <options>   options to use for Unknown Words Case Base
+  valid Timbl options: a d k m q v w x -
+.RE
+
+.SH BUGS
+possibly
+
+.SH AUTHORS
+Ko van der Sloot Timbl@uvt.nl
+
+Antal van den Bosch Timbl@uvt.nl
+
+.SH SEE ALSO
+.BR Timbl (1)
+.BR MbtServer (1)
+
+
