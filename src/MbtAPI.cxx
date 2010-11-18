@@ -137,10 +137,7 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
 void run_usage( char *progname ){
   cerr << "Usage is : " << progname << " option option ... \n"
        << "\t-s settingsfile  ...or:\n\n"
-       << "\t-S <portnumber>, run as server on port <portnumber>.\n"
-       << "\t-C <max_conn>, maximum # of connections to server.\n"
        << "\t-l <lexiconfile>\n"
-       << "\t-logfile <logfile>\n"
        << "\t-r <ambitagfile>\n"
        << "\t-k <known words case base>\n"
        << "\t-u <unknown words case base>\n"
@@ -149,7 +146,6 @@ void run_usage( char *progname ){
        << "\t-t <testfile> | -T <tagged testfile> "
        << "(default is untagged stdin)\n" 
        << "\t-o <outputfile> (default stdout)\n"
-       << "\t-pidfile <pidfile>\n"
        << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
        << "\t  <options>   options to use for Both Known and Unknown Words Case Base\n"
        << "\t  K: <options>   options to use for Known Words Case Base\n"
