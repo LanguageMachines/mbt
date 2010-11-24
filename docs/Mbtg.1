@@ -9,10 +9,10 @@ or
 
 Mbtg [options]
 
-
 .SH DESCRIPTION
+
 This programs generates, based on a tagged corpus, all the files needed to be able to tag a text with 
-.B Mbt
+.B Mbt.
 .
 
 .SH OPTIONS
@@ -36,17 +36,17 @@ with minimal effort. (like Mbt -s settings -T somefile)
 
 .BR -p " pattern"
 .RS
-The pattern for known words (default ddfa)
+the pattern for known words (default ddfa)
 .RE
 
 .BR -P " pattern"
 .RS
-The pattern for unknown words (default dFapsss)
+the pattern for unknown words (default dFapsss)
 .RE
 
 .BR -% " <number>"
 .RS
-Filter Treshold for ambitag construction (default 5%)
+filter treshold for ambitag construction (default 5%)
 .RE
 
 .BR -l " <lexiconfile>"
@@ -73,9 +73,9 @@ keep the intermediate files
 .BR -O "Timbl options"
 .RS
  (Note: there is NO SPACE between O and the options)
-  <options>   options to use for Both Known and Unknown Words Case Base
-  K: <options>   options to use for Known Words Case Base
-  U: <options>   options to use for Unknown Words Case Base
+  <options>   classifier options for both known and unknown words instances bases
+  K: <options>   classifier options for known words instance base
+  U: <options>   classifier options for unknown words case base
   valid Timbl options: a d k m q v w x -
 .RE
 
@@ -89,6 +89,5 @@ Antal van den Bosch Timbl@uvt.nl
 
 .SH SEE ALSO
 .BR Timbl (1)
+.BR Mbt (1)
 .BR MbtServer (1)
-
-

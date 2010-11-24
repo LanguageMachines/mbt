@@ -6,13 +6,15 @@ MBT - Memory Based Tagger
 Mbt [options]
 
 .SH DESCRIPTION
-to do
+Mbt is a memory-based tagger part can tag new sequences. It takes
+files generated during tagger generation by 
+.B Mbtg.
 
 .SH OPTIONS
 
 .BR -s " settingsfile"
 
-Or...
+Or:
 
 .BR -l " <lexiconfile>"
 
@@ -35,9 +37,9 @@ Or...
 .BR -O "Timbl options"
 .RS
  (Note: there is NO SPACE between O and the options)
-  <options>   options to use for Both Known and Unknown Words Case Base
-  K: <options>   options to use for Known Words Case Base
-  U: <options>   options to use for Unknown Words Case Base
+  <options>   classifier options for both known and unknown words instance bases
+  K: <options>   classifier options for known words instance base
+  U: <options>   classifier options for unknown words instance base
   valid Timbl options: a d k m q v w x -
 .RE
 
@@ -65,6 +67,5 @@ Antal van den Bosch Timbl@uvt.nl
 
 .SH SEE ALSO
 .BR Timbl (1)
+.BR Mbtg (1)
 .BR MbtServer (1)
-
-
