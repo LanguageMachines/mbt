@@ -175,6 +175,11 @@ namespace Tagger {
     return true;
   }
 
+  bool TaggerClass::setLog( LogStream& os, const std::string& msg ){
+    cur_log = new LogStream( os, msg.c_str() );
+    return true;
+  }
+
   BeamData::BeamData(){
     size = 0;
     paths = 0;
