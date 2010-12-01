@@ -68,12 +68,13 @@ LIBS="$LIBS $timbl_LIBS"
 # Checks for library functions.
 AC_CHECK_FUNCS([strdup strerror])
 
-ACX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
-if test x"$acx_pthread_ok" = xyes; then
-   LIBS="$PTHREAD_LIBS $LIBS" \
-   CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS" \
-   CXX="$PTHREAD_CC"
-fi
+ACX_PTHREAD(
+	[ LIBS="$PTHREAD_LIBS $LIBS" \
+   	  CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS" \
+	],
+	[
+	  AC_MSG_NOTICE([no pthread support found])
+	])
 
 AC_C_CONST
 AC_TYPE_SIGNAL
