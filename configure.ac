@@ -70,7 +70,7 @@ AC_CHECK_FUNCS([strdup strerror])
 
 ACX_PTHREAD(
 	[ LIBS="$PTHREAD_LIBS $LIBS" \
-   	  CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS" \
+   	  CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 	],
 	[
 	  AC_MSG_NOTICE([no pthread support found])
