@@ -459,6 +459,10 @@ namespace Tagger {
     if ( !cloned ){
       delete KnownTree;
       delete unKnownTree;
+      delete MT_lexicon;
+      delete kwordlist;
+      delete uwordlist;
+      delete cur_log;
     }
     delete Beam;
   }

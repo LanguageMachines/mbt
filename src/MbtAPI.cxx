@@ -188,6 +188,7 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
       timediff = 1;
     cerr << "  Time used: " << timediff << endl;
     cerr << "  Words/sec: " << nw/(timediff) << endl;
+    delete tagger;
     return true;
   }
 }
