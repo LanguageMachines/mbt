@@ -470,26 +470,34 @@ namespace Tagger {
     return Beam->Init( Beam_Size, no_words );
   }
 
+  int TaggerClass::TagLine( const string& line, string& result ){
+    int no_words=0;    
+    result.clear();
+    mySentence.reset( EosMark );
+    mySentence.fill( line, input_kind );
+    //    LOG << "read a sentence " << mySentence << endl;
+    if ( mySentence.size() != 0 ){
+      result = Tag();
+      if ( !result.empty() ) {
+	//	LOG << "tagged a sentence " << result << endl;
+      }
+    } 
+    return mySentence.size();
+  }
+  
   int TaggerClass::ProcessLines( istream &is, ostream& os ){
     int no_words=0;    
     // loop as long as you get non empty sentences
     //
     string tagged_sentence;
-    while ( is &&
-	    ( mySentence.reset( EosMark ), mySentence.read( is, input_kind, true ) )) {
-      //      LOG << "read a sentence " << mySentence << endl;
-      if ( mySentence.size() == 0 )
-	break;
-      tagged_sentence = Tag();
-      if ( !tagged_sentence.empty() ) {
-	//	LOG << "tagged a sentence " << tagged_sentence << endl;
-	// show the results of 1 sentence
+    string line;
+    while ( getline(is, line ) ){
+      int num = TagLine( line, tagged_sentence );
+      if ( num > 0 ){
+	no_words += num;
 	os << tagged_sentence << endl;
-	// increase the counter of processed words
-	no_words += mySentence.size();
       }
     } // end of while looping over sentences
-    
     cerr << endl << "Done:" << endl
 	 << "  " << no_words << " words processed." << endl;
     return no_words;
@@ -1063,9 +1071,9 @@ namespace Tagger {
   }
   
   string TaggerClass::Tag( const string& inp ){
-    mySentence.reset( EosMark );
-    mySentence.fill( inp, false );
-    return Tag();
+    string result;
+    TagLine( inp, result );
+    return result;
   }
 
   string TaggerClass::Tag(){
@@ -1075,7 +1083,7 @@ namespace Tagger {
       throw runtime_error( "Tagger not initialized" );
       return tag;
     }
-    DBG << mySentence;
+    DBG << mySentence << endl;
     
     if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
 				   *MT_lexicon, TheLex ) ) {
@@ -1403,7 +1411,6 @@ namespace Tagger {
 	SettingsFilePath = SettingsFileName.substr( 0, lastSlash+1 );
       else
 	SettingsFilePath = "";
-      // cout << SettingsFilePath << endl;
       if( !readsettings( SettingsFileName ) ){
 	cerr << "Cannot read settingsfile " << SettingsFileName << endl;
 	exit(EXIT_FAILURE);

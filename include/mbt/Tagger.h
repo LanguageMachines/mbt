@@ -76,6 +76,7 @@ namespace Tagger {
     bool InitBeaming( unsigned int );
     TaggerClass *clone() const;
     int Run( );
+    int TagLine( const std::string&, std::string& );
     std::string Tag( const std::string& );
     int CreateKnown();
     int CreateUnknown();
