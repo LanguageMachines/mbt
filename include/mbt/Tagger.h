@@ -87,11 +87,10 @@ namespace Tagger {
     bool isClone() const { return cloned; };
     void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
     bool setLog( LogStream& );
-    bool setLog( LogStream&, const std::string& );
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
-    static TaggerClass *StartTagger( Timbl::TimblOpts& );
+    static TaggerClass *StartTagger( Timbl::TimblOpts&, LogStream* = 0 );
     static int CreateTagger( Timbl::TimblOpts& );
   private:
     LogStream *cur_log;

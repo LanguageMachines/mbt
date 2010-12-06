@@ -175,11 +175,6 @@ namespace Tagger {
     return true;
   }
 
-  bool TaggerClass::setLog( LogStream& os, const std::string& msg ){
-    cur_log = new LogStream( os, msg.c_str() );
-    return true;
-  }
-
   BeamData::BeamData(){
     size = 0;
     paths = 0;
@@ -1531,9 +1526,11 @@ namespace Tagger {
     }
   }
   
-  TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts ){
+  TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts, LogStream* os ){
     TaggerClass *tagger = new TaggerClass;
     tagger->parse_run_args( Opts );
+    if ( os )
+      tagger->setLog( *os );
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
