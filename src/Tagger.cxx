@@ -1166,7 +1166,7 @@ namespace Tagger {
 	result = result + tagstring + " ";
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
-      result = result + mySentence.Eos() + "\n";
+      result = result + mySentence.Eos();
     return result;
   }
   
@@ -1225,7 +1225,7 @@ namespace Tagger {
 	statistics( no_known, no_unknown,
 		    no_correct_known, 
 		    no_correct_unknown );
-	outfile << tagged_sentence;
+	outfile << tagged_sentence << endl;
 	// increase the counter of processed words
 	no_words += mySentence.size();
       }
