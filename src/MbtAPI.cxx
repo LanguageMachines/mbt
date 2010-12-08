@@ -52,8 +52,7 @@ MbtAPI::MbtAPI( const std::string& opts, LogStream& ls ){
   // get all the commandline options in an TimblOpts structure
   //
   TimblOpts Opts( opts );
-  tagger = TaggerClass::StartTagger( Opts );
-  tagger->setLog( ls );
+  tagger = TaggerClass::StartTagger( Opts, &ls );
 }
 
 MbtAPI::~MbtAPI(){
