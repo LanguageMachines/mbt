@@ -470,7 +470,6 @@ namespace Tagger {
   }
 
   int TaggerClass::TagLine( const string& line, string& result ){
-    int no_words=0;    
     result.clear();
     mySentence.reset( EosMark );
     mySentence.fill( line, input_kind );
