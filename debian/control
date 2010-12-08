@@ -3,14 +3,14 @@ Section: science
 Priority: extra
 Maintainer: Ko van der Sloot <Ko.vanderSloot@uvt.nl>
 Uploaders: Joost van Baal <joostvb-mbt@ad1810.com>
-Build-Depends: cdbs, debhelper (>= 7), timbl (>= 6.3.0)
+Build-Depends: cdbs, debhelper (>= 7), timbl (>= 6.3.1)
 Standards-Version: 3.8.0
 Homepage: http://ilk.uvt.nl/mbt/
 Vcs-Svn: https://svn.ilk.uvt.nl/svn/trunk/sources/Mbt3
 
 Package: mbt
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, timbl (>= 6.3.0), adduser
+Depends: ${shlibs:Depends}, ${misc:Depends}, timbl (>= 6.3.1), adduser
 Description: memory-based tagger-generator and tagger for natural language processing
  MBT is a memory-based tagger-generator and tagger in one. The tagger-generator
  part can generate a sequence tagger on the basis of a training set of tagged
