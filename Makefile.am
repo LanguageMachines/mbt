@@ -10,5 +10,5 @@ EXTRA_DIST = bootstrap AUTHORS TODO NEWS mbt.pc
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mbt.pc
 
-$(top_srcdir)/ChangeLog: $(top_srcdir)/NEWS
+ChangeLog: NEWS
 	svn update; svn2cl --include-rev
