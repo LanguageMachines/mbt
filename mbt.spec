@@ -48,8 +48,6 @@ be of use to you.
 %configure
 %install
 %{__rm} -rf %{buildroot}
-%makeinstall
-%{__rm} %{buildroot}%{_sysconfdir}/init.d/mbt
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -68,6 +66,7 @@ be of use to you.
 * Mon Jan 31 2011 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.4-1
 - New upstream release
   + No longer ships pdf manual; does ship Mbt(1).
+  + No longer ships init script.
 * Thu Aug 19 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2.99.1
 - New upstream SVN snapshot release
 * Wed Aug 18 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2-1
