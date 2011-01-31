@@ -35,9 +35,8 @@ Easily customizable feature representation; can incorporate user-provided
 features; * Automatic generation of separate sub-taggers for known words and
 unknown words; * Can make use of full algorithmic parameters of TiMBL.
 
-TiMBL is a product of the ILK (Induction of Linguistic Knowledge) research
-group of the Tilburg University and the CNTS research group of the University
-of Antwerp.
+MBT is a product of the ILK Research Group (Tilburg University, The
+Netherlands) and the CLiPS Research Centre (University of Antwerp, Belgium).
 
 If you do scientific research in natural language processing, MBT will likely
 be of use to you.
