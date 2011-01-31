@@ -48,6 +48,7 @@ be of use to you.
 %configure
 %install
 %{__rm} -rf %{buildroot}
+%makeinstall
 
 %clean
 %{__rm} -rf %{buildroot}
