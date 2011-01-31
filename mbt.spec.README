@@ -114,4 +114,13 @@ root@virbalas.mdcc.cx:/usr/lib64# rm libTimbl*.la
 
 Jep, dat fixt t: timbl en timblserver moeten .la 's _niet_ installeren.
 
+lundi 31 janvier 2011, 11:20:03 (UTC+0100) ---------------------------------
+
+
+joostvb@fedora.mdcc.cx:~/rpmbuild/SOURCES% wget http://ilk.uvt.nl/downloads/pub/software/mbt-3.2.4.tar.gz
+
+joostvb@bruhat:~/svn/svn.ilk.uvt.nl/Mbt3% scp mbt.spec 192.168.26.41:rpmbuild/SPECS/
+
+joostvb@fedora.mdcc.cx:~/rpmbuild/SPECS% rpmbuild -ba mbt.spec 
+
 
