@@ -3,7 +3,7 @@
 
 Summary: Memory Based Tagger
 Name: mbt
-Version: 3.2.2.99.1
+Version: 3.2.4
 Release: 1
 License: GPL
 Group: Applications/System
@@ -58,14 +58,17 @@ be of use to you.
 %files
 %defattr(-, root, root, 0755)
 %doc AUTHORS ChangeLog NEWS README TODO
-%{_datadir}/doc/%{name}/*.pdf
 %{_datadir}/doc/%{name}/examples/*
 %{_libdir}/libMbt*
 %{_bindir}/Mbt*
 %{_includedir}/%{name}/*.h
 %{_libdir}/pkgconfig/mbt.pc
+%{_mandir}/man*/Mbt*
 
 %changelog
+* Mon Jan 31 2011 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.4-1
+- New upstream release
+  + No longer ships pdf manual; does ship Mbt(1).
 * Thu Aug 19 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2.99.1
 - New upstream SVN snapshot release
 * Wed Aug 18 2010 Joost van Baal <joostvb-timbl@ad1810.com> - 3.2.2-1
