@@ -1,7 +1,7 @@
 /*
   $Id$
   $URL$
-  Copyright (c) 1998 - 2010
+  Copyright (c) 1998 - 2011
   ILK  -  Tilburg University
   CNTS -  University of Antwerp
  
@@ -102,7 +102,7 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   // 
   // present yourself to the user
   //
-  cerr << "Mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2010." << endl
+  cerr << "Mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2011." << endl
        << "Memory Based Tagger Generator" << endl
        << "Induction of Linguistic Knowledge Research Group,"
        << "Tilburg University" << endl
@@ -160,7 +160,7 @@ void run_usage( char *progname ){
 bool MbtAPI::RunTagger( int argc, char **argv ){
   // present yourself to the user
   //
-  cerr << "Mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2010." << endl
+  cerr << "Mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2011." << endl
        << "Memory Based Tagger " << endl
        << "Tilburg University" << endl
        << "CLiPS Computational Linguistics Group, University of Antwerp"
