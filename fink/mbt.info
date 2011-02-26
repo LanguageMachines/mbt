@@ -6,7 +6,7 @@ Package: mbt
 Version: 3.2.4
 Revision: 1
 BuildDependsOnly: false
-Shlibs: %p/lib/libMbt.0.dylib 1.0.0 %n (>= 3.1.4-1)
+Shlibs: %p/lib/libMbt.0.dylib 1.0.0 %n (>= 3.2.4-1)
 DescPackaging: <<
 This package was built on i386 running Darwin / Mac OS X v. 10.6.0,
 using fink 0.29.19-51.
@@ -27,8 +27,6 @@ Source-Checksum: SHA1(7a44719cacd42f632ddf7d95ca67511eee8227f7)
 InstallScript: <<
  make install DESTDIR=%d
  test -L %d/%p/lib/libMbt.dylib && rm %d/%p/lib/libMbt.dylib || true
- rm %d/%p/etc/init.d/mbt
- rmdir %d/%p/etc/init.d || true
 <<
 DocFiles: AUTHORS ChangeLog NEWS README TODO
 DescDetail: <<
