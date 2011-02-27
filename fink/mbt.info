@@ -1,17 +1,14 @@
 # $Id$
 # $URL$
 Package: mbt
-# FIXME : better use 3.1.99.1
-# http://ilk.uvt.nl/packages/beta/mbt-3.2.0-pre1.tar.gz
 Version: 3.2.4
-Revision: 1
-BuildDependsOnly: false
-Shlibs: %p/lib/libMbt.0.dylib 1.0.0 %n (>= 3.2.4-1)
+Revision: 2
+Depends: %N-shlibs (= %v-%r)
+BuildDepends: timbl-dev
 DescPackaging: <<
 This package was built on i386 running Darwin / Mac OS X v. 10.6.0,
 using fink 0.29.19-51.
 
-#FIXME: Add Timbl (build-)depends
 #FIXME: A libMbt.dylib symlink should be in "mbt".  libMbt.2.dylib
 #should be in a yet to be created package (SplitOff: %N-shlibs).  For now,
 #we remove the symlink in order to keep fink happy.  And for now,
@@ -26,7 +23,17 @@ Source: http://ilk.uvt.nl/downloads/pub/software/mbt-%v.tar.gz
 Source-Checksum: SHA1(7a44719cacd42f632ddf7d95ca67511eee8227f7)
 InstallScript: <<
  make install DESTDIR=%d
- test -L %d/%p/lib/libMbt.dylib && rm %d/%p/lib/libMbt.dylib || true
+<<
+SplitOff: <<
+  Package: %N-shlibs
+  Files: lib/libMbt.0.dylib
+  Shlibs: %p/lib/libMbt.0.dylib 1.0.0 %n (>= 3.2.4-1)
+<<
+SplitOff2: <<
+  Package: %N-dev
+  Depends: %N-shlibs (= %v-%r)
+  BuildDependsOnly: true
+  Files: lib/libMbt.dylib include/mbt lib/pkgconfig
 <<
 DocFiles: AUTHORS ChangeLog NEWS README TODO
 DescDetail: <<
