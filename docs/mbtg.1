@@ -1,18 +1,18 @@
-.TH Mbtg 1 "2010 november 18"
+.TH mbtg 1 "2011 march 21"
 
 .SH NAME
 MBTG - Memory Based Tagger generator
 .SH SYNOPSYS
-Mbtg -T <filename> -s <setting filename>
+mbtg -T <filename> -s <setting filename>
 
 or
 
-Mbtg [options]
+mbtg [options]
 
 .SH DESCRIPTION
 
 This programs generates, based on a tagged corpus, all the files needed to be able to tag a text with 
-.B Mbt.
+.B mbt.
 .
 
 .SH OPTIONS
@@ -24,14 +24,14 @@ or
 .BR -E " <enriched tagged training corpus file>"
 
 All further options have reasonable defaults, so using them is only
-needed for the experienced user. See the Mbt manual for more details.
+needed for the experienced user. See the mbt manual for more details.
 
 .BR -s " settingsfile"
 .RS
-.B Mbtg
+.B mbtg
 creates this file, which can be used to run 
-.B Mbt
-with minimal effort. (like Mbt -s settings -T somefile)
+.B mbt
+with minimal effort. (like mbt -s settings -T somefile)
 .RE
 
 .BR -p " pattern"
@@ -70,13 +70,15 @@ filter treshold for ambitag construction (default 5%)
 keep the intermediate files
 .RE
 
-.BR -O "Timbl options"
+.BR -O "timbl options"
 .RS
  (Note: there is NO SPACE between O and the options)
   <options>   classifier options for both known and unknown words instances bases
   K: <options>   classifier options for known words instance base
   U: <options>   classifier options for unknown words case base
-  valid Timbl options: a d k m q v w x -
+  valid 
+.B timbl
+options are: a d k m q v w x -
 .RE
 
 .SH BUGS
@@ -88,6 +90,6 @@ Ko van der Sloot Timbl@uvt.nl
 Antal van den Bosch Timbl@uvt.nl
 
 .SH SEE ALSO
-.BR Timbl (1)
-.BR Mbt (1)
-.BR MbtServer (1)
+.BR timbl (1)
+.BR mbt (1)
+.BR mbtserver (1)

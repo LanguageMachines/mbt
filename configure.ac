@@ -4,7 +4,7 @@
 # $URL$
 
 AC_PREREQ(2.61)
-AC_INIT([Mbt],[3.2.5],[timbl@uvt.nl])
+AC_INIT([mbt],[3.2.5],[timbl@uvt.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -51,12 +51,12 @@ if test "x$PKG_CONFIG_PATH" = x; then
 fi
 AC_ARG_WITH(timbl,
        [  --with-timbl=DIR       use timbl installed in <DIR>; 
-               note that you can install Timbl in a non-default directory with
-               ./configure --prefix=<DIR> in the Timbl installation directory],
+               note that you can install timbl in a non-default directory with
+               ./configure --prefix=<DIR> in the timbl installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
 #  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([timbl], [timbl >= 6.3.0] )
+PKG_CHECK_MODULES([timbl], [timbl >= 6.4.0] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 

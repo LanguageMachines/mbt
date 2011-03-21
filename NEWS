@@ -1,3 +1,7 @@
+mbt version 3.2.5 2011-03-21
+- decapped version. so Mbt ==> mbt and Mbtg ==> mbtg, also for libMbt
+- fink stuff changed/added
+
 mbt version 3.2.2.99.1, 2010-08-19
 
 - SVN snapshot release.

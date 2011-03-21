@@ -3,10 +3,10 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Mbt
+Name: mbt
 Version: @VERSION@
 Description: mbt library.
-Requires: timbl >= 6.2.0
-Libs: -L${libdir} -lMbt
+Requires: timbl >= 6.4.0
+Libs: -L${libdir} -lmbt
 Libs.private: @LIBS@
 Cflags: -I${includedir}

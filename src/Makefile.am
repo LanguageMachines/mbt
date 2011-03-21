@@ -3,22 +3,22 @@
 
 AM_CPPFLAGS = -I@top_srcdir@/include
 
-LDADD = libMbt.la
+LDADD = libmbt.la
 
-bin_PROGRAMS = Mbt Mbtg
+bin_PROGRAMS = mbt mbtg
 
 noinst_PROGRAMS = convert demo
 
-Mbt_SOURCES = Mbt.cxx
+mbt_SOURCES = Mbt.cxx
 
-Mbtg_SOURCES = Mbtg.cxx
+mbtg_SOURCES = Mbtg.cxx
 
 demo_SOURCES = demo.cxx
 
 convert_SOURCES = convert.cxx
 
-lib_LTLIBRARIES = libMbt.la
-libMbt_la_LDFLAGS= -version-info 0:0:0
+lib_LTLIBRARIES = libmbt.la
+libmbt_la_LDFLAGS= -version-info 0:0:0
 
-libMbt_la_SOURCES = MbtAPI.cxx Pattern.cxx TagLex.cxx Sentence.cxx \
+libmbt_la_SOURCES = MbtAPI.cxx Pattern.cxx TagLex.cxx Sentence.cxx \
 	Tagger.cxx 
