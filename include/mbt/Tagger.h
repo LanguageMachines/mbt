@@ -35,6 +35,10 @@
 #include "timbl/TimblAPI.h"
 
 namespace Tagger {
+
+  std::string Version();
+  std::string VersionName();
+
   const int EMPTY_PATH = -1000000;
 
   class n_best_tuple {

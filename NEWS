@@ -1,3 +1,8 @@
+mbt version 3.2.6 2011-04-xx
+
+* addded Version() and VersionName() functions to be consistent withe the 
+  whole Timbl family.
+
 mbt version 3.2.5 2011-03-21
 - decapped version. so Mbt ==> mbt and Mbtg ==> mbtg, also for libMbt
 - fink stuff changed/added
