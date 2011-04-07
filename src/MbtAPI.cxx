@@ -108,7 +108,7 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
        << "Tilburg University" << endl
        << "CLiPS Computational Linguistics Group, University of Antwerp"
        << endl << endl
-       << "Based on Timbl version " << TimblAPI::VersionInfo() 
+       << "Based on " << Timbl::VersionName() 
        << endl << endl;
   // test for the right number of arguments
   //
@@ -165,7 +165,7 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
        << "Tilburg University" << endl
        << "CLiPS Computational Linguistics Group, University of Antwerp"
        << endl << endl
-       << "Based on Timbl version " << TimblAPI::VersionInfo() 
+       << "Based on " << Timbl::VersionName() 
        << endl << endl;
   // test for the right number of arguments
   //
