@@ -993,7 +993,7 @@ namespace Tagger {
 
   const TargetValue *TaggerClass::Classify( MatchAction Action, 
 					    const string& teststring, 
-					    const ValueDistribution *distribution,
+					    const ValueDistribution **distribution,
 					    double& distance ){
     const TargetValue *answer = 0;
 #if defined(HAVE_PTHREAD)
@@ -1001,10 +1001,10 @@ namespace Tagger {
       pthread_mutex_lock( &timbl_lock );
 #endif
     if ( Action == Known ){
-      answer = KnownTree->Classify( teststring, distribution, distance );
+      answer = KnownTree->Classify( teststring, *distribution, distance );
     }
     else {
-      answer = unKnownTree->Classify( teststring, distribution, distance );
+      answer = unKnownTree->Classify( teststring, *distribution, distance );
     }
 #if defined(HAVE_PTHREAD)
     if ( cloned )
@@ -1022,12 +1022,12 @@ namespace Tagger {
     string teststring = pat_to_string( Action, 0 );
     const ValueDistribution *distribution = 0;
     double distance;
-    const TargetValue *answer = Classify( Action, teststring, distribution, distance );
+    const TargetValue *answer = Classify( Action, teststring, &distribution, distance );
     distance_array.resize( mySentence.size() );
     distribution_array.resize( mySentence.size() );
     if ( distance_flag )
       distance_array[0] = distance;
-    if ( distrib_flag )
+    if ( distrib_flag && distribution )
       distribution_array[0] = distribution->DistToString();
     if ( IsActive( DBG ) ){
       LOG << "BeamData::InitPaths( " << mySentence << endl; 
@@ -1057,11 +1057,11 @@ namespace Tagger {
       const ValueDistribution *distribution = 0;
       double distance;
       const TargetValue *answer = Classify( Action, teststring, 
-					    distribution, distance );
+					    &distribution, distance );
       if ( beam_cnt == 0 ){
 	if ( distance_flag )
 	  distance_array[i_word] = distance;
-	if ( distrib_flag )
+	if ( distrib_flag && distribution )
 	  distribution_array[i_word] = distribution->DistToString();
       }
       Beam->NextPath( TheLex, answer, distribution, beam_cnt ); 

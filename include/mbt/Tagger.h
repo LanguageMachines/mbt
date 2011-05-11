@@ -142,7 +142,7 @@ namespace Tagger {
     void InitTest( MatchAction );
     bool NextBest( int, int );
     const Timbl::TargetValue *Classify( MatchAction, const std::string&, 
-					const Timbl::ValueDistribution *distribution, 
+					const Timbl::ValueDistribution **distribution, 
 					double& );
     std::string get_result();
     void statistics( int& no_known,
