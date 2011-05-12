@@ -59,6 +59,10 @@ MbtAPI::~MbtAPI(){
   RemoveTagger( tagger );
 }
 
+bool MbtAPI::isInit() const{
+  return tagger && tagger->isInit();
+}
+
 string MbtAPI::Tag( const std::string& inp ){
   if ( tagger )
     return tagger->Tag( inp );

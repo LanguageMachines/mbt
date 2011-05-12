@@ -99,6 +99,7 @@ namespace Tagger {
     void read_listfile( const std::string&, StringHash * );
     static TaggerClass *StartTagger( Timbl::TimblOpts&, LogStream* = 0 );
     static int CreateTagger( Timbl::TimblOpts& );
+    bool isInit() const { return initialized; };
   private:
     LogStream *cur_log;
     sentence mySentence;

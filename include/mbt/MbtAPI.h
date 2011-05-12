@@ -44,6 +44,7 @@ class MbtAPI {
   MbtAPI( const std::string& );
   MbtAPI( const std::string&, LogStream& );
   ~MbtAPI();
+  bool isInit() const;
   std::string Tag( const std::string& );
  private:
   TaggerClass *tagger;
