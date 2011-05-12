@@ -119,6 +119,7 @@ namespace Tagger {
     dumpflag = false;
     distance_flag = false;
     distrib_flag = false;
+    confidence_flag = false;
     klistflag= false;
     cloned = false;
   }
@@ -172,6 +173,7 @@ namespace Tagger {
     dumpflag = in.dumpflag;
     distance_flag = in.distance_flag;
     distrib_flag = in.distrib_flag;
+    confidence_flag = in.confidence_flag;
     klistflag = in.klistflag;
     cloned = true;
   }
@@ -1025,10 +1027,15 @@ namespace Tagger {
     const TargetValue *answer = Classify( Action, teststring, &distribution, distance );
     distance_array.resize( mySentence.size() );
     distribution_array.resize( mySentence.size() );
+    confidence_array.resize( mySentence.size() );
     if ( distance_flag )
       distance_array[0] = distance;
-    if ( distrib_flag && distribution )
-      distribution_array[0] = distribution->DistToString();
+    if ( distribution ){
+      if ( distrib_flag )
+	distribution_array[0] = distribution->DistToString();
+      if ( confidence_flag )
+	confidence_array[0] = distribution->Confidence( answer );
+    }
     if ( IsActive( DBG ) ){
       LOG << "BeamData::InitPaths( " << mySentence << endl; 
       LOG << " , " << answer << " , " << distribution << " )" << endl;
@@ -1061,8 +1068,12 @@ namespace Tagger {
       if ( beam_cnt == 0 ){
 	if ( distance_flag )
 	  distance_array[i_word] = distance;
-	if ( distrib_flag && distribution )
-	  distribution_array[i_word] = distribution->DistToString();
+	if ( distribution ){
+	  if ( distrib_flag )
+	    distribution_array[i_word] = distribution->DistToString();
+	  if ( confidence_flag )
+	    confidence_array[i_word] = distribution->Confidence( answer );
+	}
       }
       Beam->NextPath( TheLex, answer, distribution, beam_cnt ); 
       if ( IsActive( DBG ) )
@@ -1152,6 +1163,8 @@ namespace Tagger {
 	  result += " " + toString( distance_array[Wcnt] );
 	if ( distrib_flag )
 	  result += " " + distribution_array[Wcnt];
+	if ( confidence_flag )
+	  result += " " + toString( confidence_array[Wcnt] );
 	result += "\n";
       }
       else if ( input_kind == TAGGED ){
@@ -1160,10 +1173,16 @@ namespace Tagger {
 	  result += " " + toString( distance_array[Wcnt] );
 	if ( distrib_flag )
 	  result += " " + distribution_array[Wcnt];
+	if ( confidence_flag )
+	  result += " " + toString( confidence_array[Wcnt] );
 	result += "\n";
       }
-      else
-	result = result + tagstring + " ";
+      else {
+	result = result + tagstring;
+	if ( confidence_flag )
+	  result += "/" + toString( confidence_array[Wcnt] );
+	result += " ";
+      }
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
       result = result + mySentence.Eos();
@@ -1521,6 +1540,8 @@ namespace Tagger {
 	  distance_flag = true;
 	if ( opts[i] == "db" )
 	  distrib_flag = true;
+	if ( opts[i] == "c" )
+	  confidence_flag = true;
       }
       Opts.Delete( 'v' );
     };

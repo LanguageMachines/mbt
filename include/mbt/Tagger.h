@@ -129,10 +129,12 @@ namespace Tagger {
     bool dumpflag;
     bool distance_flag;
     bool distrib_flag;
+    bool confidence_flag;
     bool klistflag;
     int Beam_Size;
     std::vector<double> distance_array;
     std::vector<std::string> distribution_array;
+    std::vector<double> confidence_array;
 
     int makedataset( std::istream& infile, bool do_known );
     bool readsettings( std::string& fname );
