@@ -1,9 +1,10 @@
-mbt version 3.2.6 2011-04-xx
+mbt version 3.2.6 2011-05-xx
 
 * addded Version() and VersionName() functions to be consistent withe the 
   whole Timbl family.
 * added an isInit() function to the API
 * fixed terrible bug. -vdb option was broken (a long time ago?)
+* added a -vc option to insert confidence in the output
 
 mbt version 3.2.5 2011-03-21
 - decapped version. so Mbt ==> mbt and Mbtg ==> mbtg, also for libMbt
