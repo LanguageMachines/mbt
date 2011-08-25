@@ -1,6 +1,6 @@
-mbt version 3.2.6 2011-05-xx
+mbt version 3.2.6 2011-08-25
 
-* addded Version() and VersionName() functions to be consistent withe the 
+* addded Version() and VersionName() functions to be consistent with the 
   whole Timbl family.
 * added an isInit() function to the API
 * fixed terrible bug. -vdb option was broken (a long time ago?)
