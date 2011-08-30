@@ -1420,9 +1420,14 @@ namespace Tagger {
     return true;
   }
 
-  void TaggerClass::parse_run_args( TimblOpts& Opts ){
+  void TaggerClass::parse_run_args( TimblOpts& Opts, bool as_server ){
     string value;
     bool mood;
+    if ( Opts.Find( 'V', value, mood ) ||
+	 Opts.Find( "version", value, mood ) ){
+      // we already identified ourself. just bail out.
+      exit(EXIT_SUCCESS);
+    }
     if ( Opts.Find( 's', value, mood ) ){
       // if a settingsfile option has been given, read that first
       // and then override with commandline options 
@@ -1550,9 +1555,24 @@ namespace Tagger {
 	   << "bailing out, sorry " << endl;
       exit(EXIT_FAILURE);
     }
+    if ( !as_server &&
+	 (!knowntreeflag || !unknowntreeflag || TestFileName.empty()) ){
+      cerr << "missing required options. See 'mbt -h' " << endl;
+      exit(EXIT_FAILURE);
+    }
   }
   
   TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts, LogStream* os ){
+    // present yourself to the user
+    //
+    cerr << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2011." << endl
+	 << "Memory Based Tagger " << endl
+	 << "Tilburg University" << endl
+	 << "CLiPS Computational Linguistics Group, University of Antwerp"
+	 << endl
+	 << "Based on " << Timbl::VersionName() 
+	 << endl << endl;
+    
     TaggerClass *tagger = new TaggerClass;
     tagger->parse_run_args( Opts );
     if ( os )
@@ -1770,6 +1790,11 @@ namespace Tagger {
   void TaggerClass::parse_create_args( TimblOpts& Opts ){
     string value;
     bool mood;
+    if ( Opts.Find( 'V', value, mood ) ||
+	 Opts.Find( "version", value, mood ) ){
+      // we already identified ourself. just bail out.
+      exit(EXIT_SUCCESS);
+    }
     if ( Opts.Find( '%', value, mood ) ){
       FilterTreshold = stringTo<int>( value );
     }
@@ -1857,9 +1882,24 @@ namespace Tagger {
       }
       Opts.Delete( 'D' );
     }
+    if ( TestFileName.empty() ){
+      cerr << "Missing required options. see 'mbt -h'" << endl;
+      exit(EXIT_SUCCESS);
+    }
   }
   
   int TaggerClass::CreateTagger( TimblOpts& Opts ){
+    // 
+    // present yourself to the user
+    //
+    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2011." << endl
+	 << "Memory Based Tagger Generator" << endl
+	 << "Induction of Linguistic Knowledge Research Group,"
+	 << "Tilburg University" << endl
+	 << "CLiPS Computational Linguistics Group, University of Antwerp"
+	 << endl
+	 << "Based on " << Timbl::VersionName() 
+	 << endl << endl;
     TaggerClass tagger;
     tagger.parse_create_args( Opts );
     tagger.set_default_filenames();

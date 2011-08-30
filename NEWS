@@ -1,7 +1,9 @@
-mbt version 3.2.6 2011-08-25
+mbt version 3.2.6 2011-08-30
 
 * addded Version() and VersionName() functions to be consistent with the 
   whole Timbl family.
+* added -V and --version option to show version
+* some internal code reshuffled for -h and -V options
 * added an isInit() function to the API
 * fixed terrible bug. -vdb option was broken (a long time ago?)
 * added a -vc option to insert confidence in the output

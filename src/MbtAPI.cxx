@@ -95,6 +95,7 @@ void gen_usage( char *progname ){
        << "\t-u <unknown words case base>\n"
        << "\t-K <known words instances file>\n"
        << "\t-U <unknown words instances file>\n"
+       << "\t-V show Version info\n"
        << "\t-X keep intermediate files \n" << endl;
 }
 
@@ -103,38 +104,30 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   //
   // generate a tagger using argv.
   // Independent, static function so, don't use the internal _tagger here
-  // 
-  // present yourself to the user
   //
-  cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2011." << endl
-       << "Memory Based Tagger Generator" << endl
-       << "Induction of Linguistic Knowledge Research Group,"
-       << "Tilburg University" << endl
-       << "CLiPS Computational Linguistics Group, University of Antwerp"
-       << endl << endl
-       << "Based on " << Timbl::VersionName() 
-       << endl << endl;
-  // test for the right number of arguments
-  //
-  if(argc<3) {
+  TimblOpts Opts( argc, argv );
+  string value;
+  bool mood;
+  if ( Opts.Find( 'h', value, mood ) ||
+       Opts.Find( "help", value, mood ) ){
     gen_usage( argv[0] );
-    return false;
-  }
-  else {
-    TimblOpts Opts( argc, argv );
-    cerr << "options " << Opts << endl;
-    time_t timebefore, timeafter, timediff;
-    time(&timebefore);
-    int nw = TaggerClass::CreateTagger( Opts );   
-    time(&timeafter);
-    timediff = timeafter - timebefore;
-    if ( timediff == 0 )
-      timediff = 1;
-    cout << endl << "Ready:" << endl
-	 << "  Time used: " << timediff << endl
-	 << "  Words/sec: " << nw/(timediff) << endl; 
     return true;
   }
+  time_t timebefore, timeafter, timediff;
+  time(&timebefore);
+  int nw = TaggerClass::CreateTagger( Opts );
+  if ( nw <= 0 ){
+    cerr << "Tagger Creation failed" << endl;
+    return false;
+  }
+  time(&timeafter);
+  timediff = timeafter - timebefore;
+  if ( timediff == 0 )
+    timediff = 1;
+  cout << endl << "Ready:" << endl
+       << "  Time used: " << timediff << endl
+       << "  Words/sec: " << nw/(timediff) << endl; 
+  return true;
 }
   
 void run_usage( char *progname ){
@@ -158,42 +151,37 @@ void run_usage( char *progname ){
        << "\t-v di add distance to output\n"
        << "\t-v db add distribution to output\n"
        << "\t-v c add confidence to output\n"
+       << "\t-V show Version info\n"
        << "\t-L <file with list of frequent words>\n" 
        << endl;
 }
 
 bool MbtAPI::RunTagger( int argc, char **argv ){
-  // present yourself to the user
+  // get all the commandline options in an TimblOpts structure
   //
-  cerr << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2011." << endl
-       << "Memory Based Tagger " << endl
-       << "Tilburg University" << endl
-       << "CLiPS Computational Linguistics Group, University of Antwerp"
-       << endl << endl
-       << "Based on " << Timbl::VersionName() 
-       << endl << endl;
-  // test for the right number of arguments
-  //
-  if(argc<3) {
+  TimblOpts Opts( argc, argv );
+  string value;
+  bool mood;
+  if ( Opts.Find( 'h', value, mood ) ||
+       Opts.Find( "help", value, mood ) ){
     run_usage( argv[0] );
-    return false;
-  }
-  else {
-    // get all the commandline options in an TimblOpts structure
-    //
-    TimblOpts Opts( argc, argv );
-    time_t timebefore, timeafter, timediff;
-    time(&timebefore);
-    TaggerClass *tagger = TaggerClass::StartTagger( Opts );
-    int nw = tagger->Run();
-    time(&timeafter);
-    timediff = timeafter - timebefore;
-    if ( timediff == 0 )
-      timediff = 1;
-    cerr << "  Time used: " << timediff << endl;
-    cerr << "  Words/sec: " << nw/(timediff) << endl;
-    delete tagger;
     return true;
   }
+  time_t timebefore, timeafter, timediff;
+  time(&timebefore);
+  TaggerClass *tagger = TaggerClass::StartTagger( Opts );
+  if ( !tagger ){
+    cerr << "Starting Tagger failed" << endl;
+    return false;
+  }
+  int nw = tagger->Run();
+  time(&timeafter);
+  timediff = timeafter - timebefore;
+  if ( timediff == 0 )
+    timediff = 1;
+  cerr << "  Time used: " << timediff << endl;
+  cerr << "  Words/sec: " << nw/(timediff) << endl;
+  delete tagger;
+  return true;
 }
 
