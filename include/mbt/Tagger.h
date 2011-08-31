@@ -106,6 +106,7 @@ namespace Tagger {
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;
     std::string Timbl_Options;
+    std::string commonstr;
     std::string knownstr;
     std::string unknownstr;
     std::string uwf;

@@ -526,12 +526,12 @@ namespace Tagger {
   }
   
 
-  void splits( const string& opts, string& known, string& unknown,
-	       string& kwf, string& uwf ){
+  void splits( const string& opts, string& common,
+	       string& known, string& unknown ){
     xDBG << "splits, opts = " << opts << endl;
     known = "";
     unknown = "";
-    string common = " -FColumns ";
+    common = " -FColumns ";
     bool done_u = false, done_k = false;
     string::size_type k_pos = opts.find( "K:" );
     string::size_type u_pos = opts.find( "U:" );
@@ -576,10 +576,6 @@ namespace Tagger {
     xDBG << "resultaat splits, common = " << common << endl;
     xDBG << "resultaat splits, K = " << known << endl;
     xDBG << "resultaat splits, U = " << unknown << endl;
-    known += common;
-    unknown += common;
-    get_weightsfile_name( known, kwf );
-    get_weightsfile_name( unknown, uwf );
   }
   
   bool TaggerClass::set_default_filenames( ){
@@ -874,7 +870,13 @@ namespace Tagger {
       Timbl_Options[pos] = '+';
       pos = Timbl_Options.find( "-vS", pos+1 );
     }
-    splits( Timbl_Options, knownstr, unknownstr, kwf, uwf );
+    splits( Timbl_Options, commonstr, knownstr, unknownstr );
+    if ( confidence_flag ){
+      if ( commonstr.find("-G") == string::npos ){
+	cerr << "-vcf is specified, but -G is missing in the common Timbl Options" << endl;
+	return false;
+      }
+    }
     if( !knowntreeflag ){
       cerr << "<knowntreefile> not specified" << endl;
       return false;
@@ -883,10 +885,10 @@ namespace Tagger {
       cerr << "<unknowntreefile> not specified" << endl;
       return false;
     }
-    KnownTree = new TimblAPI( knownstr );
+    KnownTree = new TimblAPI( knownstr + commonstr );
     if ( !KnownTree->Valid() )
       return false;
-    unKnownTree = new TimblAPI( unknownstr );
+    unKnownTree = new TimblAPI( unknownstr + commonstr );
     if ( !unKnownTree->Valid() )
       return false;
     // read a previously stored InstanceBase for known words
@@ -899,6 +901,8 @@ namespace Tagger {
       return false;
     }
     else {
+      get_weightsfile_name( knownstr, kwf );
+      get_weightsfile_name( unknownstr, uwf );
       if ( !kwf.empty() ){
 	if ( !KnownTree->GetWeights( kwf ) ){
 	  cerr << "Couldn't read known weights from " << kwf << endl;
@@ -1545,7 +1549,7 @@ namespace Tagger {
 	  distance_flag = true;
 	if ( opts[i] == "db" )
 	  distrib_flag = true;
-	if ( opts[i] == "c" )
+	if ( opts[i] == "cf" )
 	  confidence_flag = true;
       }
       Opts.Delete( 'v' );
@@ -1596,7 +1600,9 @@ namespace Tagger {
       Timbl_Options = "-a IB1";
     else
       Timbl_Options = TimblOptStr;
-    splits( Timbl_Options, knownstr, unknownstr, kwf, uwf );
+    splits( Timbl_Options, commonstr, knownstr, unknownstr );
+    get_weightsfile_name( knownstr, kwf );
+    get_weightsfile_name( unknownstr, uwf );
     // the testpattern is of the form given in Ktemplate and Utemplate
     // here we allocate enough space for the larger of them to serve both
     //
@@ -1681,8 +1687,8 @@ namespace Tagger {
     int nwords = 0;
     if ( knowntemplateflag ){
       cout << endl << "  Create known words case base" << endl
-	   << "    Timbl options: '" << knownstr << "'" << endl;
-      TimblAPI *UKtree = new TimblAPI( knownstr );
+	   << "    Timbl options: '" << knownstr + commonstr << "'" << endl;
+      TimblAPI *UKtree = new TimblAPI( knownstr + commonstr );
       if ( !UKtree->Valid() )
 	exit(EXIT_FAILURE);
       cout << "    Algorithm = " << to_string(UKtree->Algo())
@@ -1721,8 +1727,8 @@ namespace Tagger {
     int nwords = 0;
     if ( unknowntemplateflag ){
       cout << endl << "  Create unknown words case base" << endl
-	   << "    Timbl options: '" << unknownstr << "'" << endl;
-      TimblAPI *UKtree = new TimblAPI( unknownstr );
+	   << "    Timbl options: '" << unknownstr + commonstr << "'" << endl;
+      TimblAPI *UKtree = new TimblAPI( unknownstr + commonstr );
       if ( !UKtree->Valid() )
 	exit(EXIT_FAILURE);
       cout << "    Algorithm = " << to_string(UKtree->Algo()) 
