@@ -1556,7 +1556,7 @@ namespace Tagger {
       exit(EXIT_FAILURE);
     }
     if ( !as_server &&
-	 (!knowntreeflag || !unknowntreeflag || TestFileName.empty()) ){
+	 (!knowntreeflag || !unknowntreeflag) ){
       cerr << "missing required options. See 'mbt -h' " << endl;
       exit(EXIT_FAILURE);
     }
