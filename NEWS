@@ -1,3 +1,7 @@
+mbt version 3.2.7 2011-xx-xx
+* changed output of +v options. Now we are in line with Timbl.
+  Breaks some stuff!
+
 mbt version 3.2.6 2011-08-30
 
 * addded Version() and VersionName() functions to be consistent with the 

@@ -1163,22 +1163,22 @@ namespace Tagger {
       if ( input_kind == ENRICHED ){
 	result = result + mySentence.getenr(Wcnt) + "\t" 
 	  + mySentence.gettag(Wcnt) + "\t" + tagstring;
-	if ( distance_flag )
-	  result += " " + toString( distance_array[Wcnt] );
+	if ( confidence_flag )
+	  result += " [" + toString( confidence_array[Wcnt] ) + "]";
 	if ( distrib_flag )
 	  result += " " + distribution_array[Wcnt];
-	if ( confidence_flag )
-	  result += " " + toString( confidence_array[Wcnt] );
+	if ( distance_flag )
+	  result += " " + toString( distance_array[Wcnt] );
 	result += "\n";
       }
       else if ( input_kind == TAGGED ){
 	result = result + mySentence.gettag(Wcnt) + "\t" + tagstring;
-	if ( distance_flag )
-	  result += " " + toString( distance_array[Wcnt] );
+	if ( confidence_flag )
+	  result += " [" + toString( confidence_array[Wcnt] ) + "]";
 	if ( distrib_flag )
 	  result += " " + distribution_array[Wcnt];
-	if ( confidence_flag )
-	  result += " " + toString( confidence_array[Wcnt] );
+	if ( distance_flag )
+	  result += " " + toString( distance_array[Wcnt] );
 	result += "\n";
       }
       else {
