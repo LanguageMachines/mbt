@@ -27,15 +27,13 @@
       timbl@uvt.nl
 */
 
-//
-// MBT API demo
-//
+#include <cstdlib>
 #include "mbt/MbtAPI.h"
-
 using namespace std;
 
-int main() {
-  MbtAPI demo( "-s eindh.data.settings" );
+int main(){
+  string path = getenv( "topsrcdir" );
+  MbtAPI demo( "-s " + path + "/example/simpletest.setting" );
   cerr << demo.Tag( "dit is een test" );
 }
 

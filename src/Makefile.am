@@ -7,13 +7,17 @@ LDADD = libmbt.la
 
 bin_PROGRAMS = mbt mbtg
 
-noinst_PROGRAMS = convert demo
+noinst_PROGRAMS = convert
+
+check_PROGRAMS = simpletest
+TESTS = $(check_PROGRAMS) 
+TESTS_ENVIRONMENT = topsrcdir=$(top_srcdir)
+simpletest_SOURCES = simpletest.cxx
+
 
 mbt_SOURCES = Mbt.cxx
 
 mbtg_SOURCES = Mbtg.cxx
-
-demo_SOURCES = demo.cxx
 
 convert_SOURCES = convert.cxx
 
