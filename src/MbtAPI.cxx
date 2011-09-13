@@ -72,7 +72,7 @@ string MbtAPI::Tag( const std::string& inp ){
   }
 }
 
-void gen_usage( char *progname ){
+void gen_usage( const char *progname ){
   cerr << "Usage is : " << progname << " option option ...\n"
        << "\t-s settingsfile\n"
        << "\t-% <percentage> Filter Treshold for ambitag construction (default 5%)\n"
@@ -99,18 +99,17 @@ void gen_usage( char *progname ){
        << "\t-X keep intermediate files \n" << endl;
 }
 
-bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
+bool MbtAPI::GenerateTagger( TimblOpts& Opts ) {
   cur_log->setlevel( Tagger_Log_Level );
   //
-  // generate a tagger using argv.
+  // generate a tagger 
   // Independent, static function so, don't use the internal _tagger here
   //
-  TimblOpts Opts( argc, argv );
   string value;
   bool mood;
   if ( Opts.Find( 'h', value, mood ) ||
        Opts.Find( "help", value, mood ) ){
-    gen_usage( argv[0] );
+    gen_usage( "mbtg" );
     return true;
   }
   time_t timebefore, timeafter, timediff;
@@ -128,6 +127,22 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
        << "  Time used: " << timediff << endl
        << "  Words/sec: " << nw/(timediff) << endl; 
   return true;
+}
+  
+bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
+  // generate a tagger using argv.
+  // Independent, static function so, don't use the internal _tagger here
+  //
+  TimblOpts Opts( argc, argv );
+  return GenerateTagger( Opts );
+}
+  
+bool MbtAPI::GenerateTagger( const std::string& arg ) {
+  // generate a tagger using a string.
+  // Independent, static function so, don't use the internal _tagger here
+  //
+  TimblOpts Opts( arg );
+  return GenerateTagger( Opts );
 }
   
 void run_usage( char *progname ){
