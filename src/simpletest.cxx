@@ -33,7 +33,8 @@ using namespace std;
 
 int main(){
   string path = getenv( "topsrcdir" );
-  MbtAPI demo( "-s " + path + "/example/simpletest.setting" );
+  MbtAPI::GenerateTagger( "-T " + path + "/example/eindh.data -s ./simple.setting " );
+  MbtAPI demo( "-s ./simple.setting" );
   cerr << demo.Tag( "dit is een test" );
 }
 

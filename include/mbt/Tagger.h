@@ -139,7 +139,7 @@ namespace Tagger {
 
     int makedataset( std::istream& infile, bool do_known );
     bool readsettings( std::string& fname );
-    void create_lexicons( const std::string& filename );
+    void create_lexicons();
     int ProcessFile( std::istream&, std::ostream& );
     void ProcessTags( TagInfo * );
     std::string Tag();
@@ -184,6 +184,7 @@ namespace Tagger {
     std::string TopNFileName;
     std::string NpaxFileName;
     std::string TestFileName;
+    std::string TestFilePath;
     std::string OutputFileName;
     std::string SettingsFileName;
     std::string SettingsFilePath;

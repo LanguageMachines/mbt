@@ -96,6 +96,7 @@ namespace Tagger {
     TopNFileName = "";
     NpaxFileName = "";
     TestFileName = "";
+    TestFilePath = "";
     OutputFileName = "";
     SettingsFileName = "";
     SettingsFilePath = "";
@@ -151,6 +152,7 @@ namespace Tagger {
     TopNFileName = in.TopNFileName;
     NpaxFileName = in.NpaxFileName;
     TestFileName = in.TestFileName;
+    TestFilePath = in.TestFilePath;
     OutputFileName = in.OutputFileName;
     SettingsFileName = in.SettingsFileName;
     SettingsFilePath = in.SettingsFilePath;
@@ -577,7 +579,33 @@ namespace Tagger {
     xDBG << "resultaat splits, K = " << known << endl;
     xDBG << "resultaat splits, U = " << unknown << endl;
   }
+
+  //**** stuff to process commandline options *********************************
+  // used to convert relative paths to absolute paths
+
+  /**
+   * If you do 'mbt -s some-path/xxx.settingsfile' Timbl can not find the 
+   * tree files.
+   *
+   * Because the settings file can contain relative paths for files these 
+   * paths are converted to absolute paths. 
+   * The relative paths are taken relative to the pos ition of the settings
+   * file, so the path of the settings file is prefixed to the realtive path.
+   *
+   * Paths that do not begin with '/' and do not have as second character ':'
+   *      (C: or X: in windows cygwin) are considered to be relative paths
+   */
   
+  void prefixWithAbsolutePath( string& fileName, 
+			       const string& prefix ) {
+    //    cout << fileName << endl;
+    if ( ( fileName[0] != '/' && fileName[1] != ':' )
+	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
+      fileName = prefix + fileName;
+    }
+    //    cout << fileName << endl;
+  }
+    
   bool TaggerClass::set_default_filenames( ){
     //
     // and use them to setup the defaults...
@@ -601,6 +629,7 @@ namespace Tagger {
     }
     char affix[32];
     LexFileName = TestFileName;
+    prefixWithAbsolutePath( LexFileName, SettingsFilePath );
     LexFileName += ".lex";
     if ( FilterTreshold < 10 )
       sprintf( affix, ".0%1i",  FilterTreshold );
@@ -608,21 +637,25 @@ namespace Tagger {
       sprintf( affix, ".%2i",  FilterTreshold );
     if( !knownoutfileflag ){
       K_option_name = TestFileName;
+      prefixWithAbsolutePath( K_option_name, SettingsFilePath );
       K_option_name += ".known.inst.";
       K_option_name += KtmplStr;
     }
     if ( !knowntreeflag ){
       KnownTreeName = TestFileName;
+      prefixWithAbsolutePath( KnownTreeName, SettingsFilePath );
       KnownTreeName += ".known.";
       KnownTreeName += KtmplStr;
     }
     if( !unknownoutfileflag ){
       U_option_name = TestFileName;
+      prefixWithAbsolutePath( U_option_name, SettingsFilePath );
       U_option_name += ".unknown.inst.";
       U_option_name += UtmplStr;
     }
     if ( !unknowntreeflag ){
       UnknownTreeName = TestFileName;
+      prefixWithAbsolutePath( UnknownTreeName, SettingsFilePath );
       UnknownTreeName += ".unknown.";
       UnknownTreeName += UtmplStr;
     }
@@ -631,6 +664,7 @@ namespace Tagger {
     }
     else {
       MTLexFileName = TestFileName;
+      prefixWithAbsolutePath( MTLexFileName, SettingsFilePath );
       MTLexFileName += ".lex.ambi";
       MTLexFileName +=  affix;
     }
@@ -639,9 +673,11 @@ namespace Tagger {
     else {
       sprintf( affix, ".top%d",  TopNumber );
       TopNFileName = TestFileName + affix;
+      prefixWithAbsolutePath( TopNFileName, SettingsFilePath );
     }
     sprintf( affix, ".%dpaxes",  Npax );
     NpaxFileName = TestFileName + affix;
+    prefixWithAbsolutePath( NpaxFileName, SettingsFilePath );
     return true;
   }
     
@@ -661,11 +697,12 @@ namespace Tagger {
     return false;
   }
   
-  void TaggerClass::create_lexicons( const string& filename ){
+  void TaggerClass::create_lexicons(){
     TagLex TaggedLexicon;
     ifstream lex_file;
     ofstream out_file;
     string Buffer;
+    string filename = TestFilePath + TestFileName;
     if ( filename != "" ){
       if ( ( lex_file.open( filename.c_str(), ios::in ),
 	     !lex_file.good() ) ){
@@ -697,7 +734,7 @@ namespace Tagger {
       out_file.close();
     }
     else {
-      cerr << "couldn't open lexiconfile " << LexFileName << endl;
+      cerr << "couldn't create lexiconfile " << LexFileName << endl;
       exit(EXIT_FAILURE);
     }
     for ( int i=0; i < LexSize; i++ )
@@ -966,13 +1003,14 @@ namespace Tagger {
 	os = &cout;
       ifstream infile;    
       if ( !piped_input ){
-	infile.open(TestFileName.c_str(), ios::in);
+	string inname = TestFilePath + TestFileName;
+	infile.open(inname.c_str(), ios::in);
 	if( infile.bad( )){
-	  cerr << "Cannot read from " << TestFileName << endl;
+	  cerr << "Cannot read from " << inname << endl;
 	  result = 0;
 	}
 	else {
-	  cerr << "Processing data from the file " << TestFileName 
+	  cerr << "Processing data from the file " << inname 
 	       << ":" <<  endl;
 	  result = ProcessFile(infile, *os );
 	}
@@ -1288,33 +1326,6 @@ namespace Tagger {
   }
   
   
-//**** stuff to process commandline options *********************************
-
-  // used to convert relative paths to absolute paths
-
-  /**
-   * If you do 'mbt -s some-path/xxx.settingsfile' Timbl can not find the 
-   * tree files.
-   *
-   * Because the settings file can contain relative paths for files these 
-   * paths are converted to absolute paths. 
-   * The relative paths are taken relative to the pos ition of the settings
-   * file, so the path of the settings file is prefixed to the realtive path.
-   *
-   * Paths that do not begin with '/' and do not have as second character ':'
-   *      (C: or X: in windows cygwin) are considered to be relative paths
-   */
-  
-  void prefixWithAbsolutePath( string& fileName, 
-			       const string& prefix ) {
-    //    cout << fileName << endl;
-    if ( ( fileName[0] != '/' && fileName[1] != ':' )
-	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
-      fileName = prefix + fileName;
-    }
-    //    cout << fileName << endl;
-  }
-  
   bool TaggerClass::readsettings( string& fname ){
     ifstream setfile( fname.c_str(), ios::in);
     if(setfile.bad()){
@@ -1595,7 +1606,7 @@ namespace Tagger {
     // name for both output files (concatenation of datafile 
     // and pattern string)
     //
-    create_lexicons( TestFileName );
+    create_lexicons();
     if ( TimblOptStr.empty() )
       Timbl_Options = "-a IB1";
     else
@@ -1694,13 +1705,13 @@ namespace Tagger {
       cout << "    Algorithm = " << to_string(UKtree->Algo())
 	   << endl << endl;
       if ( !piped_input ){
-	ifstream infile( TestFileName.c_str(), ios::in );
+	string inname = TestFilePath + TestFileName;
+	ifstream infile( inname.c_str(), ios::in );
 	if(infile.bad()){
-	  cerr << "Cannot read from " << TestFileName << endl;
+	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
-	cout << "    Processing data from the file " 
-	     << TestFileName << "...";
+	cout << "    Processing data from the file " << inname << "...";
 	cout.flush();
 	nwords = makedataset( infile, true );
       }
@@ -1734,13 +1745,13 @@ namespace Tagger {
       cout << "    Algorithm = " << to_string(UKtree->Algo()) 
 	   << endl << endl;
       if ( !piped_input ){
-	ifstream infile( TestFileName.c_str(), ios::in );
+	string inname = TestFilePath + TestFileName;
+	ifstream infile( inname.c_str(), ios::in );
 	if(infile.bad()){
-	  cerr << "Cannot read from " << TestFileName << endl;
+	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
-	cout << "    Processing data from the file "
-	     << TestFileName << "...";
+	cout << "    Processing data from the file " << inname << "...";
 	cout.flush();
 	nwords = makedataset( infile, false );
       }
@@ -1852,14 +1863,36 @@ namespace Tagger {
     if ( Opts.Find( 's', value, mood ) ){
       // if a settingsfile option has been specified, use that name
       SettingsFileName = value;
+      // extract the absolute path to the settingsfile
+      string::size_type lastSlash = SettingsFileName.rfind('/');
+      if ( lastSlash != string::npos )
+	SettingsFilePath = SettingsFileName.substr( 0, lastSlash+1 );
+      else
+	SettingsFilePath = "";
     }
     if ( Opts.Find( 'E', value, mood ) ){
       TestFileName = value;
+      // extract the absolute path to the testfile
+      string::size_type lastSlash = TestFileName.rfind('/');
+      if ( lastSlash != string::npos ){
+	TestFilePath = TestFileName.substr( 0, lastSlash+1 );
+	TestFileName = TestFileName.substr( lastSlash+1 );
+      }
+      else
+	TestFilePath = "";
       piped_input = false;
       input_kind = ENRICHED; // an enriched tagged test file specified
     }
     if ( Opts.Find( 'T', value, mood ) ){
       TestFileName = value;
+      // extract the absolute path to the testfile
+      string::size_type lastSlash = TestFileName.rfind('/');
+      if ( lastSlash != string::npos ){
+	TestFilePath = TestFileName.substr( 0, lastSlash+1 );
+	TestFileName = TestFileName.substr( lastSlash+1 );
+      }
+      else
+	TestFilePath = "";
       piped_input = false;
       input_kind = TAGGED; // there is a tagged test file specified
     }
