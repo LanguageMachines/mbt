@@ -62,8 +62,8 @@ namespace Tagger {
   using namespace Hash;
   using namespace Timbl;
 
-  string Version() { return VERSION; };
-  string VersionName() { return PACKAGE_STRING; };
+  string Version() { return VERSION; }
+  string VersionName() { return PACKAGE_STRING; }
 
   const string UNKSTR   = "UNKNOWN";
   

@@ -1,6 +1,7 @@
 mbt version 3.2.7 2011-xx-xx
-* changed output of +v options. Now we are in line with Timbl.
-  might breaks some stuff! BUT NOT FROG.
+  * changed output of +v options. Now we are in line with Timbl.
+    might breaks some stuff! BUT NOT FROG.
+  * small changes to satisfy '-pedantic'
 
 mbt version 3.2.6 2011-08-30
 
