@@ -126,6 +126,7 @@ namespace Tagger {
   }
 
   TaggerClass::TaggerClass( const TaggerClass& in ){
+    cur_log = in.cur_log;
     KnownTree = in.KnownTree;
     unKnownTree = in.unKnownTree;
     TimblOptStr = in.TimblOptStr;
@@ -181,6 +182,8 @@ namespace Tagger {
   }
 
   bool TaggerClass::setLog( LogStream& os ){
+    if ( !cloned )
+      delete cur_log;
     cur_log = new LogStream( os, "mbt-" );
     return true;
   }
