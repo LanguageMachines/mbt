@@ -1,4 +1,7 @@
-mbt version 3.2.7 2011-xx-xx
+mbt version 3.2.7 2011-12-20
+
+  * fixed memoryleak problem with multithreading.
+  * added a make 'check' target
   * changed output of +v options. Now we are in line with Timbl.
     might breaks some stuff! BUT NOT FROG.
   * small changes to satisfy '-pedantic'
