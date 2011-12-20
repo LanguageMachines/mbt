@@ -156,7 +156,7 @@ namespace Tagger {
     std::string pat_to_string( MatchAction, int );
 
     std::string TimblOptStr;
-    int FilterTreshold;
+    int FilterThreshold;
     int Npax;
     int TopNumber;
     bool DoSort;

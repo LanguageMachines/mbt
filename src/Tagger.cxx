@@ -76,7 +76,7 @@ namespace Tagger {
     KnownTree = NULL;
     unKnownTree = NULL;
     TimblOptStr = "+vS -FColumns K: -a IGTREE +D U: -a IB1 ";
-    FilterTreshold = 5;
+    FilterThreshold = 5;
     Npax = 5;
     TopNumber = 100;
     DoSort = false;
@@ -130,7 +130,7 @@ namespace Tagger {
     KnownTree = in.KnownTree;
     unKnownTree = in.unKnownTree;
     TimblOptStr = in.TimblOptStr;
-    FilterTreshold = in.FilterTreshold;
+    FilterThreshold = in.FilterThreshold;
     Npax = in.Npax;
     TopNumber = in.TopNumber;
     DoSort = in.DoSort;
@@ -634,10 +634,10 @@ namespace Tagger {
     LexFileName = TestFileName;
     prefixWithAbsolutePath( LexFileName, SettingsFilePath );
     LexFileName += ".lex";
-    if ( FilterTreshold < 10 )
-      sprintf( affix, ".0%1i",  FilterTreshold );
+    if ( FilterThreshold < 10 )
+      sprintf( affix, ".0%1i",  FilterThreshold );
     else
-      sprintf( affix, ".%2i",  FilterTreshold );
+      sprintf( affix, ".%2i",  FilterThreshold );
     if( !knownoutfileflag ){
       K_option_name = TestFileName;
       prefixWithAbsolutePath( K_option_name, SettingsFilePath );
@@ -685,7 +685,7 @@ namespace Tagger {
   }
     
   void TaggerClass::ProcessTags( TagInfo *TI ){
-    TI->Prune( FilterTreshold );
+    TI->Prune( FilterThreshold );
     TI->CreateStringRepr();
   }
   
@@ -1816,7 +1816,7 @@ namespace Tagger {
       exit(EXIT_SUCCESS);
     }
     if ( Opts.Find( '%', value, mood ) ){
-      FilterTreshold = stringTo<int>( value );
+      FilterThreshold = stringTo<int>( value );
     }
     if ( Opts.Find( 'd', value, mood ) ){
       dumpflag=true;

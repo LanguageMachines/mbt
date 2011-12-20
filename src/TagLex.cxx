@@ -62,11 +62,11 @@ namespace Tagger {
     }
   }
   
-  void TagInfo::Prune( int Treshold ){
+  void TagInfo::Prune( int Threshold ){
     map<string,int>::iterator it = TagFreqs.begin();
     while ( it != TagFreqs.end() ){
       double perc = ( (double)it->second * 100 ) / ( double)WordFreq;
-      if ( perc < Treshold )
+      if ( perc < Threshold )
 	TagFreqs.erase( it++ );
       else
 	++it;

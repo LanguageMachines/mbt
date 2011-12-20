@@ -75,7 +75,7 @@ string MbtAPI::Tag( const std::string& inp ){
 void gen_usage( const char *progname ){
   cerr << "Usage is : " << progname << " option option ...\n"
        << "\t-s settingsfile\n"
-       << "\t-% <percentage> Filter Treshold for ambitag construction (default 5%)\n"
+       << "\t-% <percentage> Filter Threshold for ambitag construction (default 5%)\n"
        << "\t-E <enriched tagged training corpus file> \n"
        << "\t-T <tagged training corpus file> \n"
        << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
