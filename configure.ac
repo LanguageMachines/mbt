@@ -29,16 +29,17 @@ AC_PROG_LIBTOOL
 # when running tests, use CXX
 AC_LANG([C++])
 
+# Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
-AC_C_INLINE
-AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
-# check for pthreads first otherwise this may fail on OpenMp stuff
+# Checks for library functions.
+
+# check for pthreads 
 ACX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
 if test x"$acx_pthread_ok" = xyes; then
    LIBS="$PTHREAD_LIBS $LIBS" \
@@ -65,12 +66,6 @@ AC_ARG_WITH(timbl,
 PKG_CHECK_MODULES([timbl], [timbl >= 6.4.2] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
-
-# Checks for library functions.
-AC_CHECK_FUNCS([strdup strerror])
-
-AC_C_CONST
-AC_TYPE_SIGNAL
 
 AC_CONFIG_FILES([
   Makefile
