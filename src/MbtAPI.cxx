@@ -152,6 +152,7 @@ void run_usage( char *progname ){
        << "\t-r <ambitagfile>\n"
        << "\t-k <known words case base>\n"
        << "\t-u <unknown words case base>\n"
+       << "\t-D <loglevel> (possible values are 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
        << "\t-e <sentence delimiter> (default '<utt>')\n"
        << "\t-E <enriched tagged testfile>\n "
        << "\t-t <testfile> | -T <tagged testfile> "
