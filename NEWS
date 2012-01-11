@@ -1,7 +1,7 @@
 mbt version 3.2.8 2011-12-20
   * added an option to usage()
   * updated man page accordingly
-  * fixex outputmangling 
+  * fixed outputmangling 
 
 mbt version 3.2.7 2011-12-20
 

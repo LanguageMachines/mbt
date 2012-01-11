@@ -137,6 +137,7 @@ namespace Tagger {
     std::vector<std::string> distribution_array;
     std::vector<double> confidence_array;
 
+    void manifest();
     int makedataset( std::istream& infile, bool do_known );
     bool readsettings( std::string& fname );
     void create_lexicons();

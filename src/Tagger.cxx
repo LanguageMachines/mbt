@@ -1580,27 +1580,24 @@ namespace Tagger {
     }
   }
 
-  void manifest( ostream &os ){
+  void TaggerClass::manifest( ){
     // present yourself to the user
     //
-    os << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2012." << endl
-       << "Memory Based Tagger " << endl
-       << "Tilburg University" << endl
-       << "CLiPS Computational Linguistics Group, University of Antwerp"
-       << endl
-       << "Based on " << Timbl::VersionName() 
-       << endl << endl;
+    LOG << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2012." << endl
+	<< "Memory Based Tagger " << endl
+	<< "Tilburg University" << endl
+	<< "CLiPS Computational Linguistics Group, University of Antwerp"
+	<< endl
+	<< "Based on " << Timbl::VersionName() 
+	<< endl << endl;
   }
-
+  
   TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts, LogStream* os ){    
     TaggerClass *tagger = new TaggerClass;
     tagger->parse_run_args( Opts );
-    if ( os ){
+    if ( os )
       tagger->setLog( *os );
-      manifest( *os );
-    }
-    else
-      manifest( cerr );
+    tagger->manifest();
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
