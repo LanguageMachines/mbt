@@ -1658,15 +1658,15 @@ namespace Tagger {
 	cout << "."; cout.flush();
       }
       if ( mySentence.init_windowing( &Ktemplate,&Utemplate, 
-				       *MT_lexicon, TheLex ) ) {
+				      *MT_lexicon, TheLex ) ) {
 	// we initialize the windowing procedure, this entails lexical lookup
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
 	int thisTagCode;
 	while( mySentence.nextpat( &Action, TestPat, 
-				    *kwordlist, TheLex,
-				    swcn ) ){ 
+				   *kwordlist, TheLex,
+				   swcn ) ){ 
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
 	    if((uwordlist->Lookup(mySentence.getword(swcn)))==0){
