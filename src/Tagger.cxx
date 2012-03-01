@@ -482,20 +482,6 @@ namespace Tagger {
     return Beam->Init( Beam_Size, no_words );
   }
 
-  int TaggerClass::TagLine( const string& line, string& result ){
-    result.clear();
-    mySentence.reset( EosMark );
-    mySentence.fill( line, input_kind );
-    //    LOG << "read a sentence " << mySentence << endl;
-    if ( mySentence.size() != 0 ){
-      result = Tag();
-      if ( !result.empty() ) {
-	//	LOG << "tagged a sentence " << result << endl;
-      }
-    } 
-    return mySentence.size();
-  }
-  
   int TaggerClass::ProcessLines( istream &is, ostream& os ){
     int no_words=0;    
     // loop as long as you get non empty sentences
@@ -503,10 +489,11 @@ namespace Tagger {
     string tagged_sentence;
     string line;
     while ( getline(is, line ) ){
-      int num = TagLine( line, tagged_sentence );
+      vector<TagResult> res = tagLine( line );
+      int num = res.size();
       if ( num > 0 ){
 	no_words += num;
-	os << tagged_sentence << endl;
+	os << get_result( res ) << endl;
       }
     } // end of while looping over sentences
     cerr << endl << "Done:" << endl
@@ -1131,8 +1118,122 @@ namespace Tagger {
   }
   
   string TaggerClass::Tag( const string& inp ){
+    vector<TagResult> res = tagLine( inp );
+    string newRes = get_result( res );
+    return newRes;
+  }
+  
+  int TaggerClass::TagLine( const std::string& inp, string& result ){
+    vector<TagResult> res = tagLine( inp );
+    result = get_result( res );
+    return res.size();
+  }
+
+  vector<TagResult> TaggerClass::tagLine( const string& line ){
+    vector<TagResult> result;
+    mySentence.reset( EosMark );
+    mySentence.fill( line, input_kind );
+    //    LOG << "read a sentence " << mySentence << endl;
+    if ( mySentence.size() != 0 ){
+      if ( !initialized ||
+	   !InitBeaming( mySentence.size() ) ){
+	throw runtime_error( "Tagger not initialized" );
+      }
+      DBG << mySentence << endl;
+      
+      if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
+				     *MT_lexicon, TheLex ) ) {
+	// here the word window is looked up in the dictionary and the values
+	// of the features are stored in the testpattern
+	MatchAction Action = Unknown;
+	if ( mySentence.nextpat( &Action, TestPat, 
+				 *kwordlist, TheLex,
+				 0 )){ 
+	  
+	  DBG << "Start: " << mySentence.getword( 0 ) << endl;
+	  InitTest( Action );
+	  for ( unsigned int iword=1; iword < mySentence.size(); iword++ ){
+	    // clear best_array
+	    DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
+	    Beam->ClearBest();
+	    for ( int beam_count=0; beam_count < Beam_Size; beam_count++ ){
+	      if ( !NextBest( iword, beam_count ) )
+		break;
+	    }
+	    Beam->Shift( mySentence.size(), iword );
+	    if ( IsActive( DBG ) ){
+	      LOG << "after shift:" << endl;
+	      Beam->Print( LOG, iword, TheLex );
+	    }
+	  }
+	} // end one sentence
+      }
+      // get output
+      for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
+	TagResult res;
+	// get the original word
+	res._word= mySentence.getword(Wcnt);
+	// get the original tag
+	res._inputTag = mySentence.gettag(Wcnt);
+	// lookup the assigned tag
+	res._tag = indexlex( Beam->paths[0][Wcnt], TheLex );
+	// is it known/unknown
+	res._known = mySentence.known(Wcnt);
+	if ( input_kind == ENRICHED )
+	  res._enrichment = mySentence.getenr(Wcnt);
+	if ( confidence_flag )
+	  res._confidence = confidence_array[Wcnt];
+	if ( distrib_flag )
+	  res._distribution = distribution_array[Wcnt];
+	if ( distance_flag )
+	  res._distance = distance_array[Wcnt];
+	result.push_back( res );
+      }
+    } // end of output loop through one sentence
+    return result;
+  }
+  
+  string TaggerClass::get_result( vector<TagResult>& tr ){
     string result;
-    TagLine( inp, result );
+    for ( unsigned int Wcnt=0; Wcnt < tr.size(); ++Wcnt ){
+      // lookup the assigned category
+      result += tr[Wcnt].word();
+      if ( tr[Wcnt].isKnown() ){
+	if ( input_kind == UNTAGGED )
+	  result += "/";
+	else
+	  result += "\t/\t";
+      }
+      else {
+	if ( input_kind == UNTAGGED )
+	  result += "//";
+	else
+	  result += "\t//\t";
+      }      
+      // output the correct tag if possible
+      //
+      if ( input_kind == ENRICHED )
+	result = result + tr[Wcnt].enrichment() + "\t";
+      if ( input_kind == TAGGED ||
+	   input_kind == ENRICHED ){
+	result += tr[Wcnt].inputTag() + "\t" + tr[Wcnt].assignedTag();
+	if ( confidence_flag )
+	  result += " [" + toString( tr[Wcnt].confidence() ) + "]";
+	if ( distrib_flag )
+	  result += " " + tr[Wcnt].distribution();
+	if ( distance_flag )
+	  result += " " + toString( tr[Wcnt].distance() );
+	result += "\n";
+      }
+      else {
+	result += tr[Wcnt].assignedTag();
+	if ( confidence_flag )
+	  result += "/" + toString( tr[Wcnt].confidence() );
+	result += " ";
+      }
+    } // end of output loop through one sentence
+    if ( input_kind != ENRICHED )
+      result = result + mySentence.Eos();
     return result;
   }
 

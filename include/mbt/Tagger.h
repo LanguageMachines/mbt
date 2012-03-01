@@ -72,7 +72,9 @@ namespace Tagger {
     double *path_prob;
     n_best_tuple **n_best_array;
   };
-  
+
+  class TagResult;
+
   class TaggerClass{
   public:
     TaggerClass( );
@@ -83,8 +85,10 @@ namespace Tagger {
     bool InitBeaming( unsigned int );
     TaggerClass *clone() const;
     int Run( );
+    std::vector<TagResult> tagLine( const std::string& );
     int TagLine( const std::string&, std::string& );
     std::string Tag( const std::string& );
+    std::string get_result( std::vector<TagResult>& );
     int CreateKnown();
     int CreateUnknown();
     void CreateSettingsFile();
@@ -193,6 +197,30 @@ namespace Tagger {
     bool cloned;
     std::vector<int> TestPat; 
   };
+
+  class TagResult {
+    friend std::vector<TagResult> TaggerClass::tagLine( const std::string&);
+  public:
+  TagResult(): _distance(-1), _confidence(-1), _known(false){};
+    bool isKnown() const { return _known; };
+    std::string word() const { return _word; };
+    std::string assignedTag() const { return _tag; };
+    std::string inputTag() const { return _inputTag; };
+    std::string enrichment() const { return _enrichment; };
+    std::string distribution() const { return _distribution; };
+    double confidence() const { return _confidence; };
+    double distance() const { return _distance; };
+  private:
+    std::string _word;
+    std::string _inputTag;
+    std::string _tag;
+    std::string _enrichment;
+    std::string _distribution;
+    double _distance;
+    double _confidence;
+    bool _known;
+  };
+  
 
   void RemoveTagger( TaggerClass * );
 }
