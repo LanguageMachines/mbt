@@ -29,6 +29,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <stdexcept> 
 #include "timbl/TimblAPI.h"
 #include "config.h"
 #include "mbt/Logging.h"
@@ -40,6 +41,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
+using std::vector;
 
 MbtAPI::MbtAPI( const std::string& opts ){
   // get all the commandline options in an TimblOpts structure
@@ -67,8 +69,23 @@ string MbtAPI::Tag( const std::string& inp ){
   if ( tagger )
     return tagger->Tag( inp );
   else {
-    cerr << "No tagger initialized yet...." << endl;
-    exit(EXIT_FAILURE);
+    throw std::runtime_error( "No tagger initialized yet...." );
+  }
+}
+
+vector<TagResult> MbtAPI::TagLine( const string& inp ){
+  if ( tagger )
+    return tagger->tagLine( inp );
+  else {
+    throw std::runtime_error( "No tagger initialized yet...." );
+  }
+}
+
+string MbtAPI::getResult( const vector<TagResult>& v ) const {
+  if ( tagger )
+    return tagger->TRtoString( v );
+  else {
+    throw std::runtime_error( "No tagger initialized yet...." );
   }
 }
 

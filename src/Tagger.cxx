@@ -493,7 +493,7 @@ namespace Tagger {
       int num = res.size();
       if ( num > 0 ){
 	no_words += num;
-	os << get_result( res ) << endl;
+	os << TRtoString( res ) << endl;
       }
     } // end of while looping over sentences
     cerr << endl << "Done:" << endl
@@ -1117,15 +1117,9 @@ namespace Tagger {
     }
   }
   
-  string TaggerClass::Tag( const string& inp ){
-    vector<TagResult> res = tagLine( inp );
-    string newRes = get_result( res );
-    return newRes;
-  }
-  
   int TaggerClass::TagLine( const std::string& inp, string& result ){
     vector<TagResult> res = tagLine( inp );
-    result = get_result( res );
+    result = TRtoString( res );
     return res.size();
   }
 
@@ -1133,7 +1127,11 @@ namespace Tagger {
     vector<TagResult> result;
     mySentence.reset( EosMark );
     mySentence.fill( line, input_kind );
-    //    LOG << "read a sentence " << mySentence << endl;
+    return tagSentence();
+  }
+
+  vector<TagResult> TaggerClass::tagSentence(){
+    vector<TagResult> result;
     if ( mySentence.size() != 0 ){
       if ( !initialized ||
 	   !InitBeaming( mySentence.size() ) ){
@@ -1193,7 +1191,7 @@ namespace Tagger {
     return result;
   }
   
-  string TaggerClass::get_result( vector<TagResult>& tr ){
+  string TaggerClass::TRtoString( const vector<TagResult>& tr ) const {
     string result;
     for ( unsigned int Wcnt=0; Wcnt < tr.size(); ++Wcnt ){
       // lookup the assigned category
@@ -1237,104 +1235,6 @@ namespace Tagger {
     return result;
   }
 
-  string TaggerClass::Tag(){
-    string tag = "";
-    if ( !initialized ||
-	 !InitBeaming( mySentence.size() ) ){
-      throw runtime_error( "Tagger not initialized" );
-      return tag;
-    }
-    DBG << mySentence << endl;
-    
-    if ( mySentence.init_windowing(&Ktemplate,&Utemplate, 
-				   *MT_lexicon, TheLex ) ) {
-      // here the word window is looked up in the dictionary and the values
-      // of the features are stored in the testpattern
-      MatchAction Action = Unknown;
-      if ( mySentence.nextpat( &Action, TestPat, 
-			       *kwordlist, TheLex,
-			       0 )){ 
-	
-	DBG << "Start: " << mySentence.getword( 0 ) << endl;
-	InitTest( Action );
-	for ( unsigned int iword=1; iword < mySentence.size(); iword++ ){
-	  // clear best_array
-	  DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
-	  Beam->ClearBest();
-	  for ( int beam_count=0; beam_count < Beam_Size; beam_count++ ){
-	    if ( !NextBest( iword, beam_count ) )
-	      break;
-	  }
-	  Beam->Shift( mySentence.size(), iword );
-	  if ( IsActive( DBG ) ){
-	    LOG << "after shift:" << endl;
-	    Beam->Print( LOG, iword, TheLex );
-	  }
-	}
-      } // end one sentence
-      tag = get_result();
-    }
-    return tag;
-  }
-  
-  string TaggerClass::get_result(){
-    string result;
-    string tagstring;
-    //now some output
-    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
-      // lookup the assigned category
-      tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
-      // now we do the appropriate output, depending on known/unknown
-      // words and the availability of a "correct tag".
-      //
-      result += mySentence.getword(Wcnt);
-      if ( mySentence.known(Wcnt) ){
-	if ( input_kind == UNTAGGED )
-	  result += "/";
-	else
-	  result += "\t/\t";
-      }
-      else {
-	if ( input_kind == UNTAGGED )
-	  result += "//";
-	else
-	  result += "\t//\t";
-      }      
-      // output the correct tag if possible
-      //
-      if ( input_kind == ENRICHED ){
-	result = result + mySentence.getenr(Wcnt) + "\t" 
-	  + mySentence.gettag(Wcnt) + "\t" + tagstring;
-	if ( confidence_flag )
-	  result += " [" + toString( confidence_array[Wcnt] ) + "]";
-	if ( distrib_flag )
-	  result += " " + distribution_array[Wcnt];
-	if ( distance_flag )
-	  result += " " + toString( distance_array[Wcnt] );
-	result += "\n";
-      }
-      else if ( input_kind == TAGGED ){
-	result = result + mySentence.gettag(Wcnt) + "\t" + tagstring;
-	if ( confidence_flag )
-	  result += " [" + toString( confidence_array[Wcnt] ) + "]";
-	if ( distrib_flag )
-	  result += " " + distribution_array[Wcnt];
-	if ( distance_flag )
-	  result += " " + toString( distance_array[Wcnt] );
-	result += "\n";
-      }
-      else {
-	result = result + tagstring;
-	if ( confidence_flag )
-	  result += "/" + toString( confidence_array[Wcnt] );
-	result += " ";
-      }
-    } // end of output loop through one sentence
-    if ( input_kind != ENRICHED )
-      result = result + mySentence.Eos();
-    return result;
-  }
-  
   void TaggerClass::statistics( int& no_known, int& no_unknown,
 				int& no_correct_known, 
 				int& no_correct_unknown ){
@@ -1384,7 +1284,8 @@ namespace Tagger {
 	outfile << EosMark << endl;
 	continue;
       }
-      tagged_sentence = Tag();
+      vector<TagResult> res = tagSentence();
+      tagged_sentence = TRtoString( res );
       if ( !tagged_sentence.empty() ){
 	// show the results of 1 sentence
 	statistics( no_known, no_unknown,

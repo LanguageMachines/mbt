@@ -86,9 +86,13 @@ namespace Tagger {
     TaggerClass *clone() const;
     int Run( );
     std::vector<TagResult> tagLine( const std::string& );
-    int TagLine( const std::string&, std::string& );
-    std::string Tag( const std::string& );
-    std::string get_result( std::vector<TagResult>& );
+    std::vector<TagResult> tagSentence();
+    std::string Tag( const std::string& inp ){
+      return TRtoString( tagLine(inp) );
+    };
+    std::string TRtoString( const std::vector<TagResult>& ) const;
+    int TagLine( const std::string&, std::string& ); 
+    // only for backward compatability
     int CreateKnown();
     int CreateUnknown();
     void CreateSettingsFile();
@@ -147,13 +151,11 @@ namespace Tagger {
     void create_lexicons();
     int ProcessFile( std::istream&, std::ostream& );
     void ProcessTags( TagInfo * );
-    std::string Tag();
     void InitTest( MatchAction );
     bool NextBest( int, int );
     const Timbl::TargetValue *Classify( MatchAction, const std::string&, 
 					const Timbl::ValueDistribution **distribution, 
 					double& );
-    std::string get_result();
     void statistics( int& no_known,
 		     int& no_unknown,
 		     int& no_correct_known, 
@@ -199,7 +201,7 @@ namespace Tagger {
   };
 
   class TagResult {
-    friend std::vector<TagResult> TaggerClass::tagLine( const std::string&);
+    friend std::vector<TagResult> TaggerClass::tagSentence();
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
     bool isKnown() const { return _known; };

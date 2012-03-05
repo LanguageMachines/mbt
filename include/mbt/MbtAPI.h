@@ -48,6 +48,8 @@ class MbtAPI {
   ~MbtAPI();
   bool isInit() const;
   std::string Tag( const std::string& );
+  std::vector<TagResult> TagLine( const std::string& );
+  std::string getResult( const std::vector<TagResult>& ) const;
  private:
   TaggerClass *tagger;
 };

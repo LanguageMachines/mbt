@@ -1,7 +1,11 @@
-mbt version 3.2.8 2011-12-20
-  * added an option to usage()
+mbt version 3.2.8 2012-03-06
+
+  * fixed terrible bug in ENRICHED training
+  * added -D (debug) option to usage()
   * updated man page accordingly
   * fixed outputmangling 
+  * some refactoring to make code clearer
+  * added a new tagLine function for a more flexible API
 
 mbt version 3.2.7 2011-12-20
 
