@@ -52,12 +52,12 @@ namespace Tagger {
   // New enriched word.
   //
   word::word( const string& some_word, const vector<string>& extra_features, const string& some_tag){
-      the_word =  some_word;
-      word_tag = some_tag;
-      the_word_index = -1;
-      extraFeatures = extra_features;
+    the_word =  some_word;
+    word_tag = some_tag;
+    the_word_index = -1;
+    extraFeatures = extra_features;
   }  
- 
+  
   // Delete a word
   //
   word::~word(){
@@ -149,7 +149,7 @@ namespace Tagger {
   bool sentence::init_windowing( PatTemplate *Ktmpl,
 				 PatTemplate *Utmpl, 
 				 Lexicon &lex,
-				 StringHash& TheLex ){
+				 StringHash& TheLex ) {
     if ( UTAG == -1 )
       UTAG = TheLex.Hash( UNKNOWN );
     if ( no_words == 0 ) {
@@ -181,7 +181,7 @@ namespace Tagger {
     }
   }
   
-  int sentence::classify_hapax( const string& word, StringHash& TheLex ){
+  int sentence::classify_hapax( const string& word, StringHash& TheLex ) const{
     string hap = "HAPAX-";
     if ( word.find( "-" ) != string::npos ) // hyphen anywere
       hap += 'H';
@@ -197,7 +197,7 @@ namespace Tagger {
   
   bool sentence::nextpat( MatchAction *Action, vector<int>& Pat, 
 			  StringHash& wordlist, StringHash& TheLex,
-			  unsigned int position, int *old_pat ) {
+			  unsigned int position, int *old_pat ) const {
     // safety check:
     //
     if( no_words == 0 || position >= no_words)
@@ -387,7 +387,7 @@ namespace Tagger {
       Words[pos]->word_ass_tag = cat;
   }
   
-  bool sentence::known( unsigned int i ){
+  bool sentence::known( unsigned int i ) const {
     if( no_words > 0 && i < no_words )
       return Words[i]->word_amb_tag != UTAG;
     else

@@ -46,6 +46,19 @@ if test x"$acx_pthread_ok" = xyes; then
    CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 fi
 
+OPENMP_CHECK( [CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
+	       AC_DEFINE(HAVE_OPENMP, 1 , Define to 1 if you have OpenMP )],
+	      [AC_MSG_NOTICE(We don't have OpenMP. Multithreaded testing is disabled)] )
+
+AC_SUBST([OPENMPFLAGS],[$OPENMP_CXXFLAGS])
+
+# for GCC we add -lgomp to LIBS. This makes libmbt depending on libgomp,
+# as we would like to see.
+# do we need a solution for other compilers?????
+if test "$OPENMPFLAGS" = "-fopenmp"; then
+   LIBS="$LIBS -lgomp"
+fi
+
 PKG_PROG_PKG_CONFIG
 # Checks for timbl library.
 

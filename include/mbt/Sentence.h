@@ -71,15 +71,15 @@ namespace Tagger {
     void reset( const std::string& );    
     bool init_windowing( PatTemplate *, PatTemplate *, Lexicon&, StringHash& );
     bool nextpat( MatchAction *, std::vector<int>&, StringHash& , StringHash&,
-		  unsigned int, int * = 0 );
-    int classify_hapax( const std::string&, StringHash& );
+		  unsigned int, int * = 0 ) const;
+    int classify_hapax( const std::string&, StringHash& ) const;
     void assign_tag( int, unsigned int );
     std::string getword( unsigned int i ) { return Words[i]->the_word; };
     word *getWord( unsigned int i ) const { return Words[i]; };
     const std::string& gettag( int i ) const { return Words[i]->word_tag; };
     std::string getenr( unsigned int i );
     unsigned int size() const { return no_words; };
-    bool known( unsigned int );
+    bool known( unsigned int ) const;
     std::string Eos() const;
     bool read( std::istream &, input_kind_type, bool=false );
     bool fill( const std::string&, bool );

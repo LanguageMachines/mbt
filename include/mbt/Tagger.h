@@ -86,7 +86,7 @@ namespace Tagger {
     TaggerClass *clone() const;
     int Run( );
     std::vector<TagResult> tagLine( const std::string& );
-    std::vector<TagResult> tagSentence();
+    std::vector<TagResult> tagSentence( sentence& );
     std::string Tag( const std::string& inp ){
       return TRtoString( tagLine(inp) );
     };
@@ -100,7 +100,7 @@ namespace Tagger {
     void parse_create_args( Timbl::TimblOpts& Opts );
     void parse_run_args( Timbl::TimblOpts& Opts, bool = false );
     bool isClone() const { return cloned; };
-    void ShowCats( std::ostream& os, std::vector<int>& Pat, int slots );
+    void ShowCats( std::ostream& os, const std::vector<int>& Pat, int slots );
     bool setLog( LogStream& );
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
@@ -110,7 +110,6 @@ namespace Tagger {
     bool isInit() const { return initialized; };
   private:
     LogStream *cur_log;
-    sentence mySentence;
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;
     std::string Timbl_Options;
@@ -119,7 +118,6 @@ namespace Tagger {
     std::string unknownstr;
     std::string uwf;
     std::string kwf;
-    int nwords;
     bool initialized;
     StringHash TheLex;
     StringHash *kwordlist;
@@ -151,16 +149,20 @@ namespace Tagger {
     void create_lexicons();
     int ProcessFile( std::istream&, std::ostream& );
     void ProcessTags( TagInfo * );
-    void InitTest( MatchAction );
-    bool NextBest( int, int );
+    void InitTest( const sentence&, std::vector<int>&, MatchAction );
+    bool NextBest( const sentence&, std::vector<int>&, int, int );
     const Timbl::TargetValue *Classify( MatchAction, const std::string&, 
 					const Timbl::ValueDistribution **distribution, 
 					double& );
-    void statistics( int& no_known,
+    void statistics( const sentence&,
+		     int& no_known,
 		     int& no_unknown,
 		     int& no_correct_known, 
 		     int& no_correct_unknown );
-    std::string pat_to_string( MatchAction, int );
+    std::string pat_to_string( const sentence&, 
+			       const std::vector<int>&,
+			       MatchAction,
+			       int );
 
     std::string TimblOptStr;
     int FilterThreshold;
@@ -197,11 +199,10 @@ namespace Tagger {
     std::string SettingsFilePath;
     
     bool cloned;
-    std::vector<int> TestPat; 
   };
 
   class TagResult {
-    friend std::vector<TagResult> TaggerClass::tagSentence();
+    friend std::vector<TagResult> TaggerClass::tagSentence( sentence& );
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
     bool isKnown() const { return _known; };

@@ -776,7 +776,7 @@ namespace Tagger {
     }
   }
   
-  void TaggerClass::ShowCats( ostream& os, vector<int>& Pat, int slots ){
+  void TaggerClass::ShowCats( ostream& os, const vector<int>& Pat, int slots ){
     os << "Pattern : ";
     for( int slot=0; slot < slots; slot++){
       os << indexlex( Pat[slot], TheLex )<< " ";
@@ -784,7 +784,10 @@ namespace Tagger {
     os << endl;
   }
   
-  string TaggerClass::pat_to_string( MatchAction action, int word ){
+  string TaggerClass::pat_to_string( const sentence& mySentence,
+				     const vector<int>& pat,
+				     MatchAction action, 
+				     int word ){
     int slots;
     if ( action == Unknown )
       slots = Utemplate.totalslots() - Utemplate.skipfocus;
@@ -792,7 +795,7 @@ namespace Tagger {
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     string line;
     for( int f=0; f < slots; f++ ){
-      line += indexlex( TestPat[f], TheLex );
+      line += indexlex( pat[f], TheLex );
       line += " ";
     }
     for (vector<string>::iterator it = mySentence.getWord(word)->extraFeatures.begin(); it != mySentence.getWord(word)->extraFeatures.end(); it++)
@@ -805,13 +808,13 @@ namespace Tagger {
     else
       line += "??";
     if ( IsActive(DBG) ){
-      ShowCats( LOG, TestPat, slots );
+      ShowCats( LOG, pat, slots );
     }
     // dump if desired
     //
     if ( dumpflag ){
       for( int slot=0; slot < slots; slot++){
-	cout << indexlex( TestPat[slot], TheLex );
+	cout << indexlex( pat[slot], TheLex );
       }
       cout << endl;
     }
@@ -883,7 +886,6 @@ namespace Tagger {
     //
     read_listfile( TopNFileName, kwordlist );
     
-    nwords = 0;
     if ( TimblOptStr.empty() )
       Timbl_Options = "-FColumns ";
     else
@@ -969,14 +971,12 @@ namespace Tagger {
     // the testpattern is of the form given in Ktemplate and Utemplate
     // here we allocate enough space for the larger of them to serve both
     //
-    TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     initialized = true;
     return true;
   }
 
   TaggerClass *TaggerClass::clone() const {
     TaggerClass *ta = new TaggerClass( *this );
-    ta->TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     ta->Beam = NULL; // own Beaming data
     ta->cloned = true;
     return ta;
@@ -1051,9 +1051,11 @@ namespace Tagger {
     return answer;
   }
 
-  void TaggerClass::InitTest( MatchAction Action ){
+  void TaggerClass::InitTest( const sentence& mySentence, 
+			      vector<int>& TestPat, 
+			      MatchAction Action ){
     // Now make a testpattern for Timbl to process.
-    string teststring = pat_to_string( Action, 0 );
+    string teststring = pat_to_string( mySentence, TestPat, Action, 0 );
     const ValueDistribution *distribution = 0;
     double distance;
     const TargetValue *answer = Classify( Action, teststring, &distribution, distance );
@@ -1079,16 +1081,18 @@ namespace Tagger {
   }
   
   
-  bool TaggerClass::NextBest( int i_word, int beam_cnt ){
+  bool TaggerClass::NextBest( const sentence& mySentence,
+			      vector<int>& TestPat,
+			      int i_word, int beam_cnt ){
     MatchAction Action = Unknown;
     if ( Beam->paths[beam_cnt][i_word-1] == EMPTY_PATH ){
       return false;
     }
     else if ( mySentence.nextpat( &Action, TestPat,
-				   *kwordlist, TheLex,
-				   i_word, Beam->paths[beam_cnt] ) ){
+				  *kwordlist, TheLex,
+				  i_word, Beam->paths[beam_cnt] ) ){
       // Now make a testpattern for Timbl to process.
-      string teststring = pat_to_string( Action, i_word );
+      string teststring = pat_to_string( mySentence, TestPat, Action, i_word );
       // process teststring to predict a category, using the 
       // appropriate tree
       //
@@ -1125,12 +1129,13 @@ namespace Tagger {
 
   vector<TagResult> TaggerClass::tagLine( const string& line ){
     vector<TagResult> result;
+    sentence mySentence;
     mySentence.reset( EosMark );
     mySentence.fill( line, input_kind );
-    return tagSentence();
+    return tagSentence( mySentence );
   }
 
-  vector<TagResult> TaggerClass::tagSentence(){
+  vector<TagResult> TaggerClass::tagSentence( sentence& mySentence ){
     vector<TagResult> result;
     if ( mySentence.size() != 0 ){
       if ( !initialized ||
@@ -1144,18 +1149,20 @@ namespace Tagger {
 	// here the word window is looked up in the dictionary and the values
 	// of the features are stored in the testpattern
 	MatchAction Action = Unknown;
+	vector<int> TestPat;
+	TestPat.reserve(Utemplate.totalslots());
 	if ( mySentence.nextpat( &Action, TestPat, 
 				 *kwordlist, TheLex,
 				 0 )){ 
 	  
 	  DBG << "Start: " << mySentence.getword( 0 ) << endl;
-	  InitTest( Action );
+	  InitTest( mySentence, TestPat, Action );
 	  for ( unsigned int iword=1; iword < mySentence.size(); iword++ ){
 	    // clear best_array
 	    DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	    Beam->ClearBest();
 	    for ( int beam_count=0; beam_count < Beam_Size; beam_count++ ){
-	      if ( !NextBest( iword, beam_count ) )
+	      if ( !NextBest( mySentence, TestPat, iword, beam_count ) )
 		break;
 	    }
 	    Beam->Shift( mySentence.size(), iword );
@@ -1231,11 +1238,12 @@ namespace Tagger {
       }
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
-      result = result + mySentence.Eos();
+      result = result + EosMark;
     return result;
   }
 
-  void TaggerClass::statistics( int& no_known, int& no_unknown,
+  void TaggerClass::statistics( const sentence& mySentence,
+				int& no_known, int& no_unknown,
 				int& no_correct_known, 
 				int& no_correct_unknown ){
     string result;
@@ -1271,6 +1279,7 @@ namespace Tagger {
     // loop as long as you get sentences
     //
     int HartBeat = 0;
+    sentence mySentence;
     while ( go_on && 
 	    (mySentence.reset( EosMark), mySentence.read(infile, input_kind ) ) ){
       if ( mySentence.size() == 0 )
@@ -1284,11 +1293,12 @@ namespace Tagger {
 	outfile << EosMark << endl;
 	continue;
       }
-      vector<TagResult> res = tagSentence();
+      vector<TagResult> res = tagSentence( mySentence );
       tagged_sentence = TRtoString( res );
       if ( !tagged_sentence.empty() ){
 	// show the results of 1 sentence
-	statistics( no_known, no_unknown,
+	statistics( mySentence,
+		    no_known, no_unknown,
 		    no_correct_known, 
 		    no_correct_unknown );
 	outfile << tagged_sentence << endl;
@@ -1622,10 +1632,6 @@ namespace Tagger {
     splits( Timbl_Options, commonstr, knownstr, unknownstr );
     get_weightsfile_name( knownstr, kwf );
     get_weightsfile_name( unknownstr, uwf );
-    // the testpattern is of the form given in Ktemplate and Utemplate
-    // here we allocate enough space for the larger of them to serve both
-    //
-    TestPat.reserve(max(Ktemplate.totalslots(),Utemplate.totalslots()));
     return true;
   }
   
@@ -1635,19 +1641,23 @@ namespace Tagger {
     int nslots=0;
     ofstream outfile;
     MatchAction Action;
+    vector<int> TestPat;
     if( do_known ){
       nslots = Ktemplate.totalslots() - Ktemplate.skipfocus;
       outfile.open( K_option_name.c_str(), ios::trunc | ios::out );
       Action = MakeKnown;
+      TestPat.reserve(Ktemplate.totalslots());
     }
     else {
       nslots = Utemplate.totalslots() - Utemplate.skipfocus;
       outfile.open( U_option_name.c_str(), ios::trunc | ios::out );
       Action = MakeUnknown;
+      TestPat.reserve(Utemplate.totalslots());
     }
     // loop as long as you get sentences
     //
     int HartBeat = 0;
+    sentence mySentence;
     while ( (mySentence.reset( EosMark), mySentence.read( infile, input_kind ) )){
       if ( mySentence.size() == 0 )
 	continue;
@@ -1953,11 +1963,10 @@ namespace Tagger {
     tagger.InitLearning();
     // process the test material
     // and do the timing
-    int nwords = 0;
-    nwords += tagger.CreateKnown();
-    nwords += tagger.CreateUnknown();
+    int kwords = tagger.CreateKnown();
+    int uwords = tagger.CreateUnknown();
     tagger.CreateSettingsFile();
-    return nwords;
+    return kwords + uwords;
   }  
 
 }
