@@ -432,36 +432,15 @@ namespace Tagger {
   }
 
 
-  bool sentence::read( istream &infile, input_kind_type kind, bool lineMode ){
+  bool sentence::read( istream &infile, input_kind_type kind ){
     if ( kind == TAGGED ||
 	 kind == UNTAGGED ){
-      if ( lineMode )
-	return readLine( infile, kind == TAGGED );
-      else
-	return read( infile, kind == TAGGED );
+      return read( infile, kind == TAGGED );
     }
     else
-      return read( infile );
+      return read_enriched( infile );
   }
 
-  bool sentence::readLine( istream &infile, bool tagged ){
-    // read a sentence from a stream
-    // every sentence is limited to one line
-    // be aware of \r\n problems
-    string linebuffer = "";
-    if ( getline( infile, linebuffer ) ){
-      if ( linebuffer.length() > 0 ){
-	if ( linebuffer[linebuffer.length()-1] == '\r' ){
-	  linebuffer.erase( linebuffer.length()-1 );
-	}
-	if ( linebuffer.length() > 0 ){
-	  return fill( linebuffer, tagged );
-	}
-      }
-    }
-    return false;
-  }
-  
   bool sentence::read( istream &infile, bool tagged ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
@@ -504,7 +483,7 @@ namespace Tagger {
       return false;
   }
   
-  bool sentence::read( istream &infile ){
+  bool sentence::read_enriched( istream &infile ){
     // read an enriched and tagged word from infile
     // it must be a one_liner
     //    cerr << "Reading enriched" << endl;

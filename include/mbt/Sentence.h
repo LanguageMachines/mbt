@@ -81,7 +81,7 @@ namespace Tagger {
     unsigned int size() const { return no_words; };
     bool known( unsigned int ) const;
     std::string Eos() const;
-    bool read( std::istream &, input_kind_type, bool=false );
+    bool read( std::istream &, input_kind_type );
     bool fill( const std::string&, bool );
   private:
     int UTAG;
@@ -95,9 +95,9 @@ namespace Tagger {
     void add( const std::string&, const std::vector<std::string>&,
 	      const std::string& );
     void add( const std::string&, const std::string& );
-    bool readLine( std::istream &, bool );
+    //    bool readLine( std::istream &, bool );
     bool read( std::istream &, bool );
-    bool read( std::istream & );
+    bool read_enriched( std::istream & );
     void print( std::ostream & ) const;
   };
 
