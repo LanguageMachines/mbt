@@ -116,15 +116,6 @@ namespace Tagger {
     os << "'";
   }
   
-  void sentence::reset( const string& EosMark ){
-    // cleanup the sentence for re-use...
-    for ( unsigned int i=0; i < no_words; i++ )
-      delete Words[i];
-    Words.clear();
-    no_words = 0;
-    InternalEosMark = EosMark;
-  }
-  
   bool sentence::Utt_Terminator( const string& z_something ){
     return ( z_something == InternalEosMark );
   }
@@ -432,7 +423,9 @@ namespace Tagger {
   }
 
 
-  bool sentence::read( istream &infile, input_kind_type kind ){
+  bool sentence::read( istream &infile, input_kind_type kind, 
+		       const string& eom ){
+    InternalEosMark = eom;
     if ( kind == TAGGED ||
 	 kind == UNTAGGED ){
       return read( infile, kind == TAGGED );
@@ -487,6 +480,11 @@ namespace Tagger {
     // read an enriched and tagged word from infile
     // it must be a one_liner
     //    cerr << "Reading enriched" << endl;
+    // cleanup the sentence for re-use...
+    for ( unsigned int i=0; i < no_words; i++ )
+      delete Words[i];
+    Words.clear();
+    no_words = 0;
     string linebuffer;
     string Word;
     string Tag;
@@ -516,6 +514,11 @@ namespace Tagger {
   }
   
   bool sentence::fill( const string& line, bool tagged ){
+    // cleanup the sentence for re-use...
+    for ( unsigned int i=0; i < no_words; i++ )
+      delete Words[i];
+    Words.clear();
+    no_words = 0;
     string token,  tagtoken;
     bool result = true;
 

@@ -1135,7 +1135,6 @@ namespace Tagger {
   vector<TagResult> TaggerClass::tagLine( const string& line ){
     vector<TagResult> result;
     sentence mySentence;
-    mySentence.reset( EosMark );
     mySentence.fill( line, input_kind );
     return tagSentence( mySentence );
   }
@@ -1286,7 +1285,7 @@ namespace Tagger {
     int HartBeat = 0;
     sentence mySentence;
     while ( go_on && 
-	    (mySentence.reset( EosMark), mySentence.read(infile, input_kind ) ) ){
+	    mySentence.read(infile, input_kind, EosMark ) ){
       if ( mySentence.size() == 0 )
 	continue;
       string tagged_sentence;
@@ -1668,7 +1667,7 @@ namespace Tagger {
     //
     int HartBeat = 0;
     sentence mySentence;
-    while ( (mySentence.reset( EosMark), mySentence.read( infile, input_kind ) )){
+    while ( mySentence.read( infile, input_kind, EosMark ) ){
       if ( mySentence.size() == 0 )
 	continue;
       // cerr << mySentence << endl;
