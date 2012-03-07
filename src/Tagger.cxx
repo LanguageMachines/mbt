@@ -52,6 +52,10 @@
 #endif
 
 LogStream default_log( std::cerr ); // fall-back
+LogStream default_cout( std::cout, "", NoStamp ); // guard cout too
+
+#define COUT *Log(default_cout)
+
 LogStream *cur_log = &default_log;  // fill the externals
 
 LogLevel internal_default_level = LogNormal;
@@ -73,6 +77,7 @@ namespace Tagger {
     cur_log = new LogStream( cerr );
     cur_log->setlevel( LogNormal );
     cur_log->setstamp( StampMessage );
+    default_cout.setstamp( NoStamp );
     KnownTree = NULL;
     unKnownTree = NULL;
     TimblOptStr = "+vS -FColumns K: -a IGTREE +D U: -a IB1 ";
@@ -588,12 +593,12 @@ namespace Tagger {
   
   void prefixWithAbsolutePath( string& fileName, 
 			       const string& prefix ) {
-    //    cout << fileName << endl;
+    //    default_log << fileName << endl;
     if ( ( fileName[0] != '/' && fileName[1] != ':' )
 	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
       fileName = prefix + fileName;
     }
-    //    cout << fileName << endl;
+    //    default_log << fileName << endl;
   }
     
   bool TaggerClass::set_default_filenames( ){
@@ -990,7 +995,7 @@ namespace Tagger {
 	os = new ofstream( OutputFileName.c_str() );
       }
       else
-	os = &cout;
+	os = &default_cout;
       ifstream infile;    
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
@@ -1667,7 +1672,7 @@ namespace Tagger {
 	continue;
       }
       if ( HartBeat++ % 100 == 0 ){
-	cout << "."; cout.flush();
+	COUT << "."; default_cout.flush();
       }
       if ( mySentence.init_windowing( &Ktemplate,&Utemplate, 
 				      *MT_lexicon, TheLex ) ) {
@@ -1702,26 +1707,24 @@ namespace Tagger {
 	no_sentences++;
       }
     }
-    cout << endl << "      ready: " << no_words << " words processed." 
-	 << endl;
-//      cout << "Output written to ";
+//      default_cout << "Output written to ";
 //      if ( do_known )
-//        cout << K_option_name << endl;
+//        default_cout << K_option_name << endl;
 //      else 
-//        cout << U_option_name << endl;
+//        default_cout << U_option_name << endl;
     return no_words;
   }
   
   int TaggerClass::CreateKnown(){
     int nwords = 0;
     if ( knowntemplateflag ){
-      cout << endl << "  Create known words case base" << endl
-	   << "    Timbl options: '" << knownstr + commonstr << "'" << endl;
+      COUT << "  Create known words case base,"
+	   << "   Timbl options: '" << knownstr + commonstr << "'" << endl;
       TimblAPI *UKtree = new TimblAPI( knownstr + commonstr );
       if ( !UKtree->Valid() )
 	exit(EXIT_FAILURE);
-      cout << "    Algorithm = " << to_string(UKtree->Algo())
-	   << endl << endl;
+      COUT << "    Algorithm = " << to_string(UKtree->Algo())
+			 << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	ifstream infile( inname.c_str(), ios::in );
@@ -1729,24 +1732,24 @@ namespace Tagger {
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
-	cout << "    Processing data from the file " << inname << "...";
-	cout.flush();
+	COUT << "    Processing data from the file " << inname << "...";
+	default_cout.flush();
 	nwords = makedataset( infile, true );
       }
       else {
-	cout << "Processing data from the standard input" << endl;
+	COUT << "Processing data from the standard input" << endl;
 	nwords = makedataset( cin, true );
       }
-      cout << "    Creating case base: " << KnownTreeName << endl;
+      COUT << "    Creating case base: " << KnownTreeName << endl;
       UKtree->Learn( K_option_name );
-      //      UKtree->ShowSettings( cout );
+      //      UKtree->ShowSettings( default_cout );
       UKtree->WriteInstanceBase( KnownTreeName );
       if ( !kwf.empty() )
 	UKtree->SaveWeights( kwf );
       delete UKtree;
       if ( !KeepIntermediateFiles ){
 	remove(K_option_name.c_str());
-	cout << "    Deleted intermediate file: " << K_option_name << endl;
+	COUT << "    Deleted intermediate file: " << K_option_name << endl;
       }
     }
     return nwords;
@@ -1755,13 +1758,13 @@ namespace Tagger {
   int TaggerClass::CreateUnknown(){
     int nwords = 0;
     if ( unknowntemplateflag ){
-      cout << endl << "  Create unknown words case base" << endl
-	   << "    Timbl options: '" << unknownstr + commonstr << "'" << endl;
+      COUT << "  Create unknown words case base,"
+			 << " Timbl options: '" << unknownstr + commonstr << "'" << endl;
       TimblAPI *UKtree = new TimblAPI( unknownstr + commonstr );
       if ( !UKtree->Valid() )
 	exit(EXIT_FAILURE);
-      cout << "    Algorithm = " << to_string(UKtree->Algo()) 
-	   << endl << endl;
+      COUT << "    Algorithm = " << to_string(UKtree->Algo()) 
+			 << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	ifstream infile( inname.c_str(), ios::in );
@@ -1769,24 +1772,24 @@ namespace Tagger {
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
-	cout << "    Processing data from the file " << inname << "...";
-	cout.flush();
+	// default_cout << "    Processing data from the file " << inname << "...";
+	// default_cout.flush();
 	nwords = makedataset( infile, false );
       }
       else {
-	cout << "Processing data from the standard input" << endl;
+	COUT << "Processing data from the standard input" << endl;
 	nwords = makedataset( cin, false );
       }
-      cout << "    Creating case base: " << UnknownTreeName << endl;
+      COUT << "    Creating case base: " << UnknownTreeName << endl;
       UKtree->Learn( U_option_name );
-      //      UKtree->ShowSettings( cout );
+      //      UKtree->ShowSettings( default_cout );
       UKtree->WriteInstanceBase( UnknownTreeName );
       if ( !uwf.empty() )
 	UKtree->SaveWeights( uwf );
       delete UKtree;
       if ( !KeepIntermediateFiles ){
 	remove(U_option_name.c_str());
-	cout << "    Deleted intermediate file: " << U_option_name << endl;
+	COUT << "    Deleted intermediate file: " << U_option_name << endl;
       }
     }
     return nwords;
@@ -1816,7 +1819,7 @@ namespace Tagger {
       out_file << "L " << TopNFileName << endl;
       out_file.close();
       cout << endl << "  Created settings file '" 
-	   << SettingsFileName << "'" << endl;
+			 << SettingsFileName << "'" << endl;
     }
   }
 
@@ -1963,8 +1966,21 @@ namespace Tagger {
     tagger.InitLearning();
     // process the test material
     // and do the timing
-    int kwords = tagger.CreateKnown();
-    int uwords = tagger.CreateUnknown();
+    int kwords = 0;
+    int uwords = 0;
+#pragma omp parallel sections
+    {
+#pragma omp section
+      {
+	kwords = tagger.CreateKnown();
+      }
+#pragma omp section
+      {
+	uwords = tagger.CreateUnknown();
+      }
+    }
+    cout << "      ready: " << kwords << " words processed." 
+	 << endl;
     tagger.CreateSettingsFile();
     return kwords + uwords;
   }  
