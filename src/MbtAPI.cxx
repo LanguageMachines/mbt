@@ -132,8 +132,7 @@ bool MbtAPI::GenerateTagger( TimblOpts& Opts ) {
   time_t timebefore, timeafter, timediff;
   time(&timebefore);
   int nw = TaggerClass::CreateTagger( Opts );
-  if ( nw <= 0 ){
-    cerr << "Tagger Creation failed" << endl;
+  if ( nw < 0 ){
     return false;
   }
   time(&timeafter);
@@ -204,7 +203,6 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
   time(&timebefore);
   TaggerClass *tagger = TaggerClass::StartTagger( Opts );
   if ( !tagger ){
-    cerr << "Starting Tagger failed" << endl;
     return false;
   }
   int nw = tagger->Run();

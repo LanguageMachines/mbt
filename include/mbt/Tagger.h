@@ -97,8 +97,8 @@ namespace Tagger {
     int CreateUnknown();
     void CreateSettingsFile();
     bool set_default_filenames();
-    void parse_create_args( Timbl::TimblOpts& Opts );
-    void parse_run_args( Timbl::TimblOpts& Opts, bool = false );
+    bool parse_create_args( Timbl::TimblOpts& Opts );
+    bool parse_run_args( Timbl::TimblOpts& Opts, bool = false );
     bool isClone() const { return cloned; };
     void ShowCats( std::ostream& os, const std::vector<int>& Pat, int slots );
     bool setLog( LogStream& );

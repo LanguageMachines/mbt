@@ -1455,13 +1455,14 @@ namespace Tagger {
     return true;
   }
 
-  void TaggerClass::parse_run_args( TimblOpts& Opts, bool as_server ){
+  bool TaggerClass::parse_run_args( TimblOpts& Opts, bool as_server ){
+    manifest();
     string value;
     bool mood;
     if ( Opts.Find( 'V', value, mood ) ||
 	 Opts.Find( "version", value, mood ) ){
       // we already identified ourself. just bail out.
-      exit(EXIT_SUCCESS);
+      return false;
     }
     if ( Opts.Find( 's', value, mood ) ){
       // if a settingsfile option has been given, read that first
@@ -1476,7 +1477,7 @@ namespace Tagger {
 	SettingsFilePath = "";
       if( !readsettings( SettingsFileName ) ){
 	cerr << "Cannot read settingsfile " << SettingsFileName << endl;
-	exit(EXIT_FAILURE);
+	return false;
       }
       Opts.Delete( 's' );
     };
@@ -1543,7 +1544,7 @@ namespace Tagger {
       cerr << "Server mode NOT longer supported in this version!\n"
 	   << "You must use mbtserver instead\n"
 	   << "sorry..." << endl;
-      exit(EXIT_FAILURE);
+      return false;
     };
     if ( Opts.Find( 't', value, mood ) ){
       TestFileName = value;
@@ -1562,7 +1563,7 @@ namespace Tagger {
       if ( input_kind == ENRICHED ){
 	cerr << "Option -T conflicts with ENRICHED format from settingsfile "
 	     << "unable to continue" << endl;
-	exit(EXIT_FAILURE);
+	return false;
       }
       input_kind = TAGGED; // there is a tagged test file specified
       Opts.Delete( 'T' );
@@ -1588,13 +1589,14 @@ namespace Tagger {
     if ( cloned && input_kind == ENRICHED ){
       cerr << "Servermode doesn't support enriched inputformat!" << endl
 	   << "bailing out, sorry " << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
     if ( !as_server &&
 	 (!knowntreeflag || !unknowntreeflag) ){
       cerr << "missing required options. See 'mbt -h' " << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
+    return true;
   }
 
   void TaggerClass::manifest( ){
@@ -1611,10 +1613,12 @@ namespace Tagger {
   
   TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts, LogStream* os ){    
     TaggerClass *tagger = new TaggerClass;
-    tagger->parse_run_args( Opts );
+    if ( !tagger->parse_run_args( Opts ) ){
+      delete tagger;
+      return 0;
+    }
     if ( os )
       tagger->setLog( *os );
-    tagger->manifest();
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
@@ -1825,13 +1829,13 @@ namespace Tagger {
 
   //**** stuff to process commandline options *****************************
   
-  void TaggerClass::parse_create_args( TimblOpts& Opts ){
+  bool TaggerClass::parse_create_args( TimblOpts& Opts ){
     string value;
     bool mood;
     if ( Opts.Find( 'V', value, mood ) ||
 	 Opts.Find( "version", value, mood ) ){
       // we already identified ourself. just bail out.
-      exit(EXIT_SUCCESS);
+      return false;
     }
     if ( Opts.Find( '%', value, mood ) ){
       FilterThreshold = stringTo<int>( value );
@@ -1944,8 +1948,9 @@ namespace Tagger {
     }
     if ( TestFileName.empty() ){
       cerr << "Missing required options. see 'mbt -h'" << endl;
-      exit(EXIT_SUCCESS);
+      return false;
     }
+    return true;
   }
   
   int TaggerClass::CreateTagger( TimblOpts& Opts ){
@@ -1961,7 +1966,8 @@ namespace Tagger {
 	 << "Based on " << Timbl::VersionName() 
 	 << endl << endl;
     TaggerClass tagger;
-    tagger.parse_create_args( Opts );
+    if ( !tagger.parse_create_args( Opts ) )
+      return -1;
     tagger.set_default_filenames();
     tagger.InitLearning();
     // process the test material
