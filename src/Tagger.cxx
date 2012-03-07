@@ -1456,12 +1456,11 @@ namespace Tagger {
   }
 
   bool TaggerClass::parse_run_args( TimblOpts& Opts, bool as_server ){
-    manifest();
     string value;
     bool mood;
     if ( Opts.Find( 'V', value, mood ) ||
 	 Opts.Find( "version", value, mood ) ){
-      // we already identified ourself. just bail out.
+      manifest();
       return false;
     }
     if ( Opts.Find( 's', value, mood ) ){
@@ -1619,6 +1618,8 @@ namespace Tagger {
     }
     if ( os )
       tagger->setLog( *os );
+    else // only manifest() when running 'standalone'
+      tagger->manifest();
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
