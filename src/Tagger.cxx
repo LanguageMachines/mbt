@@ -1675,8 +1675,15 @@ namespace Tagger {
 	// only possible for ENRICHED!
 	continue;
       }
-      if ( HartBeat++ % 100 == 0 ){
-	COUT << "."; default_cout.flush();
+      if ( ++HartBeat % 100 == 0 ) {
+	if ( do_known ){
+	  COUT << "+";
+	  default_cout.flush();
+	}
+	else {
+	  COUT << "-";
+	  default_cout.flush();
+	}
       }
       if ( mySentence.init_windowing( &Ktemplate,&Utemplate, 
 				      *MT_lexicon, TheLex ) ) {
@@ -1724,11 +1731,10 @@ namespace Tagger {
     if ( knowntemplateflag ){
       COUT << "  Create known words case base,"
 	   << "   Timbl options: '" << knownstr + commonstr << "'" << endl;
-      TimblAPI *UKtree = new TimblAPI( knownstr + commonstr );
-      if ( !UKtree->Valid() )
+      TimblAPI *Ktree = new TimblAPI( knownstr + commonstr );
+      if ( !Ktree->Valid() )
 	exit(EXIT_FAILURE);
-      COUT << "    Algorithm = " << to_string(UKtree->Algo())
-			 << endl;
+      COUT << "    Algorithm = " << to_string(Ktree->Algo()) << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	ifstream infile( inname.c_str(), ios::in );
@@ -1744,13 +1750,13 @@ namespace Tagger {
 	COUT << "Processing data from the standard input" << endl;
 	nwords = makedataset( cin, true );
       }
-      COUT << "    Creating case base: " << KnownTreeName << endl;
-      UKtree->Learn( K_option_name );
+      COUT << endl << "    Creating case base: " << KnownTreeName << endl;
+      Ktree->Learn( K_option_name );
       //      UKtree->ShowSettings( default_cout );
-      UKtree->WriteInstanceBase( KnownTreeName );
+      Ktree->WriteInstanceBase( KnownTreeName );
       if ( !kwf.empty() )
-	UKtree->SaveWeights( kwf );
-      delete UKtree;
+	Ktree->SaveWeights( kwf );
+      delete Ktree;
       if ( !KeepIntermediateFiles ){
 	remove(K_option_name.c_str());
 	COUT << "    Deleted intermediate file: " << K_option_name << endl;
@@ -1763,12 +1769,11 @@ namespace Tagger {
     int nwords = 0;
     if ( unknowntemplateflag ){
       COUT << "  Create unknown words case base,"
-			 << " Timbl options: '" << unknownstr + commonstr << "'" << endl;
+	   << " Timbl options: '" << unknownstr + commonstr << "'" << endl;
       TimblAPI *UKtree = new TimblAPI( unknownstr + commonstr );
       if ( !UKtree->Valid() )
 	exit(EXIT_FAILURE);
-      COUT << "    Algorithm = " << to_string(UKtree->Algo()) 
-			 << endl;
+      COUT << "    Algorithm = " << to_string(UKtree->Algo()) << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	ifstream infile( inname.c_str(), ios::in );
@@ -1784,7 +1789,7 @@ namespace Tagger {
 	COUT << "Processing data from the standard input" << endl;
 	nwords = makedataset( cin, false );
       }
-      COUT << "    Creating case base: " << UnknownTreeName << endl;
+      COUT << endl << "    Creating case base: " << UnknownTreeName << endl;
       UKtree->Learn( U_option_name );
       //      UKtree->ShowSettings( default_cout );
       UKtree->WriteInstanceBase( UnknownTreeName );
