@@ -31,7 +31,7 @@
 #define MBT_API_H
 
 #include "timbl/TimblAPI.h"
-#include "timbl/LogStream.h"
+#include "ticcutils/LogStream.h"
 #include "mbt/Tagger.h"
 
 using namespace Timbl;
