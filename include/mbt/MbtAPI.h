@@ -35,6 +35,7 @@
 #include "mbt/Tagger.h"
 
 using namespace Timbl;
+using namespace TiCC;
 using namespace Tagger;
 
 class MbtAPI {
@@ -44,7 +45,7 @@ class MbtAPI {
   static bool GenerateTagger( const std::string& );
   static bool RunTagger( int, char** );
   MbtAPI( const std::string& );
-  MbtAPI( const std::string&, LogStream& );
+  MbtAPI( const std::string&, TiCC::LogStream& );
   ~MbtAPI();
   bool isInit() const;
   std::string Tag( const std::string& );

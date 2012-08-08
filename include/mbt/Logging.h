@@ -32,14 +32,13 @@
 
 #include "ticcutils/LogStream.h"
 
-extern LogStream default_log;
-extern LogStream *cur_log;
-
-#define LOG (*Log(cur_log))
-#define DBG (*Dbg(cur_log))
-#define xDBG (*xDbg(cur_log))
-#define xxDBG (*xxDbg(cur_log))
-
+extern TiCC::LogStream default_log;
+extern TiCC::LogStream *cur_log;
 extern LogLevel Tagger_Log_Level;
+
+#define LOG (*TiCC::Log(cur_log))
+#define DBG (*TiCC::Dbg(cur_log))
+#define xDBG (*TiCC::xDbg(cur_log))
+#define xxDBG (*TiCC::xxDbg(cur_log))
 
 #endif // LOGGING_H

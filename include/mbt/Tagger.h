@@ -101,15 +101,15 @@ namespace Tagger {
     bool parse_run_args( Timbl::TimblOpts& Opts, bool = false );
     bool isClone() const { return cloned; };
     void ShowCats( std::ostream& os, const std::vector<int>& Pat, int slots );
-    bool setLog( LogStream& );
+    bool setLog( TiCC::LogStream& );
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
-    static TaggerClass *StartTagger( Timbl::TimblOpts&, LogStream* = 0 );
+    static TaggerClass *StartTagger( Timbl::TimblOpts&, TiCC::LogStream* = 0 );
     static int CreateTagger( Timbl::TimblOpts& );
     bool isInit() const { return initialized; };
   private:
-    LogStream *cur_log;
+    TiCC::LogStream *cur_log;
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;
     std::string Timbl_Options;

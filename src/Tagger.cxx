@@ -51,6 +51,8 @@
 #include <pthread.h>
 #endif
 
+using namespace TiCC;
+
 LogStream default_log( std::cerr ); // fall-back
 LogStream default_cout( std::cout, "", NoStamp ); // guard cout too
 
