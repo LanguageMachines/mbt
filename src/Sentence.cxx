@@ -36,14 +36,13 @@
 #include <cctype>
 #include <cassert>
 
-#include "timbl/StringOps.h"
+#include "ticcutils/StringOps.h"
 #include "timbl/Tree.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 
 namespace Tagger {
   using namespace Hash;
-  using namespace Timbl;
   using namespace std;
  
   const string Separators = "\t \n";
@@ -493,7 +492,7 @@ namespace Tagger {
     while( not_ready && infile ) {
       getline( infile, linebuffer );
       infile >> ws;
-      size_t size = split( linebuffer, extras );
+      size_t size = TiCC::split( linebuffer, extras );
       if ( size == 1 && Utt_Terminator( extras.front() ) ){
 	// Word = extras.front();
 	// add( Word, "" );
