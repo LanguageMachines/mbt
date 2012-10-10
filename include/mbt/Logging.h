@@ -27,8 +27,8 @@
       timbl@uvt.nl
 */
 
-#ifndef LOGGING_H
-#define LOGGING_H
+#ifndef MBT_LOGGING_H
+#define MBT_LOGGING_H
 
 #include "ticcutils/LogStream.h"
 

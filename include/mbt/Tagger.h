@@ -26,8 +26,8 @@
   or send mail to:
       timbl@uvt.nl
 */
-#ifndef TAGGER_H
-#define TAGGER_H
+#ifndef MBT_TAGGER_H
+#define MBT_TAGGER_H
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"

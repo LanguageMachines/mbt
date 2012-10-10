@@ -26,8 +26,8 @@
   or send mail to:
       timbl@uvt.nl
 */
-#ifndef PATTERN_H
-#define PATTERN_H
+#ifndef MBT_PATTERN_H
+#define MBT_PATTERN_H
 
 class PatTemplate {
  public:

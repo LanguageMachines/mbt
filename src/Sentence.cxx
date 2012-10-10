@@ -37,7 +37,6 @@
 #include <cassert>
 
 #include "ticcutils/StringOps.h"
-#include "timbl/Tree.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 

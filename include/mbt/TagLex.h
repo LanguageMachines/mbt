@@ -26,10 +26,10 @@
   or send mail to:
       timbl@uvt.nl
 */
-#ifndef TAGLEX_H
-#define TAGLEX_H
+#ifndef MBT_TAGLEX_H
+#define MBT_TAGLEX_H
 
-#include "timbl/Trie.h"
+#include "ticcutils/Trie.h"
 #include "timbl/Common.h"
 
 namespace Tagger {

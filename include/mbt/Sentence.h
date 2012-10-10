@@ -26,10 +26,10 @@
   or send mail to:
       timbl@uvt.nl
 */
-#ifndef SENTENCE_H
-#define SENTENCE_H
+#ifndef MBT_SENTENCE_H
+#define MBT_SENTENCE_H
 
-#include "timbl/Tree.h"
+#include "ticcutils/TreeHash.h"
 
 namespace Tagger {
   using Hash::Lexicon;
