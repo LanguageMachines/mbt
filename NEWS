@@ -1,3 +1,6 @@
+mbt version 3.2.9 2012-10-11
+  * now based on ticcutils
+
 mbt version 3.2.8 2012-03-06
 
   * fixed terrible bug in ENRICHED training
