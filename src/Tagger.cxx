@@ -1349,7 +1349,7 @@ namespace Tagger {
   
   bool TaggerClass::readsettings( string& fname ){
     ifstream setfile( fname.c_str(), ios::in);
-    if(setfile.bad()){
+    if( !setfile ){
       return false;
     }
     char SetBuffer[512];
