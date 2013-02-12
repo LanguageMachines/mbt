@@ -29,17 +29,17 @@
 
 #include <algorithm>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
-#include "timbl/StringOps.h"
+#include "ticcutils/StringOps.h"
 #include "timbl/Types.h"
 #include "mbt/TagLex.h"
 
 namespace Tagger {
-  using namespace Timbl;
   using namespace std;
   
   TagInfo::TagInfo( const string& name, const string& tag ){
@@ -77,7 +77,7 @@ namespace Tagger {
     string result;
     map<string, int>::const_iterator it = TagFreqs.begin();
     while ( it != TagFreqs.end() ){
-      result += it->first + ":" + toString(it->second) + " ";
+      result += it->first + ":" + Timbl::toString(it->second) + " ";
       ++it;
     }
     return result;
@@ -158,7 +158,7 @@ namespace Tagger {
     //     
     int diff = t2->Freq() - t1->Freq();
     if ( diff == 0 ){
-      if ( compare_nocase( t2->Word, t1->Word ) )
+      if ( TiCC::lowercase(t2->Word) == TiCC::lowercase(t1->Word) )
 	return strcmp( t2->Word.c_str(), t1->Word.c_str() ) < 0;
       else
 	return strcmp( t1->Word.c_str(), t2->Word.c_str() ) < 0;
