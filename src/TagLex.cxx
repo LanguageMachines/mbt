@@ -36,7 +36,6 @@
 #include <string>
 
 #include "ticcutils/StringOps.h"
-#include "timbl/Types.h"
 #include "mbt/TagLex.h"
 
 namespace Tagger {
@@ -77,7 +76,7 @@ namespace Tagger {
     string result;
     map<string, int>::const_iterator it = TagFreqs.begin();
     while ( it != TagFreqs.end() ){
-      result += it->first + ":" + Timbl::toString(it->second) + " ";
+      result += it->first + ":" + TiCC::toString(it->second) + " ";
       ++it;
     }
     return result;
