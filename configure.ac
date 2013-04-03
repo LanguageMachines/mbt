@@ -4,7 +4,7 @@
 # $URL$
 
 AC_PREREQ(2.61)
-AC_INIT([mbt],[3.2.9],[timbl@uvt.nl])
+AC_INIT([mbt],[3.2.10],[timbl@uvt.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -76,7 +76,7 @@ AC_ARG_WITH(timbl,
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
 #  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([timbl], [timbl >= 6.4.2] )
+PKG_CHECK_MODULES([timbl], [timbl >= 6.4.4] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
