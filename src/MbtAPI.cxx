@@ -182,7 +182,7 @@ void run_usage( char *progname ){
        << "\t-B <beamsize for search> (default = 1) \n"
        << "\t-v di add distance to output\n"
        << "\t-v db add distribution to output\n"
-       << "\t-v c add confidence to output\n"
+       << "\t-v cf add confidence to output\n"
        << "\t-V show Version info\n"
        << "\t-L <file with list of frequent words>\n" 
        << endl;
