@@ -1,3 +1,5 @@
+mbt version 3.2.11 2014-xx-yy
+
 mbt version 3.2.10 2013-04-03
   * even more based on ticcutils
 
@@ -9,7 +11,7 @@ mbt version 3.2.8 2012-03-06
   * fixed terrible bug in ENRICHED training
   * added -D (debug) option to usage()
   * updated man page accordingly
-  * fixed outputmangling 
+  * fixed outputmangling
   * some refactoring to make code clearer
   * added a new tagLine function for a more flexible API
 
@@ -23,7 +25,7 @@ mbt version 3.2.7 2011-12-20
 
 mbt version 3.2.6 2011-08-30
 
-* addded Version() and VersionName() functions to be consistent with the 
+* addded Version() and VersionName() functions to be consistent with the
   whole Timbl family.
 * added -V and --version option to show version
 * some internal code reshuffled for -h and -V options
@@ -49,7 +51,7 @@ mbt version 3.2.2, 2010-06
 
 mbt version 3.2.1, 2010-02-22
 
-- new release 
+- new release
 - one extra features added tot the API. Tadpole likes it.
 
 
