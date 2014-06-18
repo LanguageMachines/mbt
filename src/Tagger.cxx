@@ -1611,7 +1611,65 @@ namespace Tagger {
 	<< endl << endl;
   }
 
-  TaggerClass *TaggerClass::StartTagger( TimblOpts& Opts, LogStream* os ){
+  void run_usage( const string& progname ){
+    cerr << "Usage is : " << progname << " option option ... \n"
+	 << "\t-s settingsfile  ...or:\n\n"
+	 << "\t-l <lexiconfile>\n"
+	 << "\t-r <ambitagfile>\n"
+	 << "\t-k <known words case base>\n"
+	 << "\t-u <unknown words case base>\n"
+	 << "\t-D <loglevel> (possible values are 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
+	 << "\t-e <sentence delimiter> (default '<utt>')\n"
+	 << "\t-E <enriched tagged testfile>\n "
+	 << "\t-t <testfile> | -T <tagged testfile> "
+	 << "(default is untagged stdin)\n"
+	 << "\t-o <outputfile> (default stdout)\n"
+	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
+	 << "\t  <options>   options to use for Both Known and Unknown Words Case Base\n"
+	 << "\t  K: <options>   options to use for Known Words Case Base\n"
+	 << "\t  U: <options>   options to use for Unknown Words Case Base\n"
+	 << "\t  valid Timbl options: a d k m q v w x -\n"
+	 << "\t-B <beamsize for search> (default = 1) \n"
+	 << "\t-v di add distance to output\n"
+	 << "\t-v db add distribution to output\n"
+	 << "\t-v cf add confidence to output\n"
+	 << "\t-V show Version info\n"
+	 << "\t-L <file with list of frequent words>\n"
+	 << endl;
+  }
+
+  TaggerClass *TaggerClass::StartTagger( int argc, char*argv[], LogStream* os ){
+    TimblOpts Opts( argc, argv );
+    string value;
+    bool mood;
+    if ( Opts.Find( 'h', value, mood ) ||
+	 Opts.Find( "help", value, mood ) ){
+      run_usage( "mbt" );
+      return 0;
+    }
+    TaggerClass *tagger = new TaggerClass;
+    if ( !tagger->parse_run_args( Opts ) ){
+      delete tagger;
+      return 0;
+    }
+    if ( os )
+      tagger->setLog( *os );
+    else // only manifest() when running 'standalone'
+      tagger->manifest();
+    tagger->set_default_filenames();
+    tagger->InitTagging();
+    return tagger;
+  }
+
+  TaggerClass *TaggerClass::StartTagger( const string& opts, LogStream* os ){
+    TimblOpts Opts( opts );
+    string value;
+    bool mood;
+    if ( Opts.Find( 'h', value, mood ) ||
+	 Opts.Find( "help", value, mood ) ){
+      run_usage( "mbt" );
+      return 0;
+    }
     TaggerClass *tagger = new TaggerClass;
     if ( !tagger->parse_run_args( Opts ) ){
       delete tagger;
@@ -1960,7 +2018,41 @@ namespace Tagger {
     return true;
   }
 
+  void gen_usage( const string& progname ){
+    cerr << "Usage is : " << progname << " option option ...\n"
+	 << "\t-s settingsfile\n"
+	 << "\t-% <percentage> Filter Threshold for ambitag construction (default 5%)\n"
+	 << "\t-E <enriched tagged training corpus file> \n"
+	 << "\t-T <tagged training corpus file> \n"
+	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
+	 << "\t   <options>   options to use for both Known and Unknown Words Case Base\n"
+	 << "\t   K: <options>   options to use for Known Words Case Base\n"
+	 << "\t   U: <options>   options to use for Unknown Words Case Base\n"
+	 << "\t   valid Timl options: a d k m q v w x -\n"
+	 << "\t-p pattern for known words (default ddfa)\n"
+	 << "\t-P pattern for unknown words (default dFapsss)\n"
+	 << "\t-e <sentence delimiter> (default '<utt>')\n"
+	 << "\t-L <file with list of frequent words>\n"
+	 << "\t-M <number of most frequent words> (default 100)\n"
+	 << "\t-n <arity of Npaxes> (default 5)\n"
+	 << "\t-l <lexiconfile>\n"
+	 << "\t-r <ambitagfile>\n"
+	 << "\t-k <known words case base>\n"
+	 << "\t-u <unknown words case base>\n"
+	 << "\t-K <known words instances file>\n"
+	 << "\t-U <unknown words instances file>\n"
+	 << "\t-V show Version info\n"
+	 << "\t-X keep intermediate files \n" << endl;
+  }
+
   int TaggerClass::CreateTagger( TimblOpts& Opts ){
+    string value;
+    bool mood;
+    if ( Opts.Find( 'h', value, mood ) ||
+	 Opts.Find( "help", value, mood ) ){
+      gen_usage( "mbtg" );
+      return true;
+    }
     //
     // present yourself to the user
     //
@@ -1996,6 +2088,16 @@ namespace Tagger {
 	 << endl;
     tagger.CreateSettingsFile();
     return kwords + uwords;
+  }
+
+  int TaggerClass::CreateTagger( const string& opt_string ){
+    TimblOpts opts( opt_string );
+    return CreateTagger( opts );
+  }
+
+  int TaggerClass::CreateTagger( int argc, char* argv[] ){
+    TimblOpts opts( argc, argv );
+    return CreateTagger( opts );
   }
 
 }

@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2014
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -40,11 +40,9 @@ using namespace Tagger;
 
 class MbtAPI {
  public:
-  static bool GenerateTagger( TimblOpts& );
   static bool GenerateTagger( int, char** );
   static bool GenerateTagger( const std::string& );
   static bool RunTagger( int, char** );
-  MbtAPI( const std::string& );
   MbtAPI( const std::string&, TiCC::LogStream& );
   ~MbtAPI();
   bool isInit() const;

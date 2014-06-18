@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2014
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -55,13 +55,13 @@ namespace Tagger {
     BeamData();
     ~BeamData();
     bool Init( int, unsigned int );
-    void InitPaths( StringHash&, 
+    void InitPaths( StringHash&,
 		    const Timbl::TargetValue *,
 		    const Timbl::ValueDistribution * );
     void NextPath( StringHash&,
 		   const Timbl::TargetValue *,
-		   const Timbl::ValueDistribution*, 
-		   int ); 
+		   const Timbl::ValueDistribution*,
+		   int );
     void ClearBest();
     void Shift( int, int );
     void Print( std::ostream& os, int i_word, StringHash& TheLex );
@@ -91,7 +91,7 @@ namespace Tagger {
       return TRtoString( tagLine(inp) );
     };
     std::string TRtoString( const std::vector<TagResult>& ) const;
-    int TagLine( const std::string&, std::string& ); 
+    int TagLine( const std::string&, std::string& );
     // only for backward compatability
     int CreateKnown();
     int CreateUnknown();
@@ -105,8 +105,11 @@ namespace Tagger {
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
-    static TaggerClass *StartTagger( Timbl::TimblOpts&, TiCC::LogStream* = 0 );
+    static TaggerClass *StartTagger( const std::string&, TiCC::LogStream* = 0 );
+    static TaggerClass *StartTagger( int, char**, TiCC::LogStream* = 0 );
     static int CreateTagger( Timbl::TimblOpts& );
+    static int CreateTagger( const std::string& );
+    static int CreateTagger( int, char** );
     bool isInit() const { return initialized; };
   private:
     TiCC::LogStream *cur_log;
@@ -151,15 +154,15 @@ namespace Tagger {
     void ProcessTags( TagInfo * );
     void InitTest( const sentence&, std::vector<int>&, MatchAction );
     bool NextBest( const sentence&, std::vector<int>&, int, int );
-    const Timbl::TargetValue *Classify( MatchAction, const std::string&, 
-					const Timbl::ValueDistribution **distribution, 
+    const Timbl::TargetValue *Classify( MatchAction, const std::string&,
+					const Timbl::ValueDistribution **distribution,
 					double& );
     void statistics( const sentence&,
 		     int& no_known,
 		     int& no_unknown,
-		     int& no_correct_known, 
+		     int& no_correct_known,
 		     int& no_correct_unknown );
-    std::string pat_to_string( const sentence&, 
+    std::string pat_to_string( const sentence&,
 			       const std::vector<int>&,
 			       MatchAction,
 			       int );
@@ -181,11 +184,11 @@ namespace Tagger {
     std::string r_option_name;
     std::string L_option_name;
     std::string EosMark;
-    
+
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
     Lexicon *MT_lexicon;
-  
+
     std::string UnknownTreeName;
     std::string KnownTreeName;
     std::string LexFileName;
@@ -197,7 +200,7 @@ namespace Tagger {
     std::string OutputFileName;
     std::string SettingsFileName;
     std::string SettingsFilePath;
-    
+
     bool cloned;
   };
 
@@ -223,10 +226,9 @@ namespace Tagger {
     double _confidence;
     bool _known;
   };
-  
+
 
   void RemoveTagger( TaggerClass * );
 }
 
 #endif
-  
