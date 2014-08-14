@@ -43,6 +43,10 @@ using std::endl;
 using std::string;
 using std::vector;
 
+MbtAPI::MbtAPI( const std::string& opts ){
+  tagger = TaggerClass::StartTagger( opts );
+}
+
 MbtAPI::MbtAPI( const std::string& opts, LogStream& ls ){
   tagger = TaggerClass::StartTagger( opts, &ls );
 }
