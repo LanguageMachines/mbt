@@ -22,7 +22,7 @@ if $cxx_flags_were_set; then
 fi
 
 # Checks for programs.
-AC_PROG_CXX( [g++] )
+AC_PROG_CXX( g++ c++ )
 AC_PROG_LIBTOOL
 LT_INIT
 
