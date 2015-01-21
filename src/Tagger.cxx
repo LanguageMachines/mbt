@@ -2,7 +2,7 @@
   $Id$
   $URL$
 
-  Copyright (c) 1998 - 2014
+  Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -1602,7 +1602,7 @@ namespace Tagger {
   void TaggerClass::manifest( ){
     // present yourself to the user
     //
-    LOG << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2014." << endl
+    LOG << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
 	<< "Memory Based Tagger " << endl
 	<< "Tilburg University" << endl
 	<< "CLiPS Computational Linguistics Group, University of Antwerp"
@@ -2056,7 +2056,7 @@ namespace Tagger {
     //
     // present yourself to the user
     //
-    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2014." << endl
+    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
 	 << "Memory Based Tagger Generator" << endl
 	 << "Induction of Linguistic Knowledge Research Group,"
 	 << "Tilburg University" << endl
