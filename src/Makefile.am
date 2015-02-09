@@ -2,6 +2,7 @@
 # $URL$
 
 AM_CPPFLAGS = -I@top_srcdir@/include
+AM_CXXFLAGS = -std=c++11
 
 LDADD = libmbt.la
 
@@ -10,7 +11,7 @@ bin_PROGRAMS = mbt mbtg
 noinst_PROGRAMS = convert
 
 check_PROGRAMS = simpletest
-TESTS = $(check_PROGRAMS) 
+TESTS = $(check_PROGRAMS)
 TESTS_ENVIRONMENT = topsrcdir=$(top_srcdir)
 simpletest_SOURCES = simpletest.cxx
 CLEANFILES= eindh.data.lex eindh.data.lex.ambi.05 eindh.data.top100 \
@@ -27,4 +28,4 @@ lib_LTLIBRARIES = libmbt.la
 libmbt_la_LDFLAGS= -version-info 1:0:0
 
 libmbt_la_SOURCES = MbtAPI.cxx Pattern.cxx TagLex.cxx Sentence.cxx \
-	Tagger.cxx 
+	Tagger.cxx
