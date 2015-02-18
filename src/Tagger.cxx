@@ -701,7 +701,7 @@ namespace Tagger {
     string Buffer;
     string filename = TestFilePath + TestFileName;
     if ( filename != "" ){
-      if ( ( lex_file.open( filename.c_str(), ios::in ),
+      if ( ( lex_file.open( filename, ios::in ),
 	     !lex_file.good() ) ){
 	cerr << "couldn't open tagged lexicon file `"
 	     << filename << "'" << endl;
@@ -721,7 +721,7 @@ namespace Tagger {
     }
     int LexSize = TaggedLexicon.numOfLexiconEntries();
     vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
-    if ( (out_file.open( LexFileName.c_str(), ios::out ),
+    if ( (out_file.open( LexFileName, ios::out ),
 	  out_file.good() ) ){
       cout << "  Creating lexicon: "  << LexFileName << " of "
 	   << LexSize << " entries." << endl;
@@ -736,7 +736,7 @@ namespace Tagger {
     }
     for ( int i=0; i < LexSize; i++ )
       ProcessTags( TagVect[i] );
-    if ( (out_file.open( MTLexFileName.c_str(), ios::out ),
+    if ( (out_file.open( MTLexFileName, ios::out ),
 	  out_file.good() ) ){
       cout << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( int j=0; j < LexSize; j++ ){
@@ -749,7 +749,7 @@ namespace Tagger {
       cerr << "couldn't create file: " << MTLexFileName << endl;
       exit(EXIT_FAILURE);
     }
-    if ( (out_file.open( TopNFileName.c_str(), ios::out ),
+    if ( (out_file.open( TopNFileName, ios::out ),
 	  out_file.good() ) ){
       cout << "  Creating list of most frequent words: "  << TopNFileName << endl;
       for ( int k=0; k < LexSize && k < TopNumber; k++ ){
@@ -763,7 +763,7 @@ namespace Tagger {
       exit(EXIT_FAILURE);
     }
     if ( DoNpax ){
-      if ( (out_file.open( NpaxFileName.c_str(), ios::out ),
+      if ( (out_file.open( NpaxFileName, ios::out ),
 	    out_file.good() ) ){
 	int np_cnt = 0;
 	//	cout << "  Creating Npax file: "  << NpaxFileName;
@@ -832,7 +832,7 @@ namespace Tagger {
     string wordbuf;
     string valbuf;
     int no_words=0;
-    ifstream lexfile( FileName.c_str(), ios::in);
+    ifstream lexfile( FileName, ios::in);
     while ( lexfile >> wordbuf >> valbuf ){
       MT_lexicon->Store( wordbuf, valbuf );
       no_words++;
@@ -844,7 +844,7 @@ namespace Tagger {
 
   bool old_style( const string& name ){
     string line;
-    ifstream in( name.c_str() );
+    ifstream in( name );
     if ( in ){
       getline( in, line );
       vector<string> tmp;
@@ -871,7 +871,7 @@ namespace Tagger {
   void TaggerClass::read_listfile( const string& FileName, StringHash *words ){
     string wordbuf;
     int no_words=0;
-    ifstream wordfile( FileName.c_str(), ios::in);
+    ifstream wordfile( FileName, ios::in);
     while( wordfile >> wordbuf ) {
       words->Hash( wordbuf );
       ++no_words;
@@ -994,14 +994,14 @@ namespace Tagger {
     if ( initialized ){
       ostream *os;
       if ( OutputFileName != "" ){
-	os = new ofstream( OutputFileName.c_str() );
+	os = new ofstream( OutputFileName );
       }
       else
 	os = &default_cout;
       ifstream infile;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
-	infile.open(inname.c_str(), ios::in);
+	infile.open(inname, ios::in);
 	if( infile.bad( )){
 	  cerr << "Cannot read from " << inname << endl;
 	  result = 0;
@@ -1348,7 +1348,7 @@ namespace Tagger {
 
 
   bool TaggerClass::readsettings( string& fname ){
-    ifstream setfile( fname.c_str(), ios::in);
+    ifstream setfile( fname, ios::in);
     if( !setfile ){
       return false;
     }
@@ -1713,13 +1713,13 @@ namespace Tagger {
     vector<int> TestPat;
     if( do_known ){
       nslots = Ktemplate.totalslots() - Ktemplate.skipfocus;
-      outfile.open( K_option_name.c_str(), ios::trunc | ios::out );
+      outfile.open( K_option_name, ios::trunc | ios::out );
       Action = MakeKnown;
       TestPat.reserve(Ktemplate.totalslots());
     }
     else {
       nslots = Utemplate.totalslots() - Utemplate.skipfocus;
-      outfile.open( U_option_name.c_str(), ios::trunc | ios::out );
+      outfile.open( U_option_name, ios::trunc | ios::out );
       Action = MakeUnknown;
       TestPat.reserve(Utemplate.totalslots());
     }
@@ -1797,7 +1797,7 @@ namespace Tagger {
       COUT << "    Algorithm = " << to_string(Ktree->Algo()) << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
-	ifstream infile( inname.c_str(), ios::in );
+	ifstream infile( inname, ios::in );
 	if(infile.bad()){
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
@@ -1836,7 +1836,7 @@ namespace Tagger {
       COUT << "    Algorithm = " << to_string(UKtree->Algo()) << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
-	ifstream infile( inname.c_str(), ios::in );
+	ifstream infile( inname, ios::in );
 	if(infile.bad()){
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
@@ -1869,7 +1869,7 @@ namespace Tagger {
       SettingsFileName = TestFileName + ".settings";
     }
     ofstream out_file;
-    if ( ( out_file.open( SettingsFileName.c_str(), ios::out ),
+    if ( ( out_file.open( SettingsFileName, ios::out ),
 	   !out_file.good() ) ){
       cerr << "couldn't create Settings-File `"
 	   << SettingsFileName << "'" << endl;

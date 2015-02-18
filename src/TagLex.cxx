@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -40,16 +40,16 @@
 
 namespace Tagger {
   using namespace std;
-  
+
   TagInfo::TagInfo( const string& name, const string& tag ){
     Word = name;
     WordFreq = 0;
     Update( tag );
   }
-  
+
   TagInfo::~TagInfo(){
   }
-  
+
   void TagInfo::Update( const string& tag ){
     ++WordFreq;
     map<string,int>::iterator it = TagFreqs.find( tag );
@@ -60,7 +60,7 @@ namespace Tagger {
       TagFreqs[tag] = 1;
     }
   }
-  
+
   void TagInfo::Prune( int Threshold ){
     map<string,int>::iterator it = TagFreqs.begin();
     while ( it != TagFreqs.end() ){
@@ -71,7 +71,7 @@ namespace Tagger {
 	++it;
     }
   }
-  
+
   string TagInfo::DisplayTagFreqs( )const {
     string result;
     map<string, int>::const_iterator it = TagFreqs.begin();
@@ -118,20 +118,20 @@ namespace Tagger {
     }
     return os;
   }
-  
+
   TagLex::TagLex(){
     TagTree = new Trie<TagInfo>;
     NumOfEntries = 0;
   }
-  
+
   TagLex::~TagLex(){
     delete TagTree;
   }
-  
+
   TagInfo *TagLex::Lookup( const string& name ){
-    return (TagInfo *)TagTree->Retrieve( name ); 
+    return (TagInfo *)TagTree->Retrieve( name );
   }
-  
+
   TagInfo *TagLex::Store( const string& name, const string& tag ){
     TagInfo *info = TagTree->Retrieve( name );
     if ( !info ){
@@ -139,40 +139,42 @@ namespace Tagger {
       info = new TagInfo( name, tag );
       return TagTree->Store( name, info );
     }
-    else 
+    else
       info->Update( tag );
     return info;
   }
-  
+
   void StoreInVector( TagInfo *TI, void *arg ){
     vector<TagInfo*> *vec = (vector<TagInfo*> *)arg;
     vec->push_back( TI );
   }
-  
+
   bool ascendingInfo( const TagInfo* t1, const TagInfo* t2 ){
     //
     // sort on decending frequency
     // when same frequency, sort alphabetical
     // but: sort Uppercase words before lowercase when equal (e.g Land/land)
-    //     
+    //
     int diff = t2->Freq() - t1->Freq();
     if ( diff == 0 ){
-      if ( TiCC::lowercase(t2->Word) == TiCC::lowercase(t1->Word) )
-	return strcmp( t2->Word.c_str(), t1->Word.c_str() ) < 0;
-      else
-	return strcmp( t1->Word.c_str(), t2->Word.c_str() ) < 0;
+      if ( TiCC::lowercase(t2->Word) == TiCC::lowercase(t1->Word) ){
+	return t2->Word < t1->Word;
+      }
+      else {
+	return t1->Word < t2->Word;
+      }
     }
     return diff < 0;
   }
-  
+
   vector<TagInfo *> TagLex::CreateSortedVector(){
     vector<TagInfo*> TagVec;
     TagTree->ForEachDo( StoreInVector, (void *)&TagVec );
     sort( TagVec.begin(), TagVec.end() , ascendingInfo );
     return TagVec;
   }
-  
+
   ostream& operator<<( ostream& os, TagLex *L ){
     return os << L->TagTree; }
-  
+
 }

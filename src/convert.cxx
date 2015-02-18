@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -64,12 +64,12 @@ void fill_map( istream& in, string_map& map ){
 }
 
 void backup( const string& in_name, const string& out_name ){
-  ifstream in( in_name.c_str() );
+  ifstream in( in_name );
   if ( !in ){
     cerr << "problems with inputfile: " << in_name << endl;
     exit(1);
   }
-  ofstream out( out_name.c_str() );
+  ofstream out( out_name );
   if ( !out ){
     cerr << "problems with opening backup file: " << out_name << endl;
     exit(1);
@@ -82,14 +82,14 @@ void backup( const string& in_name, const string& out_name ){
        << ")" << endl;
 }
 
-void convert( const string& in_name, const string& out_name, 
+void convert( const string& in_name, const string& out_name,
 	      string_map& tmap ){
-  ifstream in( in_name.c_str() );
+  ifstream in( in_name );
   if ( !in ){
     cerr << "problems with inputfile: " << in_name << endl;
     exit(1);
   }
-  ofstream out( out_name.c_str() );
+  ofstream out( out_name );
   if ( !out ){
     cerr << "problems with opening output file: " << out_name << endl;
     exit(1);
@@ -146,4 +146,3 @@ int main( int argc, char *argv[] ){
   backup( tree_file_name, back_name );
   convert( back_name, tree_file_name, tag_map );
 }
-
