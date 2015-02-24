@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -38,15 +38,15 @@ namespace Tagger {
   const std::string DOT = "==";
   const std::string UNKNOWN = "__";
   enum MatchAction { Unknown, Known, MakeKnown, MakeUnknown };
-  
+
   // A word in a sentence.
   //
   class word {
   public:
-    
+
     std::string the_word;
     int the_word_index;
-    
+
     std::string word_tag;
     int word_amb_tag;
     int word_ass_tag;
@@ -54,9 +54,9 @@ namespace Tagger {
     word( const std::string&, const std::string& );
     word( const std::string&, const std::vector<std::string>&, const std::string& );
     ~word();
-    
+
   };
-  
+
   enum word_stat { NO_MORE_WORDS, LAST_WORD, EOS_FOUND, READ_MORE };
   enum input_kind_type { UNTAGGED, TAGGED, ENRICHED };
 
@@ -67,7 +67,7 @@ namespace Tagger {
   public:
     sentence();
     ~sentence();
-
+    void clear();
     bool init_windowing( PatTemplate *, PatTemplate *, Lexicon&, StringHash& );
     bool nextpat( MatchAction *, std::vector<int>&, StringHash& , StringHash&,
 		  unsigned int, int * = 0 ) const;
@@ -80,11 +80,11 @@ namespace Tagger {
     unsigned int size() const { return no_words; };
     bool known( unsigned int ) const;
     std::string Eos() const;
-    bool read( std::istream &, input_kind_type, const std::string& );
-    bool fill( const std::string&, bool );
+    bool read( std::istream &, input_kind_type, const std::string&, size_t& );
   private:
     int UTAG;
     std::vector<word *> Words;
+    std::string remainder;
     PatTemplate * Ktemplate;
     PatTemplate * Utemplate;
     unsigned int no_words;
@@ -96,7 +96,9 @@ namespace Tagger {
     void add( const std::string&, const std::string& );
     //    bool readLine( std::istream &, bool );
     bool read( std::istream &, bool );
-    bool read_enriched( std::istream & );
+    bool read_tagged( std::istream&, size_t& );
+    bool read_untagged( std::istream&, size_t& );
+    bool read_enriched( std::istream&, size_t& );
     void print( std::ostream & ) const;
   };
 

@@ -1135,9 +1135,10 @@ namespace Tagger {
   }
 
   vector<TagResult> TaggerClass::tagLine( const string& line ){
-    vector<TagResult> result;
     sentence mySentence;
-    mySentence.fill( line, input_kind );
+    stringstream ss(line);
+    size_t dummy = 0;
+    mySentence.read( ss, input_kind, EosMark, dummy );
     return tagSentence( mySentence );
   }
 
@@ -1204,6 +1205,13 @@ namespace Tagger {
     return result;
   }
 
+  string decode( const string& eom ){
+    if ( eom  == "EL" )
+      return "";
+    else
+      return eom;
+  }
+
   string TaggerClass::TRtoString( const vector<TagResult>& tr ) const {
     string result;
     for ( unsigned int Wcnt=0; Wcnt < tr.size(); ++Wcnt ){
@@ -1244,7 +1252,7 @@ namespace Tagger {
       }
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
-      result = result + EosMark;
+      result = result + decode( EosMark );
     return result;
   }
 
@@ -1285,9 +1293,10 @@ namespace Tagger {
     // loop as long as you get sentences
     //
     int HartBeat = 0;
+    size_t line_cnt = 0;
     sentence mySentence;
     while ( go_on &&
-	    mySentence.read(infile, input_kind, EosMark ) ){
+	    mySentence.read(infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
       string tagged_sentence;
@@ -1726,8 +1735,9 @@ namespace Tagger {
     // loop as long as you get sentences
     //
     int HartBeat = 0;
+    size_t line_cnt = 0;
     sentence mySentence;
-    while ( mySentence.read( infile, input_kind, EosMark ) ){
+    while ( mySentence.read( infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
       // cerr << mySentence << endl;

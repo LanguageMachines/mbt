@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
       timbl@uvt.nl
 */
 
-#include <fstream> 
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -43,7 +43,7 @@
 namespace Tagger {
   using namespace Hash;
   using namespace std;
- 
+
   const string Separators = "\t \n";
   const int MAXTCPBUF   = 65536;
 
@@ -54,25 +54,31 @@ namespace Tagger {
     word_tag = some_tag;
     the_word_index = -1;
     extraFeatures = extra_features;
-  }  
-  
+  }
+
   // Delete a word
   //
   word::~word(){
   }
-  
+
   // New sentence.
   //
   sentence::sentence(){
     UTAG = -1;
     no_words = 0;
   }
-  
+
   // Delete it.
   //
   sentence::~sentence(){
-    for ( unsigned int i=0; i < no_words; ++i )
+    clear();
+  }
+
+  void sentence::clear(){
+    for ( unsigned int i=0; i < no_words; i++ )
       delete Words[i];
+    Words.clear();
+    no_words = 0;
   }
 
   ostream& operator<<( ostream& os, const sentence& s ){
@@ -99,7 +105,7 @@ namespace Tagger {
       return "\n\n";
     if ( InternalEosMark == "NL" )
       return "\n";
-    return InternalEosMark; 
+    return InternalEosMark;
   }
 
   // Print it.
@@ -113,30 +119,30 @@ namespace Tagger {
     }
     os << "'";
   }
-  
+
   bool sentence::Utt_Terminator( const string& z_something ){
     return ( z_something == InternalEosMark );
   }
-  
+
   // Add an enriched word to a sentence.
   //
-  void sentence::add( const string& a_word, 
+  void sentence::add( const string& a_word,
 		      const vector<string>& extraFeatures,
 		      const string& a_tag ){
     Words.push_back( new word( a_word, extraFeatures, a_tag ) );
     ++no_words;
   }
-  
+
   // Add a word to a sentence.
   //
   void sentence::add(const string& a_word, const string& a_tag)
   {
     vector<string> tmp;
     add(a_word, tmp, a_tag);
-  }  
-  
+  }
+
   bool sentence::init_windowing( PatTemplate *Ktmpl,
-				 PatTemplate *Utmpl, 
+				 PatTemplate *Utmpl,
 				 Lexicon &lex,
 				 StringHash& TheLex ) {
     if ( UTAG == -1 )
@@ -169,7 +175,7 @@ namespace Tagger {
       return true;
     }
   }
-  
+
   int sentence::classify_hapax( const string& word, StringHash& TheLex ) const{
     string hap = "HAPAX-";
     if ( word.find( "-" ) != string::npos ) // hyphen anywere
@@ -183,8 +189,8 @@ namespace Tagger {
       hap += '0';
     return TheLex.Hash( hap );
   }
-  
-  bool sentence::nextpat( MatchAction *Action, vector<int>& Pat, 
+
+  bool sentence::nextpat( MatchAction *Action, vector<int>& Pat,
 			  StringHash& wordlist, StringHash& TheLex,
 			  unsigned int position, int *old_pat ) const {
     // safety check:
@@ -208,35 +214,35 @@ namespace Tagger {
       //      cerr << "Next pat, Unknown word = "
       //  	 << current_word->the_word << endl;
       aTemplate = Utemplate;
-    }    
+    }
     else {
       *Action = Known;
-      //      cerr << "Next pat, Known word = " 
+      //      cerr << "Next pat, Known word = "
       //  	 << current_word->the_word << endl;
       aTemplate = Ktemplate;
     }
-    
+
     // Prefix?
     //
     if (aTemplate->numprefix > 0) {
       for ( size_t j = 0;
 	    j < (size_t)aTemplate->numprefix; j++) {
 	string addChars = "_";
-	if ( j < CurWLen ) 
+	if ( j < CurWLen )
 	  addChars += current_word->the_word[j];
-	else 
+	else
 	  addChars += '=';  // "_=" denotes "no value"
 	Pat[i_feature] = TheLex.Hash( addChars );
 	i_feature++;
       }
     }
-    
+
     for ( unsigned int i = 0, c_pos = position - aTemplate->word_focuspos;
 	  i < aTemplate->wordslots;
 	  i++, c_pos++) {
       // Now loop.
       //
-      // depending on the slot type, transfer the appropriate 
+      // depending on the slot type, transfer the appropriate
       // information to the next feature
       //
       if ( c_pos < no_words ) {
@@ -252,15 +258,15 @@ namespace Tagger {
 	  }
 	  else {
 	    tok = wordlist.Lookup( wPtr->the_word );
-	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;	    
+	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
 	      Pat[i_feature] = wPtr->the_word_index;
 	    }
-	    else 
+	    else
 	      Pat[i_feature] = classify_hapax(  wPtr->the_word, TheLex );
 	  }
 	  i_feature++;
-	  break;                    
+	  break;
 	}
       }
       else {   // Out of context.
@@ -268,19 +274,19 @@ namespace Tagger {
 	i_feature++;
       }
     } // i
-    
+
     // Lexical and Context features ?
     //
     for ( unsigned int ii = 0, cc_pos = position - aTemplate->focuspos;
 	  ii < aTemplate->numslots;
 	  ii++, cc_pos++ ) {
-      
+
       // move a pointer to the position of the word that
       // should occupy the present template slot
       //
       if ( cc_pos < no_words ) {
 	wPtr = Words[cc_pos];
-	// depending on the slot type, transfer the appropriate 
+	// depending on the slot type, transfer the appropriate
 	// information to the next feature
 	//
 	switch(aTemplate->templatestring[ii]){
@@ -293,7 +299,7 @@ namespace Tagger {
 	    Pat[i_feature] = old_pat[position+ii-aTemplate->focuspos];
 	  }
 	  i_feature++;
-	  break;                        
+	  break;
 	case 'f':
 	  Pat[i_feature] = wPtr->word_amb_tag;
 	  i_feature++;
@@ -311,21 +317,21 @@ namespace Tagger {
 	i_feature++;
       }
     } // i
-    
+
     // Suffix?
     //
     if (aTemplate->numsuffix > 0) {
       for ( size_t j = aTemplate->numsuffix; j > 0; j--) {
 	string addChars = "_";
-	if ( j <= CurWLen ) 
+	if ( j <= CurWLen )
 	  addChars  += current_word->the_word[CurWLen - j];
-	else 
+	else
 	  addChars += '=';
 	Pat[i_feature] = TheLex.Hash( addChars );
 	i_feature++;
       }
     }
-    
+
     // Hyphen?
     //
     if (aTemplate->hyphen) {
@@ -337,19 +343,19 @@ namespace Tagger {
       Pat[i_feature] = TheLex.Hash( addChars );
       i_feature++;
     }
-    
+
     // Capital (First Letter)?
     //
     if (aTemplate->capital) {
       string addChars = "_";
       if ( isupper(current_word->the_word[0]) )
 	addChars += 'C';
-      else 
+      else
 	addChars += '0';
       Pat[i_feature] = TheLex.Hash( addChars );
       i_feature++;
     }
-    
+
     // Numeric (somewhere in word)?
     //
     if (aTemplate->numeric) {
@@ -375,7 +381,7 @@ namespace Tagger {
     if( no_words > 0 && pos < no_words )
       Words[pos]->word_ass_tag = cat;
   }
-  
+
   bool sentence::known( unsigned int i ) const {
     if( no_words > 0 && i < no_words )
       return Words[i]->word_amb_tag != UTAG;
@@ -400,7 +406,7 @@ namespace Tagger {
 	  else {
 	    while( isspace((ch=is.peek())) && ch != '\n' ) ch = is.get();
 	    // skip all whitespace exept '\n'
-	    if ( is.peek() == '\n' ){ 
+	    if ( is.peek() == '\n' ){
 	      // so an empty line
 	    ch = is.get();
 	    return LAST_WORD;
@@ -421,68 +427,108 @@ namespace Tagger {
   }
 
 
-  bool sentence::read( istream &infile, input_kind_type kind, 
-		       const string& eom ){
+  bool sentence::read( istream &infile, input_kind_type kind,
+		       const string& eom, size_t& line ){
+    if ( !infile )
+      return false;
     InternalEosMark = eom;
-    if ( kind == TAGGED ||
-	 kind == UNTAGGED ){
-      return read( infile, kind == TAGGED );
+    //    cerr << "READ zet InternalEosMark = " << eom << endl;
+    if ( kind == TAGGED ){
+      return read_tagged( infile, line );
+    }
+    else if ( kind == UNTAGGED ){
+      return read_untagged( infile, line );
     }
     else
-      return read_enriched( infile );
+      return read_enriched( infile, line );
   }
 
-  bool sentence::read( istream &infile, bool tagged ){
+  bool sentence::read_tagged( istream &infile, size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
-    
-    string linebuffer = "";
-    string Word;
-    // get the word from the file
-    //
-    //    cerr << "start read" << endl;
-    word_stat eos ;
-    do {
-      eos = READ_MORE;
-      while( eos == READ_MORE && infile ){
-	eos = get_word( infile, Word );
-	//	cerr << "got Word '" << Word << "'" << endl;
-	if ( eos == EOS_FOUND )
-	  break;
-	linebuffer = linebuffer + ' ' + Word;
-	if ( eos == LAST_WORD )
-	  break;
-	if( tagged ){
-	  // get the tag
-	  //
-	  if ( infile ){
-	    eos = get_word( infile, Word );
-	    //	    cerr << "got Tag '" << Word << "'" << endl;
-	    linebuffer = linebuffer + ' ' + Word;
+    clear();
+    string line;
+    while ( getline( infile, line ) ){
+      ++line_no;
+      //      cerr << "read line: " << line << endl;
+      line = TiCC::trim( line );
+      if ( line.empty() ){
+	if ( InternalEosMark == "EL" ){
+	  return true;
+	}
+	continue;
+      }
+      else if ( Utt_Terminator( line ) ){
+	return true;
+      }
+      vector<string> parts;
+      int num = TiCC::split_at_first_of( line, parts, Separators );
+      if ( num != 2 ){
+#pragma omp critical
+	{
+	  cerr << endl << "error in line " << line_no << " : '"
+	       << line << "' (skipping it)" << endl;
+	  if ( num == 1 ){
+	    cerr << "missing a tag ? " << endl;
 	  }
-	  else{
-	    break;
+	  else {
+	    cerr << "extra values found " << endl;
+	  }
+	}
+	continue;
+      }
+      add( parts[0], parts[1] );
+    }
+    //    cerr << "read a sentence: " << *this << endl;
+    return true;
+  }
+
+  bool sentence::read_untagged( istream &infile, size_t& line_no ){
+    // read a whole sentence from a stream
+    // A sentence can be delimited either by an Eos marker or EOF.
+    clear();
+    //    cerr << "untagged-read remainder='" << remainder << "'" << endl;
+    string line = remainder;
+    remainder.clear();
+    while ( !line.empty() || getline( infile, line ) ){
+      ++line_no;
+      //      cerr << "untagged-read line: " << line << endl;
+      line = TiCC::trim( line );
+      if ( line.empty() ){
+	if ( InternalEosMark == "EL" ){
+	  return true;
+	}
+	continue;
+      }
+      vector<string> parts;
+      TiCC::split_at_first_of( line, parts, " \t" );
+      line = "";
+      bool terminated = false;
+      for ( auto p : parts ){
+	//	cerr << "bekijk " << p << endl;
+	if ( Utt_Terminator( p ) ){
+	  terminated = true;
+	}
+	else {
+	  if ( terminated ){
+	    remainder += p + " ";
+	  }
+	  else {
+	    add( p, "" );
 	  }
 	}
       }
-      //      cerr << "Eos = " << eos << endl;
-    }  while ( linebuffer.length() == 0 && infile );
-    //    cerr << "done reading '" << linebuffer << "'" << endl;
-    if ( linebuffer.length() > 0 )
-      return fill( linebuffer, tagged );
-    else
-      return false;
+      if ( terminated )
+	return true;
+    }
+    return true;
   }
-  
-  bool sentence::read_enriched( istream &infile ){
-    // read an enriched and tagged word from infile
-    // it must be a one_liner
-    //    cerr << "Reading enriched" << endl;
+
+  bool sentence::read_enriched( istream &infile, size_t& line_no ){
+    // read a sequence of enriched and tagged words from infile
+    // every word must be a one_liner
     // cleanup the sentence for re-use...
-    for ( unsigned int i=0; i < no_words; i++ )
-      delete Words[i];
-    Words.clear();
-    no_words = 0;
+    clear();
     string linebuffer;
     string Word;
     string Tag;
@@ -490,11 +536,10 @@ namespace Tagger {
     bool not_ready = true;
     while( not_ready && infile ) {
       getline( infile, linebuffer );
+      ++line_no;
       infile >> ws;
       size_t size = TiCC::split( linebuffer, extras );
       if ( size == 1 && Utt_Terminator( extras.front() ) ){
-	// Word = extras.front();
-	// add( Word, "" );
 	not_ready = false;
       }
       if ( size >= 2 ){
@@ -505,54 +550,9 @@ namespace Tagger {
 	if ( !Word.empty() && !Tag.empty() ){
 	  add( Word, extras, Tag );
 	}
-	//	nothing_yet = false;
       }
     };
     return no_words > 0;
   }
-  
-  bool sentence::fill( const string& line, bool tagged ){
-    // cleanup the sentence for re-use...
-    for ( unsigned int i=0; i < no_words; i++ )
-      delete Words[i];
-    Words.clear();
-    no_words = 0;
-    string token,  tagtoken;
-    bool result = true;
 
-    string::size_type s_pos, e_pos;
-    s_pos = line.find_first_not_of( Separators );
-    // in this loop we extract word (or word-tag pairs) from the buffer
-    // and fill them into the "sentence" variable
-    //
-    while( s_pos != string::npos ){
-      e_pos = line.find_first_of( Separators, s_pos );
-      token  = line.substr( s_pos, e_pos - s_pos ); 
-      // if necessary ... read the tag as well ...
-      //
-      s_pos = line.find_first_not_of( Separators, e_pos );
-      if( tagged ) {
-	if ( s_pos == string::npos ) {
-	  cerr << "cannot get tag for word " << token << endl;
-	  result = false;
-	  break;
-	}
-	else {
-	  e_pos = line.find_first_of( Separators, s_pos );
-	  tagtoken  = line.substr( s_pos, e_pos - s_pos ); 
-	  s_pos = line.find_first_not_of( Separators, e_pos );
-	  // add the extracted token to the sentence representation
-	  // there is an associated tag for the word
-	  add( token, tagtoken );
-	}
-      }
-      else {
-	// add the extracted token(s) to the sentence representation
-	// there is no associated tag for the word
-	add( token, "" ); 
-      }
-    }
-    return result;
-  }
-  
 } // namespace
