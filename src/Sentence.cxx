@@ -100,14 +100,6 @@ namespace Tagger {
     return result;
   }
 
-  string sentence::Eos() const {
-    if ( InternalEosMark == "EL" )
-      return "\n\n";
-    if ( InternalEosMark == "NL" )
-      return "\n";
-    return InternalEosMark;
-  }
-
   // Print it.
   //
   void sentence::print( ostream &os ) const{
@@ -389,44 +381,6 @@ namespace Tagger {
       return false;
   }
 
-  word_stat sentence::get_word( istream& is, string& Word ){
-    Word = "";
-    if ( is ){
-      is >> ws >> Word;
-      //      cerr << "getWord got '" << Word << "'" << endl;
-      if ( InternalEosMark == "EL" || InternalEosMark == "NL" ){
-	int ch;
-	while( isspace((ch=is.peek())) && ch != '\n' ) ch = is.get();
-	// skip all whitespace exept '\n'
-	if ( ch == '\n' ){
-	  ch = is.get(); // get the '\n'
-	  if ( InternalEosMark == "NL" ){
-	    return LAST_WORD;
-	  }
-	  else {
-	    while( isspace((ch=is.peek())) && ch != '\n' ) ch = is.get();
-	    // skip all whitespace exept '\n'
-	    if ( is.peek() == '\n' ){
-	      // so an empty line
-	    ch = is.get();
-	    return LAST_WORD;
-	    }
-	  }
-	}
-      }
-      else {
-	if ( Utt_Terminator(Word) ){
-	  // stop if Utterance terminator found
-	  return EOS_FOUND;
-	}
-      }
-      is >> ws;
-      return READ_MORE;
-    }
-    return NO_MORE_WORDS;
-  }
-
-
   bool sentence::read( istream &infile, input_kind_type kind,
 		       const string& eom, size_t& line ){
     if ( !infile )
@@ -529,22 +483,26 @@ namespace Tagger {
     // every word must be a one_liner
     // cleanup the sentence for re-use...
     clear();
-    string linebuffer;
+    string line;
     string Word;
     string Tag;
     vector<string> extras;
-    bool not_ready = true;
-    while( not_ready && infile ) {
-      getline( infile, linebuffer );
+    while( getline( infile, line ) ){
       ++line_no;
-      infile >> ws;
-      size_t size = TiCC::split( linebuffer, extras );
-      if ( size == 1 && Utt_Terminator( extras.front() ) ){
-	not_ready = false;
+      line = TiCC::trim( line );
+      if ( line.empty() ){
+	if ( InternalEosMark == "EL" ){
+	  return true;
+	}
+	continue;
       }
+      else if ( Utt_Terminator( line ) ){
+	return true;
+      }
+      size_t size = TiCC::split_at_first_of( line, extras, Separators );
       if ( size >= 2 ){
 	Word = extras.front();
-	extras.erase(extras.begin());
+	extras.erase(extras.begin()); // expensive, but allas. extras is small
 	Tag  = extras.back();
 	extras.pop_back();
 	if ( !Word.empty() && !Tag.empty() ){

@@ -79,7 +79,6 @@ namespace Tagger {
     std::string getenr( unsigned int i );
     unsigned int size() const { return no_words; };
     bool known( unsigned int ) const;
-    std::string Eos() const;
     bool read( std::istream &, input_kind_type, const std::string&, size_t& );
   private:
     int UTAG;
@@ -90,12 +89,9 @@ namespace Tagger {
     unsigned int no_words;
     std::string InternalEosMark;
     bool Utt_Terminator( const std::string& );
-    word_stat get_word( std::istream& is, std::string& Word );
     void add( const std::string&, const std::vector<std::string>&,
 	      const std::string& );
     void add( const std::string&, const std::string& );
-    //    bool readLine( std::istream &, bool );
-    bool read( std::istream &, bool );
     bool read_tagged( std::istream&, size_t& );
     bool read_untagged( std::istream&, size_t& );
     bool read_enriched( std::istream&, size_t& );
