@@ -805,10 +805,9 @@ namespace Tagger {
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
-    for (vector<string>::iterator it = mySentence.getWord(word)->extraFeatures.begin(); it != mySentence.getWord(word)->extraFeatures.end(); it++)
-    {
-      line += *it;
-      line += " ";
+    const vector<string> enr = mySentence.getEnrichments(word);
+    for ( auto er: enr ){
+      line += er + " ";
     }
     if ( input_kind == TAGGED )
       line += mySentence.gettag(word);
@@ -1777,7 +1776,7 @@ namespace Tagger {
 	    }
 	  thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
 	  if ( !skip ){
-	    for (vector<string>::iterator it = mySentence.getWord(swcn)->extraFeatures.begin(); it != mySentence.getWord(swcn)->extraFeatures.end(); it++)
+	    for ( vector<string>::const_iterator it = mySentence.getEnrichments(swcn).begin(); it != mySentence.getEnrichments(swcn).end(); it++)
 	      outfile << *it << " ";
 	    outfile << mySentence.gettag( swcn ) << '\n';
 	  }

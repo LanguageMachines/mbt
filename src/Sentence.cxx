@@ -89,8 +89,9 @@ namespace Tagger {
   string sentence::getenr( unsigned int index ){
     string result;
     if ( index < no_words ){
-      vector<string>::const_iterator it=Words[index]->extraFeatures.begin();
-      while( it != Words[index]->extraFeatures.end() ){
+      const std::vector<std::string> enr = getEnrichments( index );
+      auto it = Words[index]->extraFeatures.cbegin();
+      while( it != Words[index]->extraFeatures.cend() ){
 	result += *it;
 	++it;
 	if (  it != Words[index]->extraFeatures.end() )
