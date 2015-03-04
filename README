@@ -21,7 +21,7 @@ This software has been tested on:
 - Apple platform running MaxOSX
 
 Compilers:
-- GCC (3.4 - 4.2.0). It is highly recommended to upgrade to at least GCC 4.1
+- GCC (4.7 - 4.9.0). It is highly recommended to upgrade to at least GCC 4.8
 
 Contents of this distribution:
 - sources
