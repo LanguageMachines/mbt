@@ -114,6 +114,8 @@ namespace Tagger {
   }
 
   bool sentence::Utt_Terminator( const string& z_something ){
+    if ( InternalEosMark == "EL" )
+      return z_something.empty();
     return ( z_something == InternalEosMark );
   }
 
