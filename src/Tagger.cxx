@@ -1464,15 +1464,9 @@ namespace Tagger {
     return true;
   }
 
-  bool TaggerClass::parse_run_args( TimblOpts& Opts, bool as_server ){
+  bool TaggerClass::parse_run_args( TiCC::CL_Options& Opts, bool as_server ){
     string value;
-    bool mood;
-    if ( Opts.Find( 'V', value, mood ) ||
-	 Opts.Find( "version", value, mood ) ){
-      manifest();
-      return false;
-    }
-    if ( Opts.Find( 's', value, mood ) ){
+    if ( Opts.extract( 's', value ) ){
       // if a settingsfile option has been given, read that first
       // and then override with commandline options
       //
@@ -1487,22 +1481,19 @@ namespace Tagger {
 	cerr << "Cannot read settingsfile " << SettingsFileName << endl;
 	return false;
       }
-      Opts.Delete( 's' );
     };
-    if ( Opts.Find( 'B', value, mood ) ){
+    if ( Opts.extract( 'B', value ) ){
       int dum_beam = stringTo<int>(value);
       if (dum_beam>1)
 	Beam_Size = dum_beam;
       else
 	Beam_Size = 1;
-      Opts.Delete( 'B' );
     };
-    if ( Opts.Find( 'd', value, mood ) ){
+    if ( Opts.extract( 'd', value ) ){
       dumpflag=true;
       cerr << "  Dumpflag ON" << endl;
-      Opts.Delete( 'd' );
     }
-    if ( Opts.Find( 'D', value, mood ) ){
+    if ( Opts.extract( 'D', value ) ){
       if ( value == "LogNormal" )
 	cur_log->setlevel( LogNormal );
       else if ( value == "LogDebug" )
@@ -1514,58 +1505,47 @@ namespace Tagger {
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;
       }
-      Opts.Delete( 'D' );
     }
-    if ( Opts.Find( 'e', value, mood ) ){
+    if ( Opts.extract( 'e', value ) ){
       EosMark = value;
-      Opts.Delete( 'e' );
     }
-    if ( Opts.Find( 'k', value, mood ) ){
+    if ( Opts.extract( 'k', value ) ){
       KnownTreeName = value;
       knowntreeflag = true; // there is a knowntreefile specified
-      Opts.Delete( 'k' );
     };
-    if ( Opts.Find( 'l', value, mood ) ){
+    if ( Opts.extract( 'l', value ) ){
       l_option_name = value;
       lexflag = true; // there is a lexicon specified
-      Opts.Delete( 'l' );
     };
-    if ( Opts.Find( 'L', value, mood ) ){
+    if ( Opts.extract( 'L', value ) ){
       L_option_name = value;
       klistflag = true;
-      Opts.Delete( 'L' );
     };
-    if ( Opts.Find( 'o', value, mood ) ){
+    if ( Opts.extract( 'o', value ) ){
       OutputFileName = value;
-      Opts.Delete( 'o' );
     };
-    if ( Opts.Find( 'O', value, mood ) ){  // Option string for Timbl
+    if ( Opts.extract( 'O', value ) ){  // Option string for Timbl
       TimblOptStr = value;
-      Opts.Delete( 'O' );
     };
-    if ( Opts.Find( 'r', value, mood ) ){
+    if ( Opts.extract( 'r', value ) ){
       r_option_name = value;
       reverseflag = true;
-      Opts.Delete( 'r' );
     }
-    if ( Opts.Find( 'S', value, mood ) ){
-      cerr << "Server mode NOT longer supported in this version!\n"
-	   << "You must use mbtserver instead\n"
-	   << "sorry..." << endl;
-      return false;
-    };
-    if ( Opts.Find( 't', value, mood ) ){
+    if ( Opts.extract( 't', value ) ){
       TestFileName = value;
       piped_input = false; // there is a test file specified
-      Opts.Delete( 't' );
     };
-    if ( Opts.Find( 'E', value, mood ) ){
+    if ( Opts.extract( 'E', value ) ){
       TestFileName = value;
       piped_input = false;
+      if ( input_kind == TAGGED ){
+	cerr << "Option -E conflicts with TAGGED format from settingsfile "
+	     << "unable to continue" << endl;
+	return false;
+      }
       input_kind = ENRICHED; // enriched tagged test file specified
-      Opts.Delete( 'E' );
     };
-    if ( Opts.Find( 'T', value, mood ) ){
+    if ( Opts.extract( 'T', value ) ){
       TestFileName = value;
       piped_input = false;
       if ( input_kind == ENRICHED ){
@@ -1574,14 +1554,12 @@ namespace Tagger {
 	return false;
       }
       input_kind = TAGGED; // there is a tagged test file specified
-      Opts.Delete( 'T' );
     };
-    if ( Opts.Find( 'u', value, mood ) ){
+    if ( Opts.extract( 'u', value ) ){
       UnknownTreeName = value;
       unknowntreeflag = true; // there is a unknowntreefile file specified
-      Opts.Delete( 'u' );
     }
-    if ( Opts.Find( 'v', value, mood ) ){
+    if ( Opts.extract( 'v', value ) ){
       vector<string> opts;
       size_t num = split_at( value, opts, "+" );
       for ( size_t i = 0; i < num; ++i ){
@@ -1592,7 +1570,6 @@ namespace Tagger {
 	if ( opts[i] == "cf" )
 	  confidence_flag = true;
       }
-      Opts.Delete( 'v' );
     };
     if ( cloned && input_kind == ENRICHED ){
       cerr << "Servermode doesn't support enriched inputformat!" << endl
@@ -1604,19 +1581,22 @@ namespace Tagger {
       cerr << "missing required options. See 'mbt -h' " << endl;
       return false;
     }
+    if ( !Opts.empty() ){
+      cerr << "unsupported options found: " << Opts.toString() << endl;
+    }
     return true;
   }
 
-  void TaggerClass::manifest( ){
+  void TaggerClass::manifest(){
     // present yourself to the user
     //
-    LOG << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
-	<< "Memory Based Tagger " << endl
-	<< "Tilburg University" << endl
-	<< "CLiPS Computational Linguistics Group, University of Antwerp"
-	<< endl
-	<< "Based on " << Timbl::VersionName()
-	<< endl << endl;
+    cout << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
+	 << "Memory Based Tagger " << endl
+	 << "Tilburg University" << endl
+	 << "CLiPS Computational Linguistics Group, University of Antwerp"
+	 << endl
+	 << "Based on " << Timbl::VersionName()
+	 << endl << endl;
   }
 
   void run_usage( const string& progname ){
@@ -1647,46 +1627,53 @@ namespace Tagger {
   }
 
   TaggerClass *TaggerClass::StartTagger( int argc, char*argv[], LogStream* os ){
-    TimblOpts Opts( argc, argv );
-    string value;
-    bool mood;
-    if ( Opts.Find( 'h', value, mood ) ||
-	 Opts.Find( "help", value, mood ) ){
-      run_usage( "mbt" );
+    TiCC::CL_Options opts( "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:",
+			   "help,version,settings:");
+    opts.init(argc, argv );
+    string progname = opts.prog_name();
+    if ( opts.extract('h') || opts.extract("help") ){
+      run_usage( progname );
+      return 0;
+    }
+    if ( opts.extract('V') || opts.extract("version") ){
+      manifest();
       return 0;
     }
     TaggerClass *tagger = new TaggerClass;
-    if ( !tagger->parse_run_args( Opts ) ){
+    if ( !tagger->parse_run_args( opts ) ){
       delete tagger;
       return 0;
     }
     if ( os )
       tagger->setLog( *os );
     else // only manifest() when running 'standalone'
-      tagger->manifest();
+      manifest();
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
   }
 
-  TaggerClass *TaggerClass::StartTagger( const string& opts, LogStream* os ){
-    TimblOpts Opts( opts );
-    string value;
-    bool mood;
-    if ( Opts.Find( 'h', value, mood ) ||
-	 Opts.Find( "help", value, mood ) ){
-      run_usage( "mbt" );
+  TaggerClass *TaggerClass::StartTagger( const string& optline, LogStream* os ){
+    TiCC::CL_Options opts( mbt_short_opts, mbt_long_opts );
+    opts.init( optline );
+    string progname = opts.prog_name();
+    if ( opts.extract('h') || opts.extract("help") ){
+      run_usage( progname );
+      return 0;
+    }
+    if ( opts.extract('V') || opts.extract("version") ){
+      manifest();
       return 0;
     }
     TaggerClass *tagger = new TaggerClass;
-    if ( !tagger->parse_run_args( Opts ) ){
+    if ( !tagger->parse_run_args( opts ) ){
       delete tagger;
       return 0;
     }
     if ( os )
       tagger->setLog( *os );
     else // only manifest() when running 'standalone'
-      tagger->manifest();
+      manifest();
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
@@ -1903,63 +1890,65 @@ namespace Tagger {
 
   //**** stuff to process commandline options *****************************
 
-  bool TaggerClass::parse_create_args( TimblOpts& Opts ){
+  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:n:o:p:P:r:s:T:u:U:XD:";
+  const string mbt_create_long = "version";
+
+  bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
     string value;
-    bool mood;
-    if ( Opts.Find( 'V', value, mood ) ||
-	 Opts.Find( "version", value, mood ) ){
+    if ( opts.is_present( 'V' ) ||
+	 opts.is_present( "version" ) ){
       // we already identified ourself. just bail out.
       return false;
     }
-    if ( Opts.Find( '%', value, mood ) ){
+    if ( opts.extract( '%', value ) ){
       FilterThreshold = stringTo<int>( value );
     }
-    if ( Opts.Find( 'd', value, mood ) ){
+    if ( opts.extract( 'd', value ) ){
       dumpflag=true;
       cout << "  Dumpflag ON" << endl;
     }
-    if ( Opts.Find( 'e', value, mood ) ){
+    if ( opts.extract( 'e', value ) ){
       EosMark = value;
       cout << "  Sentence delimiter set to '" << EosMark << "'" << endl;
     }
-    if ( Opts.Find( 'K', value, mood ) ){
+    if ( opts.extract( 'K', value ) ){
       K_option_name = value;
       knownoutfileflag = true; // there is a knownoutfile specified
     }
-    if ( Opts.Find( 'k', value, mood ) ){
+    if ( opts.extract( 'k', value ) ){
       KnownTreeName = value;
       knowntreeflag = true; // there is a knowntreefile specified
     }
-    if ( Opts.Find( 'l', value, mood ) ){
+    if ( opts.extract( 'l', value ) ){
       l_option_name = value;
       lexflag = true; // there is a lexicon specified
     }
-    if ( Opts.Find( 'L', value, mood ) ){
+    if ( opts.extract( 'L', value ) ){
       L_option_name = value;
       klistflag = true;
     }
-    if ( Opts.Find( 'M', value, mood ) ){
+    if ( opts.extract( 'M', value ) ){
       TopNumber = stringTo<int>(value);
     }
-    if ( Opts.Find( 'n', value, mood ) ){
+    if ( opts.extract( 'n', value ) ){
       Npax = stringTo<int>(value);
       if ( Npax == 0 )
 	DoNpax = false;
     }
-    if ( Opts.Find( 'O', value, mood ) ){
+    if ( opts.extract( 'O', value ) ){
       TimblOptStr = value; // Option string for Timbl
     }
-    if ( Opts.Find( 'p', value, mood ) ){
+    if ( opts.extract( 'p', value ) ){
       KtmplStr = value;  // windowing pattern for known words
     }
-    if ( Opts.Find( 'P', value, mood ) ){
+    if ( opts.extract( 'P', value ) ){
       UtmplStr = value;  // windowing pattern for unknown words
     }
-    if ( Opts.Find( 'r', value, mood ) ){
+    if ( opts.extract( 'r', value ) ){
       r_option_name = value;
       reverseflag = true;
     }
-    if ( Opts.Find( 's', value, mood ) ){
+    if ( opts.extract( 's', value ) ){
       // if a settingsfile option has been specified, use that name
       SettingsFileName = value;
       // extract the absolute path to the settingsfile
@@ -1969,7 +1958,7 @@ namespace Tagger {
       else
 	SettingsFilePath = "";
     }
-    if ( Opts.Find( 'E', value, mood ) ){
+    if ( opts.extract( 'E', value ) ){
       TestFileName = value;
       // extract the absolute path to the testfile
       string::size_type lastSlash = TestFileName.rfind('/');
@@ -1982,7 +1971,7 @@ namespace Tagger {
       piped_input = false;
       input_kind = ENRICHED; // an enriched tagged test file specified
     }
-    if ( Opts.Find( 'T', value, mood ) ){
+    if ( opts.extract( 'T', value ) ){
       TestFileName = value;
       // extract the absolute path to the testfile
       string::size_type lastSlash = TestFileName.rfind('/');
@@ -1995,18 +1984,18 @@ namespace Tagger {
       piped_input = false;
       input_kind = TAGGED; // there is a tagged test file specified
     }
-    if ( Opts.Find( 'u', value, mood ) ){
+    if ( opts.extract( 'u', value ) ){
       UnknownTreeName = value;
       unknowntreeflag = true; // there is a unknowntreefile file specified
     }
-    if ( Opts.Find( 'U', value, mood ) ){
+    if ( opts.extract( 'U', value ) ){
       U_option_name = value;
       unknownoutfileflag = true; // there is a unknownoutfile specified
     }
-    if ( Opts.Find( 'X', value, mood ) ){
+    if ( opts.extract( 'X', value ) ){
       KeepIntermediateFiles = true;
     }
-    if ( Opts.Find( 'D', value, mood ) ){
+    if ( opts.extract( 'D', value ) ){
       if ( value == "LogNormal" )
 	cur_log->setlevel( LogNormal );
       else if ( value == "LogDebug" )
@@ -2018,7 +2007,6 @@ namespace Tagger {
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;
       }
-      Opts.Delete( 'D' );
     }
     if ( TestFileName.empty() ){
       cerr << "Missing required options. see 'mbt -h'" << endl;
@@ -2054,11 +2042,10 @@ namespace Tagger {
 	 << "\t-X keep intermediate files \n" << endl;
   }
 
-  int TaggerClass::CreateTagger( TimblOpts& Opts ){
+  int TaggerClass::CreateTagger( TiCC::CL_Options& opts ){
     string value;
-    bool mood;
-    if ( Opts.Find( 'h', value, mood ) ||
-	 Opts.Find( "help", value, mood ) ){
+    if ( opts.is_present( 'h' ) ||
+	 opts.is_present( "help" ) ){
       gen_usage( "mbtg" );
       return true;
     }
@@ -2074,7 +2061,7 @@ namespace Tagger {
 	 << "Based on " << Timbl::VersionName()
 	 << endl << endl;
     TaggerClass tagger;
-    if ( !tagger.parse_create_args( Opts ) )
+    if ( !tagger.parse_create_args( opts ) )
       return -1;
     tagger.set_default_filenames();
     tagger.InitLearning();
@@ -2100,12 +2087,14 @@ namespace Tagger {
   }
 
   int TaggerClass::CreateTagger( const string& opt_string ){
-    TimblOpts opts( opt_string );
+    TiCC::CL_Options opts( mbt_create_short, mbt_create_long );
+    opts.init( opt_string );
     return CreateTagger( opts );
   }
 
   int TaggerClass::CreateTagger( int argc, char* argv[] ){
-    TimblOpts opts( argc, argv );
+    TiCC::CL_Options opts( mbt_create_short, mbt_create_long );
+    opts.init( argc, argv );
     return CreateTagger( opts );
   }
 

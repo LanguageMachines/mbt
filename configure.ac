@@ -4,7 +4,7 @@
 # $URL$
 
 AC_PREREQ(2.61)
-AC_INIT([mbt],[3.2.12],[timbl@uvt.nl])
+AC_INIT([mbt],[3.2.13],[timbl@uvt.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])

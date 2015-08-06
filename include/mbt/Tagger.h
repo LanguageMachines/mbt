@@ -39,6 +39,9 @@ namespace Tagger {
   std::string Version();
   std::string VersionName();
 
+  const std::string mbt_short_opts = "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:";
+  const std::string mbt_long_opts  = "help,version,settings:";
+
   const int EMPTY_PATH = -1000000;
 
   class n_best_tuple {
@@ -97,8 +100,8 @@ namespace Tagger {
     int CreateUnknown();
     void CreateSettingsFile();
     bool set_default_filenames();
-    bool parse_create_args( Timbl::TimblOpts& Opts );
-    bool parse_run_args( Timbl::TimblOpts& Opts, bool = false );
+    bool parse_create_args( TiCC::CL_Options& );
+    bool parse_run_args( TiCC::CL_Options&, bool = false );
     bool isClone() const { return cloned; };
     void ShowCats( std::ostream& os, const std::vector<int>& Pat, int slots );
     bool setLog( TiCC::LogStream& );
@@ -107,7 +110,7 @@ namespace Tagger {
     void read_listfile( const std::string&, StringHash * );
     static TaggerClass *StartTagger( const std::string&, TiCC::LogStream* = 0 );
     static TaggerClass *StartTagger( int, char**, TiCC::LogStream* = 0 );
-    static int CreateTagger( Timbl::TimblOpts& );
+    static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
     static int CreateTagger( int, char** );
     bool isInit() const { return initialized; };
@@ -146,7 +149,7 @@ namespace Tagger {
     std::vector<std::string> distribution_array;
     std::vector<double> confidence_array;
 
-    void manifest();
+    static void manifest();
     int makedataset( std::istream& infile, bool do_known );
     bool readsettings( std::string& fname );
     void create_lexicons();
