@@ -1117,6 +1117,10 @@ namespace Tagger {
 	    confidence_array[i_word] = distribution->Confidence( answer );
 	}
       }
+      if ( IsActive( DBG ) ){
+	LOG << "BeamData::NextPaths( " << mySentence << endl;
+	LOG << " , " << answer << " , " << distribution << " )" << endl;
+      }
       Beam->NextPath( TheLex, answer, distribution, beam_cnt );
       if ( IsActive( DBG ) )
 	Beam->PrintBest( LOG, TheLex );
