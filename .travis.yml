@@ -20,7 +20,7 @@ before_install:
     - sudo make install
     - cd ..
 install:
-    - bash bootstrap.sh
+    -  bash bootstrap.sh
     - ./configure
     - make
     - sudo make install
