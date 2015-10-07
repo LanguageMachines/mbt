@@ -167,10 +167,6 @@ namespace Tagger {
     }
   }
 
-#if defined(HAVE_PTHREAD)
-  static pthread_mutex_t timbl_lock = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
   bool TaggerClass::InitLearning( ){
     // if not supplied on command line, make a default
     // name for both output files (concatenation of datafile
@@ -251,8 +247,9 @@ namespace Tagger {
 	    }
 	  thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
 	  if ( !skip ){
-	    for ( vector<string>::const_iterator it = mySentence.getEnrichments(swcn).begin(); it != mySentence.getEnrichments(swcn).end(); it++)
-	      outfile << *it << " ";
+	    for ( auto const& it : mySentence.getEnrichments(swcn) ){
+	      outfile << it << " ";
+	    }
 	    outfile << mySentence.gettag( swcn ) << '\n';
 	  }
 	  mySentence.assign_tag(thisTagCode, swcn );

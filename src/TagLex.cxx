@@ -52,7 +52,7 @@ namespace Tagger {
 
   void TagInfo::Update( const string& tag ){
     ++WordFreq;
-    map<string,int>::iterator it = TagFreqs.find( tag );
+    auto it = TagFreqs.find( tag );
     if ( it != TagFreqs.end() ){
       ++it->second;
     }
@@ -62,7 +62,7 @@ namespace Tagger {
   }
 
   void TagInfo::Prune( int Threshold ){
-    map<string,int>::iterator it = TagFreqs.begin();
+    auto it = TagFreqs.begin();
     while ( it != TagFreqs.end() ){
       double perc = ( (double)it->second * 100 ) / ( double)WordFreq;
       if ( perc < Threshold )
@@ -74,10 +74,8 @@ namespace Tagger {
 
   string TagInfo::DisplayTagFreqs( )const {
     string result;
-    map<string, int>::const_iterator it = TagFreqs.begin();
-    while ( it != TagFreqs.end() ){
-      result += it->first + ":" + TiCC::toString(it->second) + " ";
-      ++it;
+    for( const auto& it : TagFreqs ){
+      result += it.first + ":" + TiCC::toString(it.second) + " ";
     }
     return result;
   }
@@ -94,20 +92,15 @@ namespace Tagger {
 
   void TagInfo::CreateStringRepr(){
     vector<FS> FreqTags;
-    map<string,int>::const_iterator it = TagFreqs.begin();
-    while ( it != TagFreqs.end() ){
-      FreqTags.push_back( FS( it->second, it->first) );
-      ++it;
+    for ( const auto& it : TagFreqs ){
+      FreqTags.push_back( FS( it.second, it.first) );
     }
     sort( FreqTags.begin(), FreqTags.end(), cmpFreq );
     string tmpstr;
-    vector<FS>::const_iterator it2 = FreqTags.begin();
-    while ( it2 != FreqTags.end() ){
-      tmpstr += it2->str;
-      ++it2;
-      if ( it2 != FreqTags.end() )
-	tmpstr += ";";
+    for ( auto const& it2 : FreqTags ){
+      tmpstr += it2.str + ";";
     }
+    tmpstr.erase(tmpstr.length()-1); //remove last ';'
     StringRepr = tmpstr;
   }
 
