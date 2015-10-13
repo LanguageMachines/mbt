@@ -63,10 +63,9 @@ namespace Tagger {
 
   // New sentence.
   //
-  sentence::sentence(){
-    UTAG = -1;
-    no_words = 0;
-  }
+  sentence::sentence( const PatTemplate& k, const PatTemplate& u ):
+    UTAG(-1), Ktemplate(k), Utemplate(u), no_words(0)
+  {}
 
   // Delete it.
   //
@@ -136,9 +135,7 @@ namespace Tagger {
     add(a_word, tmp, a_tag);
   }
 
-  bool sentence::init_windowing( PatTemplate *Ktmpl,
-				 PatTemplate *Utmpl,
-				 Lexicon &lex,
+  bool sentence::init_windowing( Lexicon &lex,
 				 StringHash& TheLex ) {
     if ( UTAG == -1 )
       UTAG = TheLex.Hash( UNKNOWN );
@@ -148,8 +145,6 @@ namespace Tagger {
     }
     else {
       LexInfo * foundInfo;
-      Ktemplate = Ktmpl;
-      Utemplate = Utmpl;
       word *cur_word;
       for ( unsigned int wpos = 0; wpos < no_words; ++wpos ){
 	cur_word = Words[wpos];
@@ -185,7 +180,7 @@ namespace Tagger {
     return TheLex.Hash( hap );
   }
 
-  bool sentence::nextpat( MatchAction *Action, vector<int>& Pat,
+  bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
 			  StringHash& wordlist, StringHash& TheLex,
 			  unsigned int position, int *old_pat ) const {
     // safety check:
@@ -195,26 +190,26 @@ namespace Tagger {
     word *current_word = Words[position];
     size_t CurWLen = current_word->the_word.length();
     int i_feature=0;
-    PatTemplate *aTemplate;
+    const PatTemplate *aTemplate;
     word* wPtr;
     unsigned int tok;
     // is the present pattern for a known or unknown word?
     //
-    if( *Action == MakeKnown )
-      aTemplate = Ktemplate;
-    else if ( *Action == MakeUnknown )
-      aTemplate = Utemplate;
+    if( Action == MakeKnown )
+      aTemplate = &Ktemplate;
+    else if ( Action == MakeUnknown )
+      aTemplate = &Utemplate;
     else if( current_word->word_amb_tag == UTAG ){
-      *Action = Unknown;
+      Action = Unknown;
       //      cerr << "Next pat, Unknown word = "
       //  	 << current_word->the_word << endl;
-      aTemplate = Utemplate;
+      aTemplate = &Utemplate;
     }
     else {
-      *Action = Known;
+      Action = Known;
       //      cerr << "Next pat, Known word = "
       //  	 << current_word->the_word << endl;
-      aTemplate = Ktemplate;
+      aTemplate = &Ktemplate;
     }
 
     // Prefix?

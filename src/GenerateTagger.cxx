@@ -206,7 +206,7 @@ namespace Tagger {
     //
     int HartBeat = 0;
     size_t line_cnt = 0;
-    sentence mySentence;
+    sentence mySentence( Ktemplate, Utemplate );
     while ( mySentence.read( infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
@@ -225,14 +225,13 @@ namespace Tagger {
 	  default_cout.flush();
 	}
       }
-      if ( mySentence.init_windowing( &Ktemplate,&Utemplate,
-				      *MT_lexicon, TheLex ) ) {
+      if ( mySentence.init_windowing( *MT_lexicon, TheLex ) ) {
 	// we initialize the windowing procedure, this entails lexical lookup
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
 	int thisTagCode;
-	while( mySentence.nextpat( &Action, TestPat,
+	while( mySentence.nextpat( Action, TestPat,
 				   *kwordlist, TheLex,
 				   swcn ) ){
 	  bool skip = false;

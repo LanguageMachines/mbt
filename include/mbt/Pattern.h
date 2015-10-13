@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -46,17 +46,17 @@ class PatTemplate {
   int numeric;
   int compensation;
   int wordfocus;
-  
+
   // todo:
   // int Cap1 : Cap1, CAPH, CAP1H
   // int non_alfanum
   // int num
 
   // int wordlength
-  // 
+  //
 
   PatTemplate();
-  ~PatTemplate(){;}
+  ~PatTemplate(){};
 
   int totalslots() const;
   int word_totalslots() const;

@@ -662,7 +662,7 @@ namespace Tagger {
     if ( Beam->paths[beam_cnt][i_word-1] == EMPTY_PATH ){
       return false;
     }
-    else if ( mySentence.nextpat( &Action, TestPat,
+    else if ( mySentence.nextpat( Action, TestPat,
 				  *kwordlist, TheLex,
 				  i_word, Beam->paths[beam_cnt] ) ){
       // Now make a testpattern for Timbl to process.
@@ -706,7 +706,7 @@ namespace Tagger {
   }
 
   vector<TagResult> TaggerClass::tagLine( const string& line ){
-    sentence mySentence;
+    sentence mySentence( Ktemplate, Utemplate );
     stringstream ss(line);
     size_t dummy = 0;
     mySentence.read( ss, input_kind, EosMark, dummy );
@@ -722,14 +722,13 @@ namespace Tagger {
       }
       DBG << mySentence << endl;
 
-      if ( mySentence.init_windowing(&Ktemplate,&Utemplate,
-				     *MT_lexicon, TheLex ) ) {
+      if ( mySentence.init_windowing( *MT_lexicon, TheLex ) ) {
 	// here the word window is looked up in the dictionary and the values
 	// of the features are stored in the testpattern
 	MatchAction Action = Unknown;
 	vector<int> TestPat;
 	TestPat.reserve(Utemplate.totalslots());
-	if ( mySentence.nextpat( &Action, TestPat,
+	if ( mySentence.nextpat( Action, TestPat,
 				 *kwordlist, TheLex,
 				 0 )){
 
@@ -865,7 +864,7 @@ namespace Tagger {
     //
     int HartBeat = 0;
     size_t line_cnt = 0;
-    sentence mySentence;
+    sentence mySentence( Ktemplate, Utemplate );
     while ( go_on &&
 	    mySentence.read(infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )

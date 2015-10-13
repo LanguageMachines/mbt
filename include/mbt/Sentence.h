@@ -65,11 +65,11 @@ namespace Tagger {
   class sentence {
     friend std::ostream& operator<< ( std::ostream& , const sentence& );
   public:
-    sentence();
+    sentence( const PatTemplate&, const PatTemplate& );
     ~sentence();
     void clear();
-    bool init_windowing( PatTemplate *, PatTemplate *, Lexicon&, StringHash& );
-    bool nextpat( MatchAction *, std::vector<int>&, StringHash& , StringHash&,
+    bool init_windowing( Lexicon&, StringHash& );
+    bool nextpat( MatchAction&, std::vector<int>&, StringHash& , StringHash&,
 		  unsigned int, int * = 0 ) const;
     int classify_hapax( const std::string&, StringHash& ) const;
     void assign_tag( int, unsigned int );
@@ -85,8 +85,8 @@ namespace Tagger {
     int UTAG;
     std::vector<word *> Words;
     std::string remainder;
-    PatTemplate * Ktemplate;
-    PatTemplate * Utemplate;
+    const PatTemplate& Ktemplate;
+    const PatTemplate& Utemplate;
     unsigned int no_words;
     std::string InternalEosMark;
     bool Utt_Terminator( const std::string& );

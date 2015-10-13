@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 */
 
 #include <cstdlib>
-#include <fstream> 
+#include <fstream>
 #include <iostream>
 #include <cstring>
 #include <cctype>
@@ -42,7 +42,7 @@ using std::cerr;
 using std::endl;
 
 PatTemplate::PatTemplate()
-{  
+{
   numslots = 0;
   wordslots = 0;
   focuspos =-1;
@@ -58,13 +58,13 @@ PatTemplate::PatTemplate()
   word_templatestring = "";
 }
 
-bool PatTemplate::set( const string& tempstr ){ 
-  // reads a format string and figures out a template for the patterns from 
+bool PatTemplate::set( const string& tempstr ){
+  // reads a format string and figures out a template for the patterns from
   // this
   tlen = tempstr.length();
-  
+
   // Find the position of the focus.
-  // Seperate string is built for the word-context. 
+  // Seperate string is built for the word-context.
   int j = 0;
   int k = 0;
   bool focus = false;
@@ -81,8 +81,8 @@ bool PatTemplate::set( const string& tempstr ){
       templatestring += tempstr[i];
       word_templatestring += tempstr[i];
       word_focuspos = k;
-      numslots++;
-      j++;
+      ++numslots;
+      ++j;
       ++wordslots;
       ++compensation;
       ++k;
@@ -98,8 +98,8 @@ bool PatTemplate::set( const string& tempstr ){
       templatestring += tempstr[i];
       word_templatestring += tempstr[i];
       word_focuspos = k;
-      numslots++;
-      j++;
+      ++numslots;
+      ++j;
       ++wordslots;
       ++compensation;
       ++k;
@@ -107,22 +107,22 @@ bool PatTemplate::set( const string& tempstr ){
       break;
     case 'd':
       templatestring += tempstr[i];
-      numslots++;
-      j++;
+      ++numslots;
+      ++j;
       break;
     case 'a':
       templatestring += tempstr[i];
-      numslots++;
-      j++;
+      ++numslots;
+      ++j;
       break;
     case 'p':
-      numprefix++;
+      ++numprefix;
       break;
     case 's':
-      numsuffix++;
+      ++numsuffix;
       break;
     case 'h':
-      hyphen=1;
+      hyphen = 1;
       break;
     case 'c':
       capital = 1;
@@ -137,7 +137,7 @@ bool PatTemplate::set( const string& tempstr ){
       break;
     case 'W':
       //
-      // the W is a modifier which changes the 'f' to a 
+      // the W is a modifier which changes the 'f' to a
       // w.
       //
       if ( focus ){
@@ -148,7 +148,7 @@ bool PatTemplate::set( const string& tempstr ){
 	  wordfocus = 1;
 	}
 	else {
-	  cerr << "W modifier not directly after 'f' or 'F' in " 
+	  cerr << "W modifier not directly after 'f' or 'F' in "
 	       << tempstr << endl;
 	}
       }
@@ -159,8 +159,8 @@ bool PatTemplate::set( const string& tempstr ){
 	templatestring += 'F';
 	word_templatestring += 'w';
 	word_focuspos = k;
-	numslots++;
-	j++;
+	++numslots;
+	++j;
 	++wordslots;
 	++k;
 	wordfocus = 1;
@@ -195,10 +195,10 @@ size_t PatTemplate::sprint( string& targetstring) const {
 	++j;
       }
     }
-    
+
     targetstring[j]=templatestring[i];
     j++;
-    
+
     if ((templatestring[i] == 'f') || (templatestring[i] == 'F')) {
       for ( size_t k = word_focuspos+1; k < wordslots; ++k ) {
 	targetstring[j]=word_templatestring[k];
@@ -231,7 +231,7 @@ size_t PatTemplate::sprint( string& targetstring) const {
 }
 
 int PatTemplate::totalslots() const {
-  return ( numslots + numprefix + numsuffix + 
+  return ( numslots + numprefix + numsuffix +
 	   hyphen + capital + numeric + word_totalslots());
 }
 
@@ -242,4 +242,3 @@ int PatTemplate::word_totalslots() const {
   //
   return (wordslots-compensation);
 }
-
