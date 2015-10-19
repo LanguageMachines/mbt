@@ -174,7 +174,7 @@ namespace Tagger {
     //
     create_lexicons();
     if ( TimblOptStr.empty() )
-      Timbl_Options = "-a IB1";
+      Timbl_Options = "-a IB1 -G0";
     else
       Timbl_Options = TimblOptStr;
     splits( Timbl_Options, commonstr, knownstr, unknownstr );
