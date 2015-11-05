@@ -50,8 +50,8 @@ namespace Tagger {
   std::string Version();
   std::string VersionName();
 
-  const std::string mbt_short_opts = "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:";
-  const std::string mbt_long_opts  = "help,version,settings:";
+  extern const std::string mbt_short_opts;
+  extern const std::string mbt_long_opts;
 
   const int EMPTY_PATH = -1000000;
 

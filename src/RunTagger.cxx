@@ -1170,6 +1170,9 @@ namespace Tagger {
 	 << endl << endl;
   }
 
+  const std::string mbt_short_opts = "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:";
+  const std::string mbt_long_opts  = "help,version,settings:";
+
   void run_usage( const string& progname ){
     cerr << "Usage is : " << progname << " option option ... \n"
 	 << "\t-s settingsfile  ...or:\n\n"
@@ -1198,9 +1201,9 @@ namespace Tagger {
   }
 
   TaggerClass *TaggerClass::StartTagger( int argc, char*argv[], LogStream* os ){
-    TiCC::CL_Options opts( "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:",
-			   "help,version,settings:");
-    opts.init(argc, argv );
+    TiCC::CL_Options opts;
+    opts.allow_args( mbt_short_opts, mbt_long_opts );
+    opts.parse_args( argc, argv );
     string progname = opts.prog_name();
     if ( opts.extract('h') || opts.extract("help") ){
       run_usage( progname );
@@ -1225,8 +1228,9 @@ namespace Tagger {
   }
 
   TaggerClass *TaggerClass::StartTagger( const string& optline, LogStream* os ){
-    TiCC::CL_Options opts( mbt_short_opts, mbt_long_opts );
-    opts.init( optline );
+    TiCC::CL_Options opts;
+    opts.allow_args( mbt_short_opts, mbt_long_opts );
+    opts.parse_args( optline );
     string progname = opts.prog_name();
     if ( opts.extract('h') || opts.extract("help") ){
       run_usage( progname );

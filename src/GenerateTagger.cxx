@@ -571,14 +571,16 @@ namespace Tagger {
   }
 
   int TaggerClass::CreateTagger( const string& opt_string ){
-    TiCC::CL_Options opts( mbt_create_short, mbt_create_long );
-    opts.init( opt_string );
+    TiCC::CL_Options opts;
+    opts.allow_args( mbt_create_short, mbt_create_long );
+    opts.parse_args( opt_string );
     return CreateTagger( opts );
   }
 
   int TaggerClass::CreateTagger( int argc, char* argv[] ){
-    TiCC::CL_Options opts( mbt_create_short, mbt_create_long );
-    opts.init( argc, argv );
+    TiCC::CL_Options opts;
+    opts.allow_args( mbt_create_short, mbt_create_long );
+    opts.parse_args( argc, argv );
     return CreateTagger( opts );
   }
 
