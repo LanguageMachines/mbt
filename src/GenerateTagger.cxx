@@ -374,7 +374,7 @@ namespace Tagger {
 
   //**** stuff to process commandline options *****************************
 
-  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:n:o:O:p:P:r:s:T:u:U:XD:";
+  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:M:n:o:O:p:P:r:s:T:u:U:XD:";
   const string mbt_create_long = "version";
 
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
