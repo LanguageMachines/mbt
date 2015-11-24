@@ -1,0 +1,26 @@
+---
+exclude: [bundle]
+defaults:
+   - 
+    scope:
+     path: ""
+     type: pages
+    values: 
+     layout: lamalayout
+     title: MBT
+     author: Ko van der sloot, Antal van den Bosch, Walter Daelemans, Peter Berck, Maarten van Gompel, Ton Weijters, Jakub Zavrel
+     keywords: memory-based tagger, kNN, IGtree, machine learning
+     description: Memory-based Tagget
+     lang: en
+     menu: 
+      - label: Home
+        url: https://languagemachines.github.io/mbt/
+      - label: Source
+        url: https://github.com/LanguageMachines/mbt/
+      - label: Releases
+        url: https://github.com/LanguageMachines/mbt/releases/
+      - label: TiMBL
+        url: https://languagemachines.github.io/timbl/
+      - label: Frog
+        url: https://languagemachines.github.io/frog/
+---

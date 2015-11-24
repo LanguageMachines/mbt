@@ -1,0 +1,133 @@
+---
+cover: true
+slogan: Tilburg Memory-Based Tagger
+extracredit: Cover photo by Michal Kulesza
+---
+
+<section>
+
+    <p>
+    <strong>MBT</strong> is a memory-based tagger-generator and tagger in
+    one. The tagger-generator part can generate a sequence tagger on the basis
+    of a training set of tagged sequences; the tagger part can tag new
+    sequences. MBT can, for instance, be used to generate part-of-speech
+    taggers or chunkers for natural language processing. It has also been used
+    for named-entity recognition, information extraction in domain-specific
+    texts, and disfluency chunking in transcribed speech.  
+    </p>
+
+    <p>Mbt is used by <a href="https://languagemachines.github.io">Frog</a> for
+    Dutch tagging.</p>
+
+</section>
+
+
+
+<section>
+    <h2>Features</h2>
+
+
+	<ul>
+        <li>Tagger generation: tagged text in, tagger out</li>
+        <li>Optional feedback loop: feed previous tag decision back to input of next decision</li>
+        <li>Easily customizable feature representation</li>
+        <li>Allows user-provided features</li>
+        <li>Automatic generation of separate sub-taggers for known words and unknown words</li>
+        <li>Can make use of full algorithmic parameters of TiMBL</li>
+        <li>Server mode is now available though a separate package: <a href="https://github.com/LanguageMachines/mbtserver">MbtServer</a></li>
+	</ul>
+
+
+</section>
+
+
+<section>
+<h2>Download &amp; Installation</h2>
+
+<p>
+Mbt is free software; you can redistribute it and/or modify it under the terms
+of the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public
+License</a> as published by the <a href="http://www.fsf.org/">Free Software
+Foundation</a>. 
+</p>
+
+<p>To download and install Mbt:</p>
+
+<ol>
+<li>First check if there are up-to-date packages
+included in your distribution's package manager. There are packages for
+<strong>Debian</strong>,<strong>Ubuntu</strong> and <strong>Arch
+Linux</strong>.</li>
+<li>If not, we <strong>strongly recommend</strong> you use our <a
+href="https://proycon.github.io/LaMachine">LaMachine</a> software distribution,
+which includes Frog and all necessary dependencies, and runs on Linux, BSD and
+Mac OS X. It can also run as a <em>virtual machine</em> under any host OS.</li>
+<li>Alternatively, you can always download, compile and install Mbt manually, as shown next.</li>
+</ol>
+
+<h3>Manual installation</h3>
+
+<ul>
+<li><a href="https://github.com/LanguageMachines/mbt/">Source code</a></li>
+<li><a href="https://github.com/LanguageMachines/mbt/releases">Stable releases</a></li>
+</ul>
+
+
+<p>To compile Timbl manually consult the included <tt>INSTALL</tt> document, you will need current versions of the following dependencies of our software:</p>
+
+<ul>
+<li><a href="https://github.com/LanguageMachines/ticcutils/">ticcutils</a> - A shared utility library </li>
+<li><a href="https://github.com/LanguageMachines/timbl/">timbl</a> - The Tilburg Memory Based Learner</li>
+</ul>
+
+<p>As well as the following 3rd party dependencies:</p>
+
+<ul>
+<li>A sane build environment with a C++ compiler (e.g. gcc or clang), autotools, libtool, pkg-config</li>
+</ul>
+
+</section>
+
+<section>
+
+<h2>Documentation</h2>
+
+<ul>
+
+<li><a href="http://ilk.uvt.nl/downloads/pub/papers/Mbt_3.2_Manual.pdf">Reference Guide</a> (15 pages, 110 kB PDF); Daelemans, W., Zavrel, J., Van den Bosch, A., and Van der Sloot, K. (2010). MBT: Memory-Based Tagger, version 3.2, Reference Guide. ILK Technical Report Series 10-04.</li>
+
+<li><a href="http://ilk.uvt.nl/downloads/pub/papers/advances99.pdf">Recent Advances in Memory-Based Part-of-Speech Tagging.</a> Jakub Zavrel and Walter Daelemans. in: Actas del VI Simposio Internacional de Comunicacion Social, Santiago de Cuba, pp. 590-597, 1999. ILK pub: ILK-9903.</li>
+
+
+<li><a href="http://ilk.uvt.nl/downloads/pub/papers/wvlc96.pdf">MBT: A Memory-Based Part of Speech Tagger-Generator.</a> Walter Daelemans, Jakub Zavrel, Peter Berck and Steven Gillis. in: E. Ejerhed and I. Dagan (eds.) Proceedings of the Fourth Workshop on Very Large Corpora, Copenhagen, Denmark, 14-27, 1996.</li>
+
+<li><a href="http://ilk.uvt.nl/mbt/stinfon2.wp.ps.gz">Part-of-Speech Tagging for Dutch with MBT, a Memory-based Tagger Generator.</a> Walter Daelemans, Jakub Zavrel, Peter Berck, in: Congresboek van de Interdisciplinaire Onderzoeksconferentie Informatiewetenchap 1996, TU Delft. </li>
+
+
+<li>Book: <a href="http://ilk.uvt.nl/mblp">Memory-Based Language Processing</a> - Daelemans, W., and Van den Bosch, A. (2005). Cambridge, UK: Cambridge University Press.</li>
+
+</ul>
+
+</section>
+
+<section>
+<h2>Links</h2>
+
+<p>Mbt is used in:</p>
+
+<ul>
+<li><a href="https://languagemachines.github.io/frog">Frog</a> - A Natural Language Processing suite for Dutch</li>
+<li><a href="http://www.cnts.ua.ac.be/cgi-bin/jmeyhi/MBSP-instant-webdemo.cgi">MBSP Demo</a> - Demo of memory-based English shallow parsing, including Mbt</li>
+<li><a href="http://aflat.org/?q=node/10">Kiswahili PoS tagger</a> - Demo of African Language Technology using Mbt</li>
+</ul>
+
+</section>
+
+<section>
+
+<p>The development and improvement of Mbt also relies on your bug reports,
+suggestions, and comments. Use the <a
+href="https://github.com/LanguageMachines/mbt/issues">github issue tracker</a>
+or mail lamasoftware (at) science.ru.nl</p>
+
+</section>
