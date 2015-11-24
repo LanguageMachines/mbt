@@ -1,33 +1,36 @@
-Mbt 3.2. (c) ILK/CNTS 1998-2010
+Mbt 3.2 (c) CLS/ILK/CNTS 1998-2015
 
-Tilburg Memory Based Learner
+ Tilburg Memory Based Tagger
+ https://github.com/LanguageMachines/mbt
 
-Induction of Linguistic Knowledge Research Group, Tilburg University and
-Centre for Dutch Language and Speech, University of Antwerp
+    Centre for Language Studies, Radboud University Nijmegen
+    Induction of Linguistic Knowledge Research Group, Tilburg University and
+    Centre for Dutch Language and Speech, University of Antwerp
 
 This is an extension to the thirth main release of Mbt
 
-While this is NOT a Beta version it may still contain some bugs or
-behave not exactly as documented or expected. Comments and
-bug-reports are welcome at: Timbl@uvt.nl. Updates and more info
-may be found on our website: http://ilk.uvt.nl/ .
+While this is NOT a Beta version it may still contain some bugs or behave not
+exactly as documented or expected. Comments and bug-reports are welcome on our
+issue tracker at https://github.com/LanguageMachines/mbt/issues , or by mailing
+a.vandenbosch (at) let.ru.nl .
 
-Mbt is distributed under the GNU Public Licence (see the file COPYING)
+Mbt is distributed under the GNU Public Licence v3 (see the file COPYING)
 
 
 This software has been tested on:
-- Intel platform running several versions of Linux, including Ubuntu and Debian
-  buth 32 and 64 bits
-- Apple platform running MaxOSX
+- Intel platform running several versions of Linux, including Ubuntu, Debian,
+  Arch Linux, Fedora (both 32 and 64 bits)
+- Apple platform running Mac OS X 10.10
 
 Compilers:
-- GCC (4.7 - 4.9.0). It is highly recommended to upgrade to at least GCC 4.8
+- GCC. It is highly recommended to upgrade to at least GCC 4.8
+- Clang
 
 Contents of this distribution:
 - sources
 - Licensing information ( COPYING )
 - Installation instructions ( INSTALL )
-- Build system based om Gnu Autotools
+- Build system based on GNU Autotools
 - example data files ( in the demos directory )
 - documentation ( in the docs directory )
 
@@ -35,8 +38,15 @@ Dependecies:
 To be able to succesfully build Timbl from the tarball, you need the
 following pakages:
 - pkg-config
-- timbl
-- timblserver
+- timbl (https://github.com/LanguageMachines/timbl)
+- timblserver (https://github.com/LanguageMachines/timblserver)
 - libxml2-dev
 
+
+To install Mbt, first consult whether your distribution's package manager has an up-to-date package for TiMBL.
+If not, for easy installation of Mbt, TiMBL, and all dependencies, it is included as part of our software
+distribution LaMachine: https://proycon.github.io/LaMachine . 
+
+To compile and install manually from source, provided you have all the
+dependencies installed, consult the included INSTALL file.
 
