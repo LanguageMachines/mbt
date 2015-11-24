@@ -9,9 +9,8 @@ Mbt 3.2 (c) CLS/ILK/CNTS 1998-2015
 
 This is an extension to the thirth main release of Mbt
 
-While this is NOT a Beta version it may still contain some bugs or behave not
-exactly as documented or expected. Comments and bug-reports are welcome on our
-issue tracker at https://github.com/LanguageMachines/mbt/issues , or by mailing
+Comments and bug-reports are welcome on our issue tracker at
+https://github.com/LanguageMachines/mbt/issues, or by mailing
 a.vandenbosch (at) let.ru.nl .
 
 Mbt is distributed under the GNU Public Licence v3 (see the file COPYING)
@@ -39,20 +38,16 @@ To be able to succesfully build Timbl from the tarball, you need the
 following pakages:
 - pkg-config
 - timbl (https://github.com/LanguageMachines/timbl)
-- timblserver (https://github.com/LanguageMachines/timblserver)
-- libxml2-dev
+- ticcutils (https://github.com/LanguageMachines/ticcutils)
 
 
 To install Mbt, first consult whether your distribution's package manager has an up-to-date package for TiMBL.
 If not, for easy installation of Mbt, TiMBL, and all dependencies, it is included as part of our software
-distribution LaMachine: https://proycon.github.io/LaMachine . 
+distribution LaMachine: https://proycon.github.io/LaMachine .
 
 To compile and install manually from source instead, provided you have all the dependencies installed:
 
  $ bash bootstrap.sh
- $ ./configure 
+ $ ./configure
  $ make
  $ make install
-
-
-
