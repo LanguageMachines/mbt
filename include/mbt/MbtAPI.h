@@ -50,6 +50,7 @@ class MbtAPI {
   std::string Tag( const std::string& );
   std::vector<TagResult> TagLine( const std::string& );
   std::string getResult( const std::vector<TagResult>& ) const;
+  std::string set_eos_mark( const std::string& );
  private:
   TaggerClass *tagger;
 };

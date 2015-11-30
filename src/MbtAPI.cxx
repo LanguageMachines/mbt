@@ -83,6 +83,14 @@ string MbtAPI::getResult( const vector<TagResult>& v ) const {
   }
 }
 
+string MbtAPI::set_eos_mark( const std::string& eos ){
+  if ( tagger )
+    return tagger->set_eos_mark( eos );
+  else {
+    throw std::runtime_error( "No tagger initialized yet...." );
+  }
+}
+
 bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   // generate a tagger using argv.
   // Independent, static function so, don't use the internal _tagger here

@@ -110,6 +110,7 @@ namespace Tagger {
     int CreateKnown();
     int CreateUnknown();
     void CreateSettingsFile();
+    std::string set_eos_mark( const std::string& );
     bool set_default_filenames();
     bool parse_create_args( TiCC::CL_Options& );
     bool parse_run_args( TiCC::CL_Options&, bool = false );

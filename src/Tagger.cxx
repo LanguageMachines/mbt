@@ -192,6 +192,11 @@ namespace Tagger {
     return true;
   }
 
+  string TaggerClass::set_eos_mark( const string& eos ){
+    string tmp = EosMark;
+    EosMark = eos;
+  }
+
   const string& indexlex( const unsigned int index,
 			  StringHash& aLex){
     return aLex.ReverseLookup( index );
