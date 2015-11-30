@@ -302,7 +302,8 @@ namespace Tagger {
   void prefixWithAbsolutePath( string& fileName,
 			       const string& prefix ) {
     //    default_log << fileName << endl;
-    if ( ( fileName[0] != '/' && fileName[1] != ':' )
+    if ( ( fileName.size() > 1 )
+	 && ( fileName[0] != '/' && fileName[1] != ':' )
 	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
       fileName = prefix + fileName;
     }
