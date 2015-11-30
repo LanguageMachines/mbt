@@ -1,7 +1,7 @@
 Mbt 3.2 (c) CLS/ILK/CNTS 1998-2015
 
  Tilburg Memory Based Tagger
- https://github.com/LanguageMachines/mbt
+ https://languagemachines.github.io/mbt
 
     Centre for Language Studies, Radboud University Nijmegen
     Induction of Linguistic Knowledge Research Group, Tilburg University and
@@ -41,7 +41,7 @@ following pakages:
 - ticcutils (https://github.com/LanguageMachines/ticcutils)
 
 
-To install Mbt, first consult whether your distribution's package manager has an up-to-date package for TiMBL.
+To install Mbt, first consult whether your distribution's package manager has an up-to-date package.
 If not, for easy installation of Mbt, TiMBL, and all dependencies, it is included as part of our software
 distribution LaMachine: https://proycon.github.io/LaMachine .
 
