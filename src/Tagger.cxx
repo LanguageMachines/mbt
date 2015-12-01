@@ -195,6 +195,7 @@ namespace Tagger {
   string TaggerClass::set_eos_mark( const string& eos ){
     string tmp = EosMark;
     EosMark = eos;
+    return tmp;
   }
 
   const string& indexlex( const unsigned int index,
