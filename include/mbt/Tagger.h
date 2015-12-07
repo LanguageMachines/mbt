@@ -186,9 +186,9 @@ namespace Tagger {
     int FilterThreshold;
     int Npax;
     int TopNumber;
-    bool DoSort;
     bool DoTop;
     bool DoNpax;
+    bool DoTagList;
     bool KeepIntermediateFiles;
 
     std::string KtmplStr;
@@ -213,6 +213,7 @@ namespace Tagger {
     std::string TestFileName;
     std::string TestFilePath;
     std::string OutputFileName;
+    std::string TagListName;
     std::string SettingsFileName;
     std::string SettingsFilePath;
 

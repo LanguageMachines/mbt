@@ -28,6 +28,8 @@
 */
 
 #include <algorithm>
+#include <vector>
+#include <map>
 #include <fstream>
 #include <iostream>
 #include <cerrno>
@@ -78,6 +80,14 @@ namespace Tagger {
     return false;
   }
 
+template <typename T1, typename T2>
+struct more_second {
+    typedef pair<T1, T2> type;
+    bool operator ()(type const& a, type const& b) const {
+        return a.second > b.second;
+    }
+};
+
   void TaggerClass::create_lexicons(){
     TagLex TaggedLexicon;
     ifstream lex_file;
@@ -97,10 +107,13 @@ namespace Tagger {
       cerr << "couldn't open inputfile " << filename << endl;
       exit(EXIT_FAILURE);
     }
+
+    map<string,unsigned int> TagList;
     string Word, Tag;
     while ( getline( lex_file, Buffer ) ){
       if ( split_special( Buffer, Word, Tag ) ){
 	TaggedLexicon.Store( Word, Tag );
+	TagList[Tag]++;
       }
     }
     int LexSize = TaggedLexicon.numOfLexiconEntries();
@@ -163,6 +176,19 @@ namespace Tagger {
       else {
 	cerr << "couldn't open file: " << NpaxFileName << endl;
 	exit(EXIT_FAILURE);
+      }
+    }
+    if ( DoTagList ){
+      vector<pair<string,unsigned int>> si_vec( TagList.begin(), TagList.end() );
+      sort(si_vec.begin(), si_vec.end(), more_second<string, unsigned int>());
+      ofstream os( TagListName );
+      if ( os ){
+	for( const auto& it: si_vec ){
+	  os << it.first << "\t" << it.second << endl;
+	}
+      }
+      else {
+	cerr << "couldn't open outputfile: " << TagListName << endl;
       }
     }
   }
@@ -374,7 +400,7 @@ namespace Tagger {
 
   //**** stuff to process commandline options *****************************
 
-  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:M:n:o:O:p:P:r:s:T:u:U:XD:";
+  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:M:n:o:O:p:P:r:s:t:T:u:U:XD:";
   const string mbt_create_long = "version";
 
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
@@ -441,6 +467,10 @@ namespace Tagger {
 	SettingsFilePath = SettingsFileName.substr( 0, lastSlash+1 );
       else
 	SettingsFilePath = "";
+    }
+    if ( opts.extract( 't', value ) ){
+      TagListName = value;
+      DoTagList = true; // we want a TagList
     }
     if ( opts.extract( 'E', value ) ){
       TestFileName = value;

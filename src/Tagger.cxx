@@ -83,7 +83,6 @@ namespace Tagger {
     FilterThreshold = 5;
     Npax = 5;
     TopNumber = 100;
-    DoSort = false;
     DoTop = false;
     DoNpax = true;
     KeepIntermediateFiles = false;
@@ -137,7 +136,6 @@ namespace Tagger {
     FilterThreshold = in.FilterThreshold;
     Npax = in.Npax;
     TopNumber = in.TopNumber;
-    DoSort = in.DoSort;
     DoTop = in.DoTop;
     DoNpax = in.DoNpax;
     KeepIntermediateFiles = in.KeepIntermediateFiles;
