@@ -52,13 +52,7 @@ namespace Tagger {
 
   void TagInfo::Update( const string& tag ){
     ++WordFreq;
-    auto it = TagFreqs.find( tag );
-    if ( it != TagFreqs.end() ){
-      ++it->second;
-    }
-    else {
-      TagFreqs[tag] = 1;
-    }
+    ++TagFreqs[tag];
   }
 
   void TagInfo::Prune( int Threshold ){

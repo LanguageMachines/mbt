@@ -1,7 +1,4 @@
 /*
-  $Id$
-  $URL$
-
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
@@ -41,7 +38,6 @@
 
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"

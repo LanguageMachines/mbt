@@ -1,7 +1,4 @@
 /*
-  $Id: Tagger.cxx 18614 2015-09-10 15:26:12Z sloot $
-  $URL: https://ilk.uvt.nl/svn/trunk/sources/Mbt3/src/Tagger.cxx $
-
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
@@ -116,29 +113,30 @@ struct more_second {
 	TagList[Tag]++;
       }
     }
-    int LexSize = TaggedLexicon.numOfLexiconEntries();
     vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
     if ( (out_file.open( LexFileName, ios::out ),
 	  out_file.good() ) ){
       cout << "  Creating lexicon: "  << LexFileName << " of "
-	   << LexSize << " entries." << endl;
-      for ( int i=0; i < LexSize; i++ )
-	out_file << TagVect[i]->Freq() << " " << TagVect[i]->Word
-		 << " " << TagVect[i]->DisplayTagFreqs() << endl;
+	   << TagVect.size() << " entries." << endl;
+      for ( auto const& tv : TagVect ){
+	out_file << tv->Freq() << " " << tv->Word
+		 << " " << tv->DisplayTagFreqs() << endl;
+      }
       out_file.close();
     }
     else {
       cerr << "couldn't create lexiconfile " << LexFileName << endl;
       exit(EXIT_FAILURE);
     }
-    for ( int i=0; i < LexSize; i++ )
-      ProcessTags( TagVect[i] );
+    for ( auto const& tv : TagVect ){
+      ProcessTags( tv );
+    }
     if ( (out_file.open( MTLexFileName, ios::out ),
 	  out_file.good() ) ){
       cout << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
-      for ( int j=0; j < LexSize; j++ ){
-	out_file << TagVect[j]->Word << " " << TagVect[j]->stringRep() << endl;
-	MT_lexicon->Store(TagVect[j]->Word, TagVect[j]->stringRep() );
+      for ( const auto& tv : TagVect ){
+	out_file << tv->Word << " " << tv->stringRep() << endl;
+	MT_lexicon->Store( tv->Word, tv->stringRep() );
       }
       out_file.close();
     }
@@ -149,9 +147,12 @@ struct more_second {
     if ( (out_file.open( TopNFileName, ios::out ),
 	  out_file.good() ) ){
       cout << "  Creating list of most frequent words: "  << TopNFileName << endl;
-      for ( int k=0; k < LexSize && k < TopNumber; k++ ){
-	out_file << TagVect[k]->Word << endl;
-	kwordlist->Hash( TagVect[k]->Word );
+      int k = 0;
+      for ( auto const& tv : TagVect ){
+	if ( ++k > TopNumber )
+	  break;
+	out_file << tv->Word << endl;
+	kwordlist->Hash( tv->Word );
       }
       out_file.close();
     }
@@ -164,10 +165,11 @@ struct more_second {
 	    out_file.good() ) ){
 	int np_cnt = 0;
 	//	cout << "  Creating Npax file: "  << NpaxFileName;
-	for ( int l=0; l < LexSize; l++ ){
-	  if ( TagVect[l]->Freq() > Npax ) continue;
-	  out_file << TagVect[l]->Word << endl;
-	  uwordlist->Hash( TagVect[l]->Word );
+	for ( const auto& tv : TagVect ){
+	  if ( tv->Freq() > Npax )
+	    continue;
+	  out_file << tv->Word << endl;
+	  uwordlist->Hash( tv->Word );
 	  np_cnt++;
 	}
 	out_file.close();
@@ -183,7 +185,7 @@ struct more_second {
       sort(si_vec.begin(), si_vec.end(), more_second<string, unsigned int>());
       ofstream os( TagListName );
       if ( os ){
-	for( const auto& it: si_vec ){
+	for ( const auto& it: si_vec ){
 	  os << it.first << "\t" << it.second << endl;
 	}
       }

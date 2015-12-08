@@ -1,7 +1,4 @@
 /*
-  $Id: Tagger.cxx 18614 2015-09-10 15:26:12Z sloot $
-  $URL: https://ilk.uvt.nl/svn/trunk/sources/Mbt3/src/Tagger.cxx $
-
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
@@ -41,7 +38,6 @@
 
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"

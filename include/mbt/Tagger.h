@@ -31,7 +31,6 @@
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
-#include "mbt/TagLex.h"
 #include "mbt/Logging.h"
 #include "timbl/TimblAPI.h"
 
@@ -46,6 +45,8 @@ extern LogLevel internal_default_level;
 extern LogLevel Tagger_Log_Level;
 
 namespace Tagger {
+
+  class TagInfo;
 
   std::string Version();
   std::string VersionName();
