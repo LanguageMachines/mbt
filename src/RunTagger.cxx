@@ -948,26 +948,30 @@ namespace Tagger {
       }
       case 'k':
 	sscanf(SetBuffer,"k %s", value );
-	KnownTreeName = value;
-	prefixWithAbsolutePath( KnownTreeName, SettingsFilePath );
+	KnownTreeBaseName = value;
+	KnownTreeName = prefixWithAbsolutePath( KnownTreeBaseName,
+						SettingsFilePath );
 	knowntreeflag = true; // there is a knowntreefile specified
 	break;
       case 'l':
 	sscanf(SetBuffer,"l %s", value );
 	l_option_name = value;
-	prefixWithAbsolutePath(l_option_name, SettingsFilePath );
+	l_option_name = prefixWithAbsolutePath( l_option_name,
+						SettingsFilePath );
 	lexflag = true; // there is a lexicon specified
 	break;
       case 'L':
 	sscanf(SetBuffer,"L %s", value );
 	L_option_name = value;
-	prefixWithAbsolutePath(L_option_name, SettingsFilePath );
+	L_option_name = prefixWithAbsolutePath( L_option_name,
+						SettingsFilePath );
 	klistflag = true;
 	break;
       case 'o':
 	sscanf(SetBuffer,"t %s", value );
 	OutputFileName = value;
-	prefixWithAbsolutePath(OutputFileName, SettingsFilePath );
+	OutputFileName = prefixWithAbsolutePath( OutputFileName,
+						 SettingsFilePath );
 	break;
       case 'O':  // Option string for Timbl
 	TimblOptStr = string(SetBuffer+1);
@@ -981,7 +985,8 @@ namespace Tagger {
       case 'r':
 	sscanf(SetBuffer,"r %s", value );
 	r_option_name = value;
-	prefixWithAbsolutePath(r_option_name, SettingsFilePath );
+	r_option_name = prefixWithAbsolutePath( r_option_name,
+						SettingsFilePath );
 	reverseflag = true;
 	break;
       case 'S':
@@ -993,13 +998,15 @@ namespace Tagger {
       case 't':
 	sscanf(SetBuffer,"t %s", value );
 	TestFileName = value;
-	prefixWithAbsolutePath(TestFileName, SettingsFilePath );
+	TestFileName = prefixWithAbsolutePath( TestFileName,
+					       SettingsFilePath );
 	piped_input = false; // there is a test file specified
 	break;
       case 'E':
 	if ( SetBuffer[1] == ' ' && sscanf(SetBuffer,"E %s", value ) > 0 ){
 	  TestFileName = value;
-	  prefixWithAbsolutePath(TestFileName, SettingsFilePath );
+	  TestFileName = prefixWithAbsolutePath( TestFileName,
+						 SettingsFilePath );
 	  piped_input = false;
 	  input_kind = ENRICHED; // an enriched tagged test file specified
 	}
@@ -1014,14 +1021,16 @@ namespace Tagger {
       case 'T':
 	sscanf(SetBuffer,"T %s", value );
 	TestFileName = value;
-	prefixWithAbsolutePath(TestFileName, SettingsFilePath );
+	TestFileName = prefixWithAbsolutePath( TestFileName,
+					       SettingsFilePath );
 	piped_input = false;
 	input_kind = TAGGED; // there is a tagged test file specified
 	break;
       case 'u':
 	sscanf(SetBuffer,"u %s", value );
-	UnknownTreeName = value;
-	prefixWithAbsolutePath(UnknownTreeName, SettingsFilePath );
+	UnknownTreeBaseName = value;
+	UnknownTreeName = prefixWithAbsolutePath( UnknownTreeBaseName,
+						  SettingsFilePath );
 	unknowntreeflag = true; // there is a unknowntreefile file specified
 	break;
       default:
@@ -1159,7 +1168,7 @@ namespace Tagger {
   void TaggerClass::manifest(){
     // present yourself to the user
     //
-    cout << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2016." << endl
+    cout << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2016." << endl
 	 << "Memory Based Tagger " << endl
 	 << "CLST  - Centre for Language and Speech Technology,"
 	 << "Radboud University" << endl

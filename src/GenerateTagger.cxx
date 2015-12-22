@@ -389,13 +389,13 @@ struct more_second {
       if ( input_kind == ENRICHED )
 	out_file << "ENRICHED" << endl;
       out_file << "e " << EosMark << endl;
-      out_file << "l " << MTLexFileName << endl;
-      out_file << "k " << KnownTreeName << endl;
-      out_file << "u " << UnknownTreeName << endl;
+      out_file << "l " << MTLexFileBaseName << endl;
+      out_file << "k " << KnownTreeBaseName << endl;
+      out_file << "u " << UnknownTreeBaseName << endl;
       out_file << "p " << KtmplStr << endl;
       out_file << "P " << UtmplStr << endl;
       out_file << "O " << Timbl_Options << endl;
-      out_file << "L " << TopNFileName << endl;
+      out_file << "L " << TopNFileBaseName << endl;
       out_file.close();
       cout << endl << "  Created settings file '"
 			 << SettingsFileName << "'" << endl;
@@ -570,7 +570,7 @@ struct more_second {
     //
     // present yourself to the user
     //
-    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2016." << endl
+    cerr << "mbtg " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2016." << endl
 	 << "Memory Based Tagger Generator" << endl
 	 << "CLST  - Centre for Language and Speech Technology,"
 	 << "Radboud University" << endl

@@ -90,18 +90,6 @@ namespace Tagger {
     L_option_name = "";
     EosMark = "<utt>";
 
-    UnknownTreeName = "";
-    KnownTreeName = "";
-    LexFileName = "";
-    MTLexFileName = "";
-    TopNFileName = "";
-    NpaxFileName = "";
-    TestFileName = "";
-    TestFilePath = "";
-    OutputFileName = "";
-    SettingsFileName = "";
-    SettingsFilePath = "";
-
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
@@ -146,6 +134,12 @@ namespace Tagger {
     Ktemplate = in.Ktemplate;
     Utemplate = in.Utemplate;
 
+    UnknownTreeBaseName = in.UnknownTreeBaseName;
+    KnownTreeBaseName = in.KnownTreeBaseName;
+    LexFileBaseName = in.LexFileBaseName;
+    MTLexFileBaseName = in.MTLexFileBaseName;
+    TopNFileBaseName = in.TopNFileBaseName;
+    NpaxFileBaseName = in.NpaxFileBaseName;
     UnknownTreeName = in.UnknownTreeName;
     KnownTreeName = in.KnownTreeName;
     LexFileName = in.LexFileName;
@@ -296,15 +290,17 @@ namespace Tagger {
    *      (C: or X: in windows cygwin) are considered to be relative paths
    */
 
-  void prefixWithAbsolutePath( string& fileName,
-			       const string& prefix ) {
+  string prefixWithAbsolutePath( const string& fileName,
+				 const string& prefix ) {
     //    default_log << fileName << endl;
+    string result = fileName;
     if ( ( fileName.size() > 1 )
 	 && ( fileName[0] != '/' && fileName[1] != ':' )
 	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
-      fileName = prefix + fileName;
+      result = prefix + fileName;
     }
-    //    default_log << fileName << endl;
+    //    default_log << result << endl;
+    return result;
   }
 
   bool TaggerClass::set_default_filenames( ){
@@ -329,56 +325,56 @@ namespace Tagger {
       }
     }
     char affix[32];
-    LexFileName = TestFileName;
-    prefixWithAbsolutePath( LexFileName, SettingsFilePath );
-    LexFileName += ".lex";
+    LexFileBaseName = TestFileName;
+    LexFileBaseName += ".lex";
+    LexFileName = prefixWithAbsolutePath( LexFileBaseName, SettingsFilePath );
     if ( FilterThreshold < 10 )
       sprintf( affix, ".0%1i",  FilterThreshold );
     else
       sprintf( affix, ".%2i",  FilterThreshold );
     if( !knownoutfileflag ){
-      K_option_name = TestFileName;
-      prefixWithAbsolutePath( K_option_name, SettingsFilePath );
-      K_option_name += ".known.inst.";
-      K_option_name += KtmplStr;
+      K_option_name = TestFileName + ".known.inst." + KtmplStr;
+      K_option_name = prefixWithAbsolutePath( K_option_name,
+					      SettingsFilePath );
     }
     if ( !knowntreeflag ){
-      KnownTreeName = TestFileName;
-      prefixWithAbsolutePath( KnownTreeName, SettingsFilePath );
-      KnownTreeName += ".known.";
-      KnownTreeName += KtmplStr;
+      KnownTreeBaseName = TestFileName + ".known." + KtmplStr;
+      KnownTreeName = prefixWithAbsolutePath( KnownTreeBaseName,
+					      SettingsFilePath );
     }
     if( !unknownoutfileflag ){
-      U_option_name = TestFileName;
-      prefixWithAbsolutePath( U_option_name, SettingsFilePath );
-      U_option_name += ".unknown.inst.";
-      U_option_name += UtmplStr;
+      U_option_name = TestFileName + ".unknown.inst." + UtmplStr;
+      U_option_name = prefixWithAbsolutePath( U_option_name,
+					      SettingsFilePath );
     }
     if ( !unknowntreeflag ){
-      UnknownTreeName = TestFileName;
-      prefixWithAbsolutePath( UnknownTreeName, SettingsFilePath );
-      UnknownTreeName += ".unknown.";
-      UnknownTreeName += UtmplStr;
+      UnknownTreeBaseName = TestFileName + ".unknown." + UtmplStr;
+      UnknownTreeName = prefixWithAbsolutePath( UnknownTreeBaseName,
+						SettingsFilePath );
     }
     if( lexflag ){
-      MTLexFileName = l_option_name;
+      MTLexFileBaseName = l_option_name;
+      MTLexFileName = MTLexFileBaseName;
     }
     else {
-      MTLexFileName = TestFileName;
-      prefixWithAbsolutePath( MTLexFileName, SettingsFilePath );
-      MTLexFileName += ".lex.ambi";
-      MTLexFileName +=  affix;
+      MTLexFileBaseName = TestFileName + ".lex.ambi" + affix;
+      MTLexFileName = prefixWithAbsolutePath( MTLexFileBaseName,
+					      SettingsFilePath );
     }
-    if ( !L_option_name.empty() )
-      TopNFileName = L_option_name;
+    if ( !L_option_name.empty() ){
+      TopNFileBaseName = L_option_name;
+      TopNFileName = TopNFileBaseName;
+    }
     else {
       sprintf( affix, ".top%d",  TopNumber );
-      TopNFileName = TestFileName + affix;
-      prefixWithAbsolutePath( TopNFileName, SettingsFilePath );
+      TopNFileBaseName = TestFileName + affix;
+      TopNFileName = prefixWithAbsolutePath( TopNFileBaseName,
+					     SettingsFilePath );
     }
     sprintf( affix, ".%dpaxes",  Npax );
-    NpaxFileName = TestFileName + affix;
-    prefixWithAbsolutePath( NpaxFileName, SettingsFilePath );
+    NpaxFileBaseName = TestFileName + affix;
+    NpaxFileName = prefixWithAbsolutePath( NpaxFileBaseName,
+					   SettingsFilePath );
     return true;
   }
 

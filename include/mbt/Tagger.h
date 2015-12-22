@@ -204,6 +204,12 @@ namespace Tagger {
     PatTemplate Utemplate;
     Lexicon *MT_lexicon;
 
+    std::string UnknownTreeBaseName;
+    std::string KnownTreeBaseName;
+    std::string LexFileBaseName;
+    std::string MTLexFileBaseName;
+    std::string TopNFileBaseName;
+    std::string NpaxFileBaseName;
     std::string UnknownTreeName;
     std::string KnownTreeName;
     std::string LexFileName;
@@ -251,7 +257,7 @@ namespace Tagger {
   void get_weightsfile_name( std::string& opts, std::string& );
   void splits( const std::string& , std::string& common,
 	       std::string& known, std::string& unknown );
-  void prefixWithAbsolutePath( std::string& , const std::string& );
+  std::string prefixWithAbsolutePath( const std::string& , const std::string& );
 
 }
 
