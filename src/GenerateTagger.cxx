@@ -1,5 +1,6 @@
 /*
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2016
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -19,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <algorithm>
@@ -568,11 +570,13 @@ struct more_second {
     //
     // present yourself to the user
     //
-    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
+    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2016." << endl
 	 << "Memory Based Tagger Generator" << endl
-	 << "Induction of Linguistic Knowledge Research Group,"
+	 << "CLST  - Centre for Language and Speech Technology,"
+	 << "Radboud University" << endl
+	 << "ILK   - Induction of Linguistic Knowledge Research Group,"
 	 << "Tilburg University" << endl
-	 << "CLiPS Computational Linguistics Group, University of Antwerp"
+	 << "CLiPS - Computational Linguistics Group, University of Antwerp"
 	 << endl
 	 << "Based on " << Timbl::VersionName()
 	 << endl << endl;

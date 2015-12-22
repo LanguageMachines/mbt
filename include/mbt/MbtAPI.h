@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2016
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #ifndef MBT_API_H
@@ -33,10 +32,6 @@
 #include "timbl/TimblAPI.h"
 #include "ticcutils/LogStream.h"
 #include "mbt/Tagger.h"
-
-using namespace Timbl;
-using namespace TiCC;
-using namespace Tagger;
 
 class MbtAPI {
  public:
@@ -48,11 +43,11 @@ class MbtAPI {
   ~MbtAPI();
   bool isInit() const;
   std::string Tag( const std::string& );
-  std::vector<TagResult> TagLine( const std::string& );
-  std::string getResult( const std::vector<TagResult>& ) const;
+  std::vector<Tagger::TagResult> TagLine( const std::string& );
+  std::string getResult( const std::vector<Tagger::TagResult>& ) const;
   std::string set_eos_mark( const std::string& );
  private:
-  TaggerClass *tagger;
+  Tagger::TaggerClass *tagger;
 };
 
 #endif
