@@ -29,6 +29,7 @@
 #include <cstdlib>
 #include "mbt/MbtAPI.h"
 using namespace std;
+using namespace Tagger;
 
 int main(){
   string path = getenv( "topsrcdir" );
