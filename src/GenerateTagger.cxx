@@ -100,7 +100,7 @@ struct more_second {
 	     << filename << "'" << endl;
 	exit(EXIT_FAILURE);
       }
-      cout << "Constructing a tagger from: " << filename << endl;
+      COUT << "Constructing a tagger from: " << filename << endl;
     }
     else {
       cerr << "couldn't open inputfile " << filename << endl;
@@ -118,7 +118,7 @@ struct more_second {
     vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
     if ( (out_file.open( LexFileName, ios::out ),
 	  out_file.good() ) ){
-      cout << "  Creating lexicon: "  << LexFileName << " of "
+      COUT << "  Creating lexicon: "  << LexFileName << " of "
 	   << TagVect.size() << " entries." << endl;
       for ( auto const& tv : TagVect ){
 	out_file << tv->Freq() << " " << tv->Word
@@ -135,7 +135,7 @@ struct more_second {
     }
     if ( (out_file.open( MTLexFileName, ios::out ),
 	  out_file.good() ) ){
-      cout << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
+      COUT << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( const auto& tv : TagVect ){
 	out_file << tv->Word << " " << tv->stringRep() << endl;
 	MT_lexicon->Store( tv->Word, tv->stringRep() );
@@ -148,7 +148,7 @@ struct more_second {
     }
     if ( (out_file.open( TopNFileName, ios::out ),
 	  out_file.good() ) ){
-      cout << "  Creating list of most frequent words: "  << TopNFileName << endl;
+      COUT << "  Creating list of most frequent words: "  << TopNFileName << endl;
       int k = 0;
       for ( auto const& tv : TagVect ){
 	if ( ++k > TopNumber )
@@ -166,7 +166,7 @@ struct more_second {
       if ( (out_file.open( NpaxFileName, ios::out ),
 	    out_file.good() ) ){
 	int np_cnt = 0;
-	//	cout << "  Creating Npax file: "  << NpaxFileName;
+	//	COUT << "  Creating Npax file: "  << NpaxFileName;
 	for ( const auto& tv : TagVect ){
 	  if ( tv->Freq() > Npax )
 	    continue;
@@ -175,7 +175,7 @@ struct more_second {
 	  np_cnt++;
 	}
 	out_file.close();
-	//	cout << "( " << np_cnt << " entries)" << endl;
+	//	COUT << "( " << np_cnt << " entries)" << endl;
       }
       else {
 	cerr << "couldn't open file: " << NpaxFileName << endl;
@@ -351,7 +351,7 @@ struct more_second {
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
-	// default_cout << "    Processing data from the file " << inname << "...";
+	// COUT << "    Processing data from the file " << inname << "...";
 	// default_cout.flush();
 	nwords = makedataset( infile, false );
       }
@@ -361,7 +361,7 @@ struct more_second {
       }
       COUT << endl << "    Creating case base: " << UnknownTreeName << endl;
       UKtree->Learn( U_option_name );
-      //      UKtree->ShowSettings( default_cout );
+      //      UKtree->ShowSettings( COUT );
       UKtree->WriteInstanceBase( UnknownTreeName );
       if ( !uwf.empty() )
 	UKtree->SaveWeights( uwf );
@@ -397,7 +397,7 @@ struct more_second {
       out_file << "O " << Timbl_Options << endl;
       out_file << "L " << TopNFileBaseName << endl;
       out_file.close();
-      cout << endl << "  Created settings file '"
+      COUT << endl << "  Created settings file '"
 			 << SettingsFileName << "'" << endl;
     }
   }
@@ -514,14 +514,26 @@ struct more_second {
       KeepIntermediateFiles = true;
     }
     if ( opts.extract( 'D', value ) ){
-      if ( value == "LogNormal" )
+      if ( value == "LogSilent" ){
+	cur_log->setlevel( LogSilent );
+	default_cout.setlevel( LogSilent );
+      }
+      else if ( value == "LogNormal" ){
 	cur_log->setlevel( LogNormal );
-      else if ( value == "LogDebug" )
+	default_cout.setlevel( LogNormal );
+      }
+      else if ( value == "LogDebug" ){
 	cur_log->setlevel( LogDebug );
-      else if ( value == "LogHeavy" )
+	default_cout.setlevel( LogDebug );
+      }
+      else if ( value == "LogHeavy" ){
 	cur_log->setlevel( LogHeavy );
-      else if ( value == "LogExtreme" )
+	default_cout.setlevel( LogHeavy );
+      }
+      else if ( value == "LogExtreme" ){
 	cur_log->setlevel( LogExtreme );
+	default_cout.setlevel( LogExtreme );
+      }
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;
       }
@@ -546,6 +558,7 @@ struct more_second {
 	 << "\t   valid Timl options: a d k m q v w x -\n"
 	 << "\t-p pattern for known words (default ddfa)\n"
 	 << "\t-P pattern for unknown words (default dFapsss)\n"
+	 << "\t-D <loglevel> (possible values are 'LogSilent', 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
 	 << "\t-e <sentence delimiter> (default '<utt>')\n"
 	 << "\t-L <file with list of frequent words>\n"
 	 << "\t-M <number of most frequent words> (default 100)\n"
@@ -600,7 +613,7 @@ struct more_second {
 	uwords = tagger.CreateUnknown();
       }
     }
-    cout << "      ready: " << kwords << " words processed."
+    COUT << "      ready: " << kwords << " words processed."
 	 << endl;
     tagger.CreateSettingsFile();
     return kwords + uwords;

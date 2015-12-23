@@ -1072,7 +1072,9 @@ namespace Tagger {
       cerr << "  Dumpflag ON" << endl;
     }
     if ( Opts.extract( 'D', value ) ){
-      if ( value == "LogNormal" )
+      if ( value == "LogSilent" )
+	cur_log->setlevel( LogSilent );
+      else if ( value == "LogNormal" )
 	cur_log->setlevel( LogNormal );
       else if ( value == "LogDebug" )
 	cur_log->setlevel( LogDebug );
@@ -1190,7 +1192,7 @@ namespace Tagger {
 	 << "\t-r <ambitagfile>\n"
 	 << "\t-k <known words case base>\n"
 	 << "\t-u <unknown words case base>\n"
-	 << "\t-D <loglevel> (possible values are 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
+	 << "\t-D <loglevel> (possible values are 'LogSilent', 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
 	 << "\t-e <sentence delimiter> (default '<utt>')\n"
 	 << "\t-E <enriched tagged testfile>\n "
 	 << "\t-t <testfile> | -T <tagged testfile> "
