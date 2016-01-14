@@ -11,4 +11,4 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mbt.pc
 
 ChangeLog: NEWS
-	svn update; svn2cl --include-rev
+	git pull; git2cl > ChangeLog

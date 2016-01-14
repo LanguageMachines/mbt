@@ -1,3 +1,13 @@
+mbt version 3.2.15 2016-01-14
+[Ko van der Sloot]
+  * repository moved to GitHub
+  * added Travis support
+  * fixed storing path in settingsfile (don't!)
+  * when desired, generate a frequencylist of the tags
+  * use more ticcutils stuff (ComandLine)
+  * better sentence reading and warnings
+  * code cleanup an small fixes
+
 mbt version 3.2.12 2014-09-23
 [Ko van der Sloot]
   * release
