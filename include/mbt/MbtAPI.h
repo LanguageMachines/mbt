@@ -47,6 +47,8 @@ class MbtAPI {
   std::string getResult( const std::vector<Tagger::TagResult>& ) const;
   std::string set_eos_mark( const std::string& );
  private:
+  MbtAPI( const MbtAPI& ); // inhibit copies
+  MbtAPI& operator=( const MbtAPI& ); // inhibit copies
   Tagger::TaggerClass *tagger;
 };
 

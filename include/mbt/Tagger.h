@@ -85,6 +85,9 @@ namespace Tagger {
     int **temppaths;
     double *path_prob;
     n_best_tuple **n_best_array;
+  private:
+    BeamData( const BeamData& ); // inhibit copies
+    BeamData& operator=( const BeamData& ); // inhibit copies
   };
 
   class TagResult;
@@ -127,6 +130,7 @@ namespace Tagger {
     static int CreateTagger( int, char** );
     bool isInit() const { return initialized; };
   private:
+    TaggerClass& operator=( const TaggerClass& ); // inhibit copy-assignment
     TiCC::LogStream *cur_log;
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;

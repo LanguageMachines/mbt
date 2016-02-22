@@ -197,6 +197,9 @@ namespace Tagger {
     string name;
     double prob;
     name_prob_pair *next;
+  private:
+    name_prob_pair( const name_prob_pair& ); // inhibit copies
+    name_prob_pair operator=( const name_prob_pair& ); // inhibit copies
   };
 
   name_prob_pair *add_descending( name_prob_pair *n, name_prob_pair *lst ){

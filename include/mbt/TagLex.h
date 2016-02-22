@@ -63,6 +63,8 @@ namespace Tagger {
     std::vector<TagInfo *> CreateSortedVector();
     int numOfLexiconEntries() const { return NumOfEntries; };
   private:
+    TagLex( const TagLex& ); // inhibit copies
+    TagLex& operator=( const TagLex& ); // inhibit copies
     Trie<TagInfo> *TagTree;
     int NumOfEntries;
   };
