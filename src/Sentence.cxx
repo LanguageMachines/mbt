@@ -469,7 +469,7 @@ namespace Tagger {
 	  }
 	}
       }
-      if ( terminated )
+      if ( terminated || InternalEosMark == "NL" )
 	return true;
     }
     return true;
