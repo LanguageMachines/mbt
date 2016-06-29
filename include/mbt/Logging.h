@@ -33,11 +33,16 @@
 
 extern TiCC::LogStream default_log;
 extern TiCC::LogStream *cur_log;
+extern TiCC::LogStream default_cout;
 extern LogLevel Tagger_Log_Level;
 
 #define LOG (*TiCC::Log(cur_log))
 #define DBG (*TiCC::Dbg(cur_log))
 #define xDBG (*TiCC::xDbg(cur_log))
 #define xxDBG (*TiCC::xxDbg(cur_log))
+#define COUT *Log(default_cout)
+
+extern LogLevel internal_default_level;
+extern LogLevel Tagger_Log_Level;
 
 #endif // LOGGING_H

@@ -30,18 +30,11 @@
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
-#include "mbt/Logging.h"
 #include "timbl/TimblAPI.h"
 
-extern TiCC::LogStream default_log;
-extern TiCC::LogStream default_cout;
-
-#define COUT *Log(default_cout)
-
-extern TiCC::LogStream *cur_log;
-
-extern LogLevel internal_default_level;
-extern LogLevel Tagger_Log_Level;
+namespace TiCC {
+  class LogStream;
+}
 
 namespace Tagger {
 
