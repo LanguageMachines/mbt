@@ -116,8 +116,7 @@ namespace Tagger {
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
-    static TaggerClass *StartTagger( const std::string&, TiCC::LogStream* = 0 );
-    static TaggerClass *StartTagger( int, char**, TiCC::LogStream* = 0 );
+    static TaggerClass *StartTagger( TiCC::CL_Options&, TiCC::LogStream* = 0 );
     static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
     static int CreateTagger( int, char** );

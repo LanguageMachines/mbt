@@ -1215,37 +1215,8 @@ namespace Tagger {
 	 << endl;
   }
 
-  TaggerClass *TaggerClass::StartTagger( int argc, char*argv[], LogStream* os ){
-    TiCC::CL_Options opts;
-    opts.allow_args( mbt_short_opts, mbt_long_opts );
-    opts.parse_args( argc, argv );
-    string progname = opts.prog_name();
-    if ( opts.extract('h') || opts.extract("help") ){
-      run_usage( progname );
-      return 0;
-    }
-    if ( opts.extract('V') || opts.extract("version") ){
-      manifest();
-      return 0;
-    }
-    TaggerClass *tagger = new TaggerClass;
-    if ( !tagger->parse_run_args( opts ) ){
-      delete tagger;
-      return 0;
-    }
-    if ( os )
-      tagger->setLog( *os );
-    else // only manifest() when running 'standalone'
-      manifest();
-    tagger->set_default_filenames();
-    tagger->InitTagging();
-    return tagger;
-  }
-
-  TaggerClass *TaggerClass::StartTagger( const string& optline, LogStream* os ){
-    TiCC::CL_Options opts;
-    opts.allow_args( mbt_short_opts, mbt_long_opts );
-    opts.parse_args( optline );
+  TaggerClass *TaggerClass::StartTagger( TiCC::CL_Options& opts,
+					 LogStream* os ){
     string progname = opts.prog_name();
     if ( opts.extract('h') || opts.extract("help") ){
       run_usage( progname );
