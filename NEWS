@@ -1,3 +1,9 @@
+mbt version 3.2.16 2016-07-11
+[Ko van der Sloot]
+Maintenance release
+- some code refactoring
+- fixed a problem with the -eNL option
+
 mbt version 3.2.15 2016-01-14
 [Ko van der Sloot]
   * repository moved to GitHub
