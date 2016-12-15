@@ -32,8 +32,16 @@ using namespace std;
 using namespace Tagger;
 
 int main(){
-  string path = getenv( "topsrcdir" );
-  MbtAPI::GenerateTagger( "-T " + path + "/example/eindh.data -s ./simple.setting " );
+  string path;
+  const char *ev = getenv( "topsrcdir" );
+  if ( ev ){
+    path = ev;
+  }
+  else {
+    path = ".";
+  }
+  string command = "-T " + path + "/example/eindh.data -s ./simple.setting";
+  MbtAPI::GenerateTagger( command );
   MbtAPI demo( "-s ./simple.setting" );
   cerr << demo.Tag( "dit is een test" ) << endl;
   vector<TagResult> v = demo.TagLine( "Test regel 2 ." );
