@@ -44,11 +44,12 @@ namespace Tagger {
   using namespace std;
 
   const string Separators = "\t \n";
-  const int MAXTCPBUF   = 65536;
 
   // New enriched word.
   //
-  word::word( const string& some_word, const vector<string>& extra_features, const string& some_tag){
+  word::word( const string& some_word,
+	      const vector<string>& extra_features,
+	      const string& some_tag ){
     the_word =  some_word;
     word_tag = some_tag;
     the_word_index = -1;
@@ -73,8 +74,9 @@ namespace Tagger {
   }
 
   void sentence::clear(){
-    for ( unsigned int i=0; i < no_words; i++ )
-      delete Words[i];
+    for ( auto w : Words ){
+      delete w;
+    }
     Words.clear();
     no_words = 0;
   }
@@ -103,10 +105,10 @@ namespace Tagger {
   //
   void sentence::print( ostream &os ) const{
     os << "Sentence :'";
-    if ( no_words != 0 ){
-      for ( unsigned int i = 0; i < no_words-1; i++ )
-	os << Words[i]->the_word << ", ";
-      os << Words[no_words-1]->the_word;
+    for ( const auto& w : Words ){
+      os << w->the_word;
+      if ( &w != &Words.back() )
+	os << ", ";
     }
     os << "'";
   }
@@ -143,15 +145,12 @@ namespace Tagger {
       return false;
     }
     else {
-      LexInfo * foundInfo;
-      word *cur_word;
-      for ( unsigned int wpos = 0; wpos < no_words; ++wpos ){
-	cur_word = Words[wpos];
+      for ( const auto& cur_word : Words ){
 	cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
 	// look up ambiguous tag in the dictionary
 	//
-	foundInfo = lex.Lookup( cur_word->the_word );
-	if( foundInfo != NULL ){
+	LexInfo *foundInfo = lex.Lookup( cur_word->the_word );
+	if ( foundInfo != NULL ){
 	  //	  cerr << "MT Lookup(" << cur_word->the_word << ") gave " << *foundInfo << endl;
 	  cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
 	}

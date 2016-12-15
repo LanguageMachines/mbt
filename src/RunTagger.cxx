@@ -218,7 +218,7 @@ namespace Tagger {
   }
 
 
-  name_prob_pair *break_down( const ValueDistribution *Dist,
+  name_prob_pair *break_down( const ValueDistribution& Dist,
 			      const TargetValue *PrefClass ){
     // split a distribution into names/probabilities  AND sort them descending
     // But put preferred in front.
@@ -226,17 +226,16 @@ namespace Tagger {
     // the most important one...!
     name_prob_pair *result = 0, *tmp, *Pref = 0;
     double sum_freq = 0.0;
-    ValueDistribution::dist_iterator it = Dist->begin();
-    while ( it != Dist->end() ){
-      string name = (*it).second->Value()->Name();
-      double freq = (*it).second->Weight();
+    for ( const auto& it : Dist ){
+      string name = it.second->Value()->Name();
+      //      string name = (*it).second->Value()->Name();
+      double freq = it.second->Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
       if ( name == PrefClass->Name() )
 	Pref = tmp;
       else
 	result = add_descending( tmp, result );
-      ++it;
     }
     if ( Pref ){
       Pref->next = result;
@@ -254,7 +253,7 @@ namespace Tagger {
 
   void BeamData::InitPaths( StringHash& TheLex,
 			    const TargetValue *answer,
-			    const ValueDistribution *distrib ){
+			    const ValueDistribution& distrib ){
     if ( size == 1 ){
       paths[0][0] = TheLex.Hash( answer->Name() );
       path_prob[0] = 1.0;
@@ -283,7 +282,7 @@ namespace Tagger {
 
   void BeamData::NextPath( StringHash& TheLex,
 			   const TargetValue *answer,
-			   const ValueDistribution *distrib,
+			   const ValueDistribution& distrib,
 			   int beam_cnt ){
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
@@ -649,7 +648,7 @@ namespace Tagger {
       LOG << "BeamData::InitPaths( " << mySentence << endl;
       LOG << " , " << answer << " , " << distribution << " )" << endl;
     }
-    Beam->InitPaths( TheLex, answer, distribution );
+    Beam->InitPaths( TheLex, answer, *distribution );
     if ( IsActive( DBG ) ){
       Beam->Print( LOG, 0, TheLex );
     }
@@ -690,7 +689,7 @@ namespace Tagger {
 	LOG << "BeamData::NextPaths( " << mySentence << endl;
 	LOG << " , " << answer << " , " << distribution << " )" << endl;
       }
-      Beam->NextPath( TheLex, answer, distribution, beam_cnt );
+      Beam->NextPath( TheLex, answer, *distribution, beam_cnt );
       if ( IsActive( DBG ) )
 	Beam->PrintBest( LOG, TheLex );
       return true;
@@ -783,12 +782,12 @@ namespace Tagger {
       return eom;
   }
 
-  string TaggerClass::TRtoString( const vector<TagResult>& tr ) const {
+  string TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
     string result;
-    for ( unsigned int Wcnt=0; Wcnt < tr.size(); ++Wcnt ){
+    for ( const auto& tr : trs ){
       // lookup the assigned category
-      result += tr[Wcnt].word();
-      if ( tr[Wcnt].isKnown() ){
+      result += tr.word();
+      if ( tr.isKnown() ){
 	if ( input_kind == UNTAGGED )
 	  result += "/";
 	else
@@ -803,22 +802,22 @@ namespace Tagger {
       // output the correct tag if possible
       //
       if ( input_kind == ENRICHED )
-	result = result + tr[Wcnt].enrichment() + "\t";
+	result = result + tr.enrichment() + "\t";
       if ( input_kind == TAGGED ||
 	   input_kind == ENRICHED ){
-	result += tr[Wcnt].inputTag() + "\t" + tr[Wcnt].assignedTag();
+	result += tr.inputTag() + "\t" + tr.assignedTag();
 	if ( confidence_flag )
-	  result += " [" + toString( tr[Wcnt].confidence() ) + "]";
+	  result += " [" + toString( tr.confidence() ) + "]";
 	if ( distrib_flag )
-	  result += " " + tr[Wcnt].distribution();
+	  result += " " + tr.distribution();
 	if ( distance_flag )
-	  result += " " + toString( tr[Wcnt].distance() );
+	  result += " " + toString( tr.distance() );
 	result += "\n";
       }
       else {
-	result += tr[Wcnt].assignedTag();
+	result += tr.assignedTag();
 	if ( confidence_flag )
-	  result += "/" + toString( tr[Wcnt].confidence() );
+	  result += "/" + toString( tr.confidence() );
 	result += " ";
       }
     } // end of output loop through one sentence
@@ -1144,14 +1143,17 @@ namespace Tagger {
     }
     if ( Opts.extract( 'v', value ) ){
       vector<string> opts;
-      size_t num = split_at( value, opts, "+" );
-      for ( size_t i = 0; i < num; ++i ){
-	if ( opts[i] == "di" )
+      split_at( value, opts, "+" );
+      for ( const auto& o : opts ){
+	if ( o == "di" ){
 	  distance_flag = true;
-	if ( opts[i] == "db" )
+	}
+	else if ( o == "db" ){
 	  distrib_flag = true;
-	if ( opts[i] == "cf" )
+	}
+	else if ( o == "cf" ){
 	  confidence_flag = true;
+	}
       }
     };
     if ( cloned && input_kind == ENRICHED ){

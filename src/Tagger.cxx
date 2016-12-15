@@ -81,6 +81,7 @@ namespace Tagger {
     FilterThreshold = 5;
     Npax = 5;
     TopNumber = 100;
+    DoTagList = false;
     DoTop = false;
     DoNpax = true;
     KeepIntermediateFiles = false;

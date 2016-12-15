@@ -68,8 +68,8 @@ bool PatTemplate::set( const string& tempstr ){
   int k = 0;
   bool focus = false;
   compensation = 0;
-  for ( size_t i = 0; i < tlen; i++) {
-    switch(tempstr[i]){
+  for ( const auto& c : tempstr ){
+    switch( c ){
     case 'f':
       if ( focus ){
 	cerr << "more than 1 focus position in Pattern! " << tempstr << endl;
@@ -77,8 +77,8 @@ bool PatTemplate::set( const string& tempstr ){
       }
       focuspos = j;
       skipfocus=0;
-      templatestring += tempstr[i];
-      word_templatestring += tempstr[i];
+      templatestring += c;
+      word_templatestring += c;
       word_focuspos = k;
       ++numslots;
       ++j;
@@ -94,8 +94,8 @@ bool PatTemplate::set( const string& tempstr ){
       }
       focuspos = j;
       skipfocus=1;
-      templatestring += tempstr[i];
-      word_templatestring += tempstr[i];
+      templatestring += c;
+      word_templatestring += c;
       word_focuspos = k;
       ++numslots;
       ++j;
@@ -105,12 +105,12 @@ bool PatTemplate::set( const string& tempstr ){
       focus = true;
       break;
     case 'd':
-      templatestring += tempstr[i];
+      templatestring += c;
       ++numslots;
       ++j;
       break;
     case 'a':
-      templatestring += tempstr[i];
+      templatestring += c;
       ++numslots;
       ++j;
       break;
@@ -130,7 +130,7 @@ bool PatTemplate::set( const string& tempstr ){
       numeric = 1;
       break;
     case 'w':
-      word_templatestring += tempstr[i];
+      word_templatestring += c;
       ++wordslots;
       ++k;
       break;
@@ -167,7 +167,7 @@ bool PatTemplate::set( const string& tempstr ){
       }
       break;
     default:
-      cerr << "ERROR: illegal symbol '" << tempstr[i]
+      cerr << "ERROR: illegal symbol '" << c
 	   << "' in context string'" << endl;
       return false;
     }

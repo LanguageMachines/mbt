@@ -91,9 +91,11 @@ namespace Tagger {
     sort( FreqTags.begin(), FreqTags.end(), cmpFreq );
     string tmpstr;
     for ( auto const& it2 : FreqTags ){
-      tmpstr += it2.str + ";";
+      tmpstr += it2.str;
+      if ( &it2 != &FreqTags.back() ){
+	tmpstr += ";";
+      }
     }
-    tmpstr.erase(tmpstr.length()-1); //remove last ';'
     StringRepr = tmpstr;
   }
 
