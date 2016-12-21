@@ -1175,7 +1175,7 @@ namespace Tagger {
   void TaggerClass::manifest(){
     // present yourself to the user
     //
-    cout << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2016." << endl
+    cout << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2017." << endl
 	 << "Memory Based Tagger " << endl
 	 << "CLST  - Centre for Language and Speech Technology,"
 	 << "Radboud University" << endl

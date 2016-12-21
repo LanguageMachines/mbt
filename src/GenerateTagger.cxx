@@ -583,7 +583,7 @@ struct more_second {
     //
     // present yourself to the user
     //
-    cerr << "mbtg " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2016." << endl
+    cerr << "mbtg " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2017." << endl
 	 << "Memory Based Tagger Generator" << endl
 	 << "CLST  - Centre for Language and Speech Technology,"
 	 << "Radboud University" << endl
