@@ -64,10 +64,10 @@ namespace Tagger {
     bool Init( int, unsigned int );
     void InitPaths( StringHash&,
 		    const Timbl::TargetValue *,
-		    const Timbl::ValueDistribution& );
+		    const Timbl::ValueDistribution * );
     void NextPath( StringHash&,
 		   const Timbl::TargetValue *,
-		   const Timbl::ValueDistribution&,
+		   const Timbl::ValueDistribution *,
 		   int );
     void ClearBest();
     void Shift( int, int );

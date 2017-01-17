@@ -218,15 +218,18 @@ namespace Tagger {
   }
 
 
-  name_prob_pair *break_down( const ValueDistribution& Dist,
+  name_prob_pair *break_down( const ValueDistribution *Dist,
 			      const TargetValue *PrefClass ){
     // split a distribution into names/probabilities  AND sort them descending
     // But put preferred in front.
     // While we will use only the first BeamSize entries, don't forget
     // the most important one...!
     name_prob_pair *result = 0, *tmp, *Pref = 0;
+    if ( !Dist ){
+      return 0;
+    }
     double sum_freq = 0.0;
-    for ( const auto& it : Dist ){
+    for ( const auto& it : *Dist ){
       string name = it.second->Value()->Name();
       //      string name = (*it).second->Value()->Name();
       double freq = it.second->Weight();
@@ -253,7 +256,7 @@ namespace Tagger {
 
   void BeamData::InitPaths( StringHash& TheLex,
 			    const TargetValue *answer,
-			    const ValueDistribution& distrib ){
+			    const ValueDistribution *distrib ){
     if ( size == 1 ){
       paths[0][0] = TheLex.Hash( answer->Name() );
       path_prob[0] = 1.0;
@@ -282,7 +285,7 @@ namespace Tagger {
 
   void BeamData::NextPath( StringHash& TheLex,
 			   const TargetValue *answer,
-			   const ValueDistribution& distrib,
+			   const ValueDistribution *distrib,
 			   int beam_cnt ){
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
@@ -643,12 +646,12 @@ namespace Tagger {
 	distribution_array[0] = distribution->DistToString();
       if ( confidence_flag )
 	confidence_array[0] = distribution->Confidence( answer );
+      if ( IsActive( DBG ) ){
+	LOG << "BeamData::InitPaths( " << mySentence << endl;
+	LOG << " , " << answer << " , " << distribution << " )" << endl;
+      }
     }
-    if ( IsActive( DBG ) ){
-      LOG << "BeamData::InitPaths( " << mySentence << endl;
-      LOG << " , " << answer << " , " << distribution << " )" << endl;
-    }
-    Beam->InitPaths( TheLex, answer, *distribution );
+    Beam->InitPaths( TheLex, answer, distribution );
     if ( IsActive( DBG ) ){
       Beam->Print( LOG, 0, TheLex );
     }
@@ -689,7 +692,7 @@ namespace Tagger {
 	LOG << "BeamData::NextPaths( " << mySentence << endl;
 	LOG << " , " << answer << " , " << distribution << " )" << endl;
       }
-      Beam->NextPath( TheLex, answer, *distribution, beam_cnt );
+      Beam->NextPath( TheLex, answer, distribution, beam_cnt );
       if ( IsActive( DBG ) )
 	Beam->PrintBest( LOG, TheLex );
       return true;
