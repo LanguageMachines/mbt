@@ -31,7 +31,6 @@ class PatTemplate {
  public:
   std::string templatestring;
   std::string word_templatestring;
-  size_t tlen;
   size_t numslots;
   size_t wordslots;
   int focuspos;

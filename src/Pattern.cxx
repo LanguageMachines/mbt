@@ -52,16 +52,13 @@ PatTemplate::PatTemplate()
   hyphen   = 0;
   capital  = 0;
   numeric  = 0;
+  compensation = 0;
   wordfocus = 0;
-  templatestring = "";
-  word_templatestring = "";
 }
 
 bool PatTemplate::set( const string& tempstr ){
   // reads a format string and figures out a template for the patterns from
   // this
-  tlen = tempstr.length();
-
   // Find the position of the focus.
   // Seperate string is built for the word-context.
   int j = 0;

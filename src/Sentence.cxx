@@ -49,11 +49,14 @@ namespace Tagger {
   //
   word::word( const string& some_word,
 	      const vector<string>& extra_features,
-	      const string& some_tag ){
-    the_word =  some_word;
-    word_tag = some_tag;
+	      const string& some_tag ):
+    the_word( some_word ),
+    word_tag( some_tag ),
+    word_amb_tag( -1 ),
+    word_ass_tag( -1 ),
+    extraFeatures( extra_features )
+  {
     the_word_index = -1;
-    extraFeatures = extra_features;
   }
 
   // Delete a word
@@ -89,7 +92,6 @@ namespace Tagger {
   string sentence::getenr( unsigned int index ){
     string result;
     if ( index < no_words ){
-      const std::vector<std::string> enr = getEnrichments( index );
       auto it = Words[index]->extraFeatures.cbegin();
       while( it != Words[index]->extraFeatures.cend() ){
 	result += *it;

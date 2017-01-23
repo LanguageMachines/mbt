@@ -190,8 +190,8 @@ namespace Tagger {
 
   class name_prob_pair{
   public:
-    name_prob_pair( const string& n, double p ){
-      name = n; prob = p; next = 0;
+    name_prob_pair( const string& n, double p ): name(n),prob(p){
+      next = 0;
     }
     ~name_prob_pair(){};
     string name;
@@ -262,7 +262,7 @@ namespace Tagger {
       path_prob[0] = 1.0;
     }
     else {
-      name_prob_pair *d_pnt, *tmp_d_pnt, *Distr;
+      name_prob_pair *d_pnt, *Distr;
       Distr = break_down( distrib, answer );
       d_pnt = Distr;
       int jb = 0;
@@ -271,7 +271,7 @@ namespace Tagger {
 	  paths[jb][0] =  TheLex.Hash( d_pnt->name );
 	  path_prob[jb] = d_pnt->prob;
 	}
-	tmp_d_pnt = d_pnt;
+	name_prob_pair *tmp_d_pnt = d_pnt;
 	d_pnt = d_pnt->next;
 	delete tmp_d_pnt;
 	jb++;
@@ -295,7 +295,7 @@ namespace Tagger {
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
 	  << distrib << " )" << endl;
-      name_prob_pair *d_pnt, *tmp_d_pnt, *Distr;
+      name_prob_pair *d_pnt, *Distr;
       Distr = break_down( distrib, answer );
       d_pnt = Distr;
       int ab = 0;
@@ -327,7 +327,7 @@ namespace Tagger {
 	    }
 	  }
 	}
-	tmp_d_pnt = d_pnt;
+	name_prob_pair *tmp_d_pnt = d_pnt;
 	d_pnt = d_pnt->next;
 	delete tmp_d_pnt;
 	++ab;
@@ -346,7 +346,6 @@ namespace Tagger {
     int no_words=0;
     // loop as long as you get non empty sentences
     //
-    string tagged_sentence;
     string line;
     while ( getline(is, line ) ){
       vector<TagResult> res = tagLine( line );
@@ -623,7 +622,6 @@ namespace Tagger {
 #endif
     if ( !answer ){
       throw runtime_error( "Tagger: A classifying problem prevented continuing. Sorry!" );
-      exit(EXIT_FAILURE);
     }
     return answer;
   }
@@ -833,7 +831,6 @@ namespace Tagger {
 				int& no_known, int& no_unknown,
 				int& no_correct_known,
 				int& no_correct_unknown ){
-    string result;
     string tagstring;
     //now some output
     for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); Wcnt++ ){
@@ -872,7 +869,6 @@ namespace Tagger {
 	    mySentence.read(infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
-      string tagged_sentence;
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
       }
@@ -882,7 +878,7 @@ namespace Tagger {
 	continue;
       }
       vector<TagResult> res = tagSentence( mySentence );
-      tagged_sentence = TRtoString( res );
+      string tagged_sentence = TRtoString( res );
       if ( !tagged_sentence.empty() ){
 	// show the results of 1 sentence
 	statistics( mySentence,
@@ -939,7 +935,7 @@ namespace Tagger {
     while(setfile.getline(SetBuffer,511,'\n')){
       switch (SetBuffer[0]) {
       case 'B':
-	if ( sscanf(SetBuffer,"B %d", &Beam_Size ) != 1 )
+	if ( sscanf(SetBuffer,"B %40d", &Beam_Size ) != 1 )
 	  Beam_Size = 1;
 	break;
       case 'd':
@@ -947,33 +943,33 @@ namespace Tagger {
 	cerr << "  Dumpflag ON" << endl;
 	break;
       case 'e': {
-	sscanf( SetBuffer, "e %s", value );
+	sscanf( SetBuffer, "e %40s", value );
 	EosMark = value;
 	break;
       }
       case 'k':
-	sscanf(SetBuffer,"k %s", value );
+	sscanf(SetBuffer,"k %300s", value );
 	KnownTreeBaseName = value;
 	KnownTreeName = prefixWithAbsolutePath( KnownTreeBaseName,
 						SettingsFilePath );
 	knowntreeflag = true; // there is a knowntreefile specified
 	break;
       case 'l':
-	sscanf(SetBuffer,"l %s", value );
+	sscanf(SetBuffer,"l %300s", value );
 	l_option_name = value;
 	l_option_name = prefixWithAbsolutePath( l_option_name,
 						SettingsFilePath );
 	lexflag = true; // there is a lexicon specified
 	break;
       case 'L':
-	sscanf(SetBuffer,"L %s", value );
+	sscanf(SetBuffer,"L %300s", value );
 	L_option_name = value;
 	L_option_name = prefixWithAbsolutePath( L_option_name,
 						SettingsFilePath );
 	klistflag = true;
 	break;
       case 'o':
-	sscanf(SetBuffer,"t %s", value );
+	sscanf(SetBuffer,"t %300s", value );
 	OutputFileName = value;
 	OutputFileName = prefixWithAbsolutePath( OutputFileName,
 						 SettingsFilePath );
@@ -988,7 +984,7 @@ namespace Tagger {
 	UtmplStr = string( SetBuffer+2 );
 	break;
       case 'r':
-	sscanf(SetBuffer,"r %s", value );
+	sscanf(SetBuffer,"r %300s", value );
 	r_option_name = value;
 	r_option_name = prefixWithAbsolutePath( r_option_name,
 						SettingsFilePath );
@@ -1001,14 +997,14 @@ namespace Tagger {
 	exit(EXIT_FAILURE);
 	break;
       case 't':
-	sscanf(SetBuffer,"t %s", value );
+	sscanf(SetBuffer,"t %300s", value );
 	TestFileName = value;
 	TestFileName = prefixWithAbsolutePath( TestFileName,
 					       SettingsFilePath );
 	piped_input = false; // there is a test file specified
 	break;
       case 'E':
-	if ( SetBuffer[1] == ' ' && sscanf(SetBuffer,"E %s", value ) > 0 ){
+	if ( SetBuffer[1] == ' ' && sscanf(SetBuffer,"E %300s", value ) > 0 ){
 	  TestFileName = value;
 	  TestFileName = prefixWithAbsolutePath( TestFileName,
 						 SettingsFilePath );
@@ -1024,7 +1020,7 @@ namespace Tagger {
 	}
 	break;
       case 'T':
-	sscanf(SetBuffer,"T %s", value );
+	sscanf(SetBuffer,"T %300s", value );
 	TestFileName = value;
 	TestFileName = prefixWithAbsolutePath( TestFileName,
 					       SettingsFilePath );
@@ -1032,7 +1028,7 @@ namespace Tagger {
 	input_kind = TAGGED; // there is a tagged test file specified
 	break;
       case 'u':
-	sscanf(SetBuffer,"u %s", value );
+	sscanf(SetBuffer,"u %300s", value );
 	UnknownTreeBaseName = value;
 	UnknownTreeName = prefixWithAbsolutePath( UnknownTreeBaseName,
 						  SettingsFilePath );

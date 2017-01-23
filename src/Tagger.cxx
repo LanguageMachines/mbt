@@ -123,6 +123,7 @@ namespace Tagger {
     FilterThreshold = in.FilterThreshold;
     Npax = in.Npax;
     TopNumber = in.TopNumber;
+    DoTagList = in.DoTagList;
     DoTop = in.DoTop;
     DoNpax = in.DoNpax;
     KeepIntermediateFiles = in.KeepIntermediateFiles;
@@ -158,6 +159,7 @@ namespace Tagger {
     Beam = 0;
     MT_lexicon = in.MT_lexicon;
     kwordlist = in.kwordlist;
+    uwordlist = in.uwordlist;
     piped_input = in.piped_input;
     input_kind = in.input_kind;
     lexflag = in.lexflag;

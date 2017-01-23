@@ -40,9 +40,8 @@
 namespace Tagger {
   using namespace std;
 
-  TagInfo::TagInfo( const string& name, const string& tag ){
-    Word = name;
-    WordFreq = 0;
+  TagInfo::TagInfo( const string& name, const string& tag ):
+    Word(name), WordFreq(0) {
     Update( tag );
   }
 
@@ -117,7 +116,7 @@ namespace Tagger {
   }
 
   TagInfo *TagLex::Lookup( const string& name ){
-    return (TagInfo *)TagTree->Retrieve( name );
+    return reinterpret_cast<TagInfo *>(TagTree->Retrieve( name ));
   }
 
   TagInfo *TagLex::Store( const string& name, const string& tag ){
