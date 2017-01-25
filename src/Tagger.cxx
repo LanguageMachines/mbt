@@ -115,67 +115,64 @@ namespace Tagger {
     cloned = false;
   }
 
-  TaggerClass::TaggerClass( const TaggerClass& in ){
-    cur_log = in.cur_log;
-    KnownTree = in.KnownTree;
-    unKnownTree = in.unKnownTree;
-    TimblOptStr = in.TimblOptStr;
-    FilterThreshold = in.FilterThreshold;
-    Npax = in.Npax;
-    TopNumber = in.TopNumber;
-    DoTagList = in.DoTagList;
-    DoTop = in.DoTop;
-    DoNpax = in.DoNpax;
-    KeepIntermediateFiles = in.KeepIntermediateFiles;
-
-    KtmplStr = in.KtmplStr;
-    UtmplStr = in.UtmplStr;
-    L_option_name = in.L_option_name;
-    EosMark = in.EosMark;
-
-    Ktemplate = in.Ktemplate;
-    Utemplate = in.Utemplate;
-
-    UnknownTreeBaseName = in.UnknownTreeBaseName;
-    KnownTreeBaseName = in.KnownTreeBaseName;
-    LexFileBaseName = in.LexFileBaseName;
-    MTLexFileBaseName = in.MTLexFileBaseName;
-    TopNFileBaseName = in.TopNFileBaseName;
-    NpaxFileBaseName = in.NpaxFileBaseName;
-    UnknownTreeName = in.UnknownTreeName;
-    KnownTreeName = in.KnownTreeName;
-    LexFileName = in.LexFileName;
-    MTLexFileName = in.MTLexFileName;
-    TopNFileName = in.TopNFileName;
-    NpaxFileName = in.NpaxFileName;
-    TestFileName = in.TestFileName;
-    TestFilePath = in.TestFilePath;
-    OutputFileName = in.OutputFileName;
-    SettingsFileName = in.SettingsFileName;
-    SettingsFilePath = in.SettingsFilePath;
-
-    initialized = in.initialized;
-    Beam_Size = in.Beam_Size;
-    Beam = 0;
-    MT_lexicon = in.MT_lexicon;
-    kwordlist = in.kwordlist;
-    uwordlist = in.uwordlist;
-    piped_input = in.piped_input;
-    input_kind = in.input_kind;
-    lexflag = in.lexflag;
-    knowntreeflag = in.knowntreeflag;
-    unknowntreeflag = in.unknowntreeflag;
-    knowntemplateflag = in.knowntemplateflag;
-    unknowntemplateflag = in.unknowntemplateflag;
-    knownoutfileflag = in.knownoutfileflag;
-    unknownoutfileflag = in.unknownoutfileflag;
-    reverseflag = in.reverseflag;
-    dumpflag = in.dumpflag;
-    distance_flag = in.distance_flag;
-    distrib_flag = in.distrib_flag;
-    confidence_flag = in.confidence_flag;
-    klistflag = in.klistflag;
-    cloned = true;
+  TaggerClass::TaggerClass( const TaggerClass& in ):
+    cur_log( in.cur_log ),
+    KnownTree( in.KnownTree ),
+    unKnownTree( in.unKnownTree ),
+    TimblOptStr( in.TimblOptStr ),
+    FilterThreshold( in.FilterThreshold ),
+    Npax( in.Npax ),
+    TopNumber( in.TopNumber ),
+    DoTagList( in.DoTagList ),
+    DoTop( in.DoTop ),
+    DoNpax( in.DoNpax ),
+    KeepIntermediateFiles( in.KeepIntermediateFiles ),
+    KtmplStr( in.KtmplStr ),
+    UtmplStr( in.UtmplStr ),
+    L_option_name( in.L_option_name ),
+    EosMark( in.EosMark ),
+    Ktemplate( in.Ktemplate ),
+    Utemplate( in.Utemplate ),
+    UnknownTreeBaseName( in.UnknownTreeBaseName ),
+    KnownTreeBaseName( in.KnownTreeBaseName ),
+    LexFileBaseName( in.LexFileBaseName ),
+    MTLexFileBaseName( in.MTLexFileBaseName ),
+    TopNFileBaseName( in.TopNFileBaseName ),
+    NpaxFileBaseName( in.NpaxFileBaseName),
+    UnknownTreeName( in.UnknownTreeName),
+    KnownTreeName( in.KnownTreeName),
+    LexFileName( in.LexFileName),
+    MTLexFileName( in.MTLexFileName),
+    TopNFileName( in.TopNFileName),
+    NpaxFileName( in.NpaxFileName),
+    TestFileName( in.TestFileName),
+    TestFilePath( in.TestFilePath),
+    OutputFileName( in.OutputFileName),
+    SettingsFileName( in.SettingsFileName),
+    SettingsFilePath( in.SettingsFilePath ),
+    initialized( in.initialized ),
+    Beam_Size( in.Beam_Size ),
+    Beam( 0 ),
+    MT_lexicon( in.MT_lexicon ),
+    kwordlist( in.kwordlist ),
+    uwordlist( in.uwordlist ),
+    piped_input( in.piped_input ),
+    input_kind( in.input_kind ),
+    lexflag( in.lexflag ),
+    knowntreeflag( in.knowntreeflag ),
+    unknowntreeflag( in.unknowntreeflag ),
+    knowntemplateflag( in.knowntemplateflag ),
+    unknowntemplateflag( in.unknowntemplateflag ),
+    knownoutfileflag( in.knownoutfileflag ),
+    unknownoutfileflag( in.unknownoutfileflag ),
+    reverseflag( in.reverseflag ),
+    dumpflag( in.dumpflag ),
+    distance_flag( in.distance_flag ),
+    distrib_flag( in.distrib_flag ),
+    confidence_flag( in.confidence_flag ),
+    klistflag( in.klistflag ),
+	       cloned( true )
+	       {
   }
 
   bool TaggerClass::setLog( LogStream& os ){

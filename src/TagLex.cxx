@@ -73,7 +73,7 @@ namespace Tagger {
   }
 
   struct FS {
-    FS( int f, string s ):freq(f), str(s) {};
+    FS( int f, const string& s ):freq(f), str(s) {};
     int freq;
     string str;
   };
