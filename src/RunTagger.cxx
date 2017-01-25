@@ -561,12 +561,14 @@ namespace Tagger {
   int TaggerClass::Run(){
     int result = -1;
     if ( initialized ){
+      bool out_to_file = OutputFileName != "";
       ostream *os;
-      if ( OutputFileName != "" ){
+      if ( out_to_file ){
 	os = new ofstream( OutputFileName );
       }
-      else
+      else {
 	os = &default_cout;
+      }
       ifstream infile;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
@@ -590,7 +592,7 @@ namespace Tagger {
 	else
 	  result = ProcessFile( cin, *os );
       }
-      if ( OutputFileName != "" ){
+      if ( out_to_file ){
 	delete os;
       }
     }
