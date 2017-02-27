@@ -260,7 +260,6 @@ struct more_second {
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
-	int thisTagCode;
 	while( mySentence.nextpat( Action, TestPat,
 				   *kwordlist, TheLex,
 				   swcn ) ){
@@ -274,7 +273,7 @@ struct more_second {
 	    for( int f=0; f < nslots; f++){
 	      outfile << indexlex( TestPat[f], TheLex ) << " ";
 	    }
-	  thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	  int thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
 	  if ( !skip ){
 	    for ( auto const& it : mySentence.getEnrichments(swcn) ){
 	      outfile << it << " ";
@@ -574,7 +573,6 @@ struct more_second {
   }
 
   int TaggerClass::CreateTagger( TiCC::CL_Options& opts ){
-    string value;
     if ( opts.is_present( 'h' ) ||
 	 opts.is_present( "help" ) ){
       gen_usage( "mbtg" );

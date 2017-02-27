@@ -81,9 +81,9 @@ namespace Tagger {
     FilterThreshold = 5;
     Npax = 5;
     TopNumber = 100;
-    DoTagList = false;
     DoTop = false;
     DoNpax = true;
+    DoTagList = false;
     KeepIntermediateFiles = false;
 
     KtmplStr = "ddfa";
@@ -119,13 +119,33 @@ namespace Tagger {
     cur_log( in.cur_log ),
     KnownTree( in.KnownTree ),
     unKnownTree( in.unKnownTree ),
+    initialized( in.initialized ),
+    kwordlist( in.kwordlist ),
+    uwordlist( in.uwordlist ),
+    Beam( 0 ),
+    input_kind( in.input_kind ),
+    piped_input( in.piped_input ),
+    lexflag( in.lexflag ),
+    knowntreeflag( in.knowntreeflag ),
+    unknowntreeflag( in.unknowntreeflag ),
+    knowntemplateflag( in.knowntemplateflag ),
+    unknowntemplateflag( in.unknowntemplateflag ),
+    knownoutfileflag( in.knownoutfileflag ),
+    unknownoutfileflag( in.unknownoutfileflag ),
+    reverseflag( in.reverseflag ),
+    dumpflag( in.dumpflag ),
+    distance_flag( in.distance_flag ),
+    distrib_flag( in.distrib_flag ),
+    confidence_flag( in.confidence_flag ),
+    klistflag( in.klistflag ),
+    Beam_Size( in.Beam_Size ),
     TimblOptStr( in.TimblOptStr ),
     FilterThreshold( in.FilterThreshold ),
     Npax( in.Npax ),
     TopNumber( in.TopNumber ),
-    DoTagList( in.DoTagList ),
     DoTop( in.DoTop ),
     DoNpax( in.DoNpax ),
+    DoTagList( in.DoTagList ),
     KeepIntermediateFiles( in.KeepIntermediateFiles ),
     KtmplStr( in.KtmplStr ),
     UtmplStr( in.UtmplStr ),
@@ -133,6 +153,7 @@ namespace Tagger {
     EosMark( in.EosMark ),
     Ktemplate( in.Ktemplate ),
     Utemplate( in.Utemplate ),
+    MT_lexicon( in.MT_lexicon ),
     UnknownTreeBaseName( in.UnknownTreeBaseName ),
     KnownTreeBaseName( in.KnownTreeBaseName ),
     LexFileBaseName( in.LexFileBaseName ),
@@ -150,29 +171,8 @@ namespace Tagger {
     OutputFileName( in.OutputFileName),
     SettingsFileName( in.SettingsFileName),
     SettingsFilePath( in.SettingsFilePath ),
-    initialized( in.initialized ),
-    Beam_Size( in.Beam_Size ),
-    Beam( 0 ),
-    MT_lexicon( in.MT_lexicon ),
-    kwordlist( in.kwordlist ),
-    uwordlist( in.uwordlist ),
-    piped_input( in.piped_input ),
-    input_kind( in.input_kind ),
-    lexflag( in.lexflag ),
-    knowntreeflag( in.knowntreeflag ),
-    unknowntreeflag( in.unknowntreeflag ),
-    knowntemplateflag( in.knowntemplateflag ),
-    unknowntemplateflag( in.unknowntemplateflag ),
-    knownoutfileflag( in.knownoutfileflag ),
-    unknownoutfileflag( in.unknownoutfileflag ),
-    reverseflag( in.reverseflag ),
-    dumpflag( in.dumpflag ),
-    distance_flag( in.distance_flag ),
-    distrib_flag( in.distrib_flag ),
-    confidence_flag( in.confidence_flag ),
-    klistflag( in.klistflag ),
-	       cloned( true )
-	       {
+    cloned( true )
+  {
   }
 
   bool TaggerClass::setLog( LogStream& os ){
