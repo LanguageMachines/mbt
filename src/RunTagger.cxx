@@ -386,7 +386,7 @@ namespace Tagger {
     for ( auto er: enr ){
       line += er + " ";
     }
-    if ( input_kind == TAGGED )
+    if ( input_kind != UNTAGGED )
       line += mySentence.gettag(word);
     else
       line += "??";
