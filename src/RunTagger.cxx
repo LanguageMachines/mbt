@@ -39,6 +39,7 @@
 #include <cassert>
 
 #include "config.h"
+#include "unicode/ustream.h"
 #include "timbl/TimblAPI.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
@@ -363,7 +364,7 @@ namespace Tagger {
   void TaggerClass::ShowCats( ostream& os, const vector<int>& Pat, int slots ){
     os << "Pattern : ";
     for( int slot=0; slot < slots; slot++){
-      os << indexlex( Pat[slot], TheLex )<< " ";
+      os << UnicodeString::fromUTF8(indexlex( Pat[slot], TheLex )) << " ";
     }
     os << endl;
   }
@@ -757,7 +758,7 @@ namespace Tagger {
       for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
 	TagResult res;
 	// get the original word
-	res._word= mySentence.getword(Wcnt);
+	res._word = toUTF8(mySentence.getword(Wcnt));
 	// get the original tag
 	res._inputTag = mySentence.gettag(Wcnt);
 	// lookup the assigned tag
@@ -867,6 +868,7 @@ namespace Tagger {
     int HartBeat = 0;
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
+    UnicodeString uEos = UnicodeString::fromUTF8(EosMark);
     while ( go_on &&
 	    mySentence.read(infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
@@ -874,7 +876,7 @@ namespace Tagger {
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
       }
-      if ( mySentence.getword(0) == EosMark ){
+      if ( mySentence.getword(0) == uEos ){
 	// only possible for ENRICHED!
 	outfile << EosMark << endl;
 	continue;

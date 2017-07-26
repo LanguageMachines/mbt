@@ -27,7 +27,10 @@
 #ifndef MBT_SENTENCE_H
 #define MBT_SENTENCE_H
 
+#include "unicode/unistr.h"
 #include "ticcutils/TreeHash.h"
+
+std::string toUTF8( const UnicodeString& );
 
 namespace Tagger {
   using Hash::Lexicon;
@@ -42,15 +45,15 @@ namespace Tagger {
   class word {
   public:
 
-    std::string the_word;
+    UnicodeString the_word;
     int the_word_index;
 
     std::string word_tag;
     int word_amb_tag;
     int word_ass_tag;
     std::vector<std::string> extraFeatures;
-    word( const std::string&, const std::string& );
-    word( const std::string&, const std::vector<std::string>&, const std::string& );
+    word( const UnicodeString&, const std::string& );
+    word( const UnicodeString&, const std::vector<std::string>&, const std::string& );
     ~word();
 
   };
@@ -71,7 +74,7 @@ namespace Tagger {
 		  unsigned int, int * = 0 ) const;
     int classify_hapax( const std::string&, StringHash& ) const;
     void assign_tag( int, unsigned int );
-    std::string getword( unsigned int i ) { return Words[i]->the_word; };
+    UnicodeString getword( unsigned int i ) { return Words[i]->the_word; };
     const std::string& gettag( int i ) const { return Words[i]->word_tag; };
     const std::vector<std::string>& getEnrichments( unsigned int i )
       const { return Words[i]->extraFeatures; };
@@ -88,9 +91,9 @@ namespace Tagger {
     unsigned int no_words;
     std::string InternalEosMark;
     bool Utt_Terminator( const std::string& );
-    void add( const std::string&, const std::vector<std::string>&,
+    void add( const UnicodeString&, const std::vector<std::string>&,
 	      const std::string& );
-    void add( const std::string&, const std::string& );
+    void add( const UnicodeString&, const std::string& );
     bool read_tagged( std::istream&, size_t& );
     bool read_untagged( std::istream&, size_t& );
     bool read_enriched( std::istream&, size_t& );

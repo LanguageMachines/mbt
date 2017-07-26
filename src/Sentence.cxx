@@ -35,9 +35,15 @@
 #include <cctype>
 #include <cassert>
 
+#include "unicode/ustream.h"
 #include "ticcutils/StringOps.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
+
+std::string toUTF8( const UnicodeString& uc ){
+  std::string ustr;
+  return uc.toUTF8String( ustr );
+}
 
 namespace Tagger {
   using namespace Hash;
@@ -45,9 +51,10 @@ namespace Tagger {
 
   const string Separators = "\t \n";
 
+
   // New enriched word.
   //
-  word::word( const string& some_word,
+  word::word( const UnicodeString& some_word,
 	      const vector<string>& extra_features,
 	      const string& some_tag ):
     the_word( some_word ),
@@ -123,7 +130,7 @@ namespace Tagger {
 
   // Add an enriched word to a sentence.
   //
-  void sentence::add( const string& a_word,
+  void sentence::add( const UnicodeString& a_word,
 		      const vector<string>& extraFeatures,
 		      const string& a_tag ){
     Words.push_back( new word( a_word, extraFeatures, a_tag ) );
@@ -132,7 +139,7 @@ namespace Tagger {
 
   // Add a word to a sentence.
   //
-  void sentence::add(const string& a_word, const string& a_tag)
+  void sentence::add(const UnicodeString& a_word, const string& a_tag)
   {
     vector<string> tmp;
     add(a_word, tmp, a_tag);
@@ -148,10 +155,11 @@ namespace Tagger {
     }
     else {
       for ( const auto& cur_word : Words ){
-	cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+	string ustr = toUTF8( cur_word->the_word );
+	cur_word->the_word_index = TheLex.Hash( ustr );
 	// look up ambiguous tag in the dictionary
 	//
-	LexInfo *foundInfo = lex.Lookup( cur_word->the_word );
+	LexInfo *foundInfo = lex.Lookup( ustr );
 	if ( foundInfo != NULL ){
 	  //	  cerr << "MT Lookup(" << cur_word->the_word << ") gave " << *foundInfo << endl;
 	  cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
@@ -237,6 +245,7 @@ namespace Tagger {
       //
       if ( c_pos < no_words ) {
 	wPtr = Words[c_pos];
+	string ustr = toUTF8( wPtr->the_word );
 	//
 	// If a list is specified, check if wPtr->the_word is
 	// allowed.
@@ -247,13 +256,14 @@ namespace Tagger {
 	    Pat[i_feature] = wPtr->the_word_index;
 	  }
 	  else {
-	    tok = wordlist.Lookup( wPtr->the_word );
+	    tok = wordlist.Lookup( ustr );
 	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
 	      Pat[i_feature] = wPtr->the_word_index;
 	    }
-	    else
-	      Pat[i_feature] = classify_hapax(  wPtr->the_word, TheLex );
+	    else {
+	      Pat[i_feature] = classify_hapax( ustr, TheLex );
+	    }
 	  }
 	  i_feature++;
 	  break;
@@ -326,7 +336,7 @@ namespace Tagger {
     //
     if (aTemplate->hyphen) {
       string addChars;
-      if ( current_word->the_word.find('-') != string::npos )
+      if ( current_word->the_word.indexOf("-") >= 0 )
 	addChars = "_H";
       else
 	addChars = "_0";
@@ -429,7 +439,7 @@ namespace Tagger {
 	}
 	continue;
       }
-      add( parts[0], parts[1] );
+      add( UnicodeString::fromUTF8(parts[0]), parts[1] );
     }
     //    cerr << "read a sentence: " << *this << endl;
     return true;
@@ -466,7 +476,7 @@ namespace Tagger {
 	    remainder += p + " ";
 	  }
 	  else {
-	    add( p, "" );
+	    add( UnicodeString::fromUTF8(p), "" );
 	  }
 	}
       }
@@ -504,7 +514,7 @@ namespace Tagger {
 	Tag  = extras.back();
 	extras.pop_back();
 	if ( !Word.empty() && !Tag.empty() ){
-	  add( Word, extras, Tag );
+	  add( UnicodeString::fromUTF8(Word), extras, Tag );
 	}
       }
     };

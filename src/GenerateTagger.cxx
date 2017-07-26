@@ -237,11 +237,12 @@ struct more_second {
     int HartBeat = 0;
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
+    UnicodeString uEos = UnicodeString::fromUTF8(EosMark);
     while ( mySentence.read( infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
       // cerr << mySentence << endl;
-      if ( mySentence.getword(0) == EosMark ){
+      if ( mySentence.getword(0) == uEos ){
 	// only possible for ENRICHED!
 	continue;
       }
@@ -265,7 +266,7 @@ struct more_second {
 				   swcn ) ){
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if((uwordlist->Lookup(mySentence.getword(swcn)))==0){
+	    if((uwordlist->Lookup(toUTF8(mySentence.getword(swcn))))==0){
 	      skip = true;
 	    }
 	  }
