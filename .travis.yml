@@ -5,6 +5,7 @@ branches:
 
 sudo: required
 dist: trusty
+group: edge
 
 notifications:
   irc:
