@@ -77,7 +77,7 @@ namespace Tagger {
   }
 
   void sentence::clear(){
-    for ( auto w : Words ){
+    for ( const auto& w : Words ){
       delete w;
     }
     Words.clear();
@@ -230,8 +230,7 @@ namespace Tagger {
     // Prefix?
     //
     if (aTemplate->numprefix > 0) {
-      for ( size_t j = 0;
-	    j < (size_t)aTemplate->numprefix; j++) {
+      for ( size_t j = 0; j < (size_t)aTemplate->numprefix; ++j ) {
 	string addChars = "_";
 	if ( j < CurWLen )
 	  addChars += current_word->the_word[j];
@@ -247,7 +246,7 @@ namespace Tagger {
 
     for ( unsigned int i = 0, c_pos = position - aTemplate->word_focuspos;
 	  i < aTemplate->wordslots;
-	  i++, c_pos++) {
+	  ++i, ++c_pos ) {
       // Now loop.
       //
       // depending on the slot type, transfer the appropriate
@@ -290,7 +289,7 @@ namespace Tagger {
     //
     for ( unsigned int ii = 0, cc_pos = position - aTemplate->focuspos;
 	  ii < aTemplate->numslots;
-	  ii++, cc_pos++ ) {
+	  ++ii, ++cc_pos ) {
 
       // move a pointer to the position of the word that
       // should occupy the present template slot
@@ -335,7 +334,7 @@ namespace Tagger {
     // Suffix?
     //
     if (aTemplate->numsuffix > 0) {
-      for ( size_t j = aTemplate->numsuffix; j > 0; j--) {
+      for ( size_t j = aTemplate->numsuffix; j > 0; --j ) {
 	string addChars = "_";
 	if ( j <= CurWLen )
 	  addChars  += current_word->the_word[CurWLen - j];
@@ -383,7 +382,7 @@ namespace Tagger {
     //
     if (aTemplate->numeric) {
       string addChars = "_0";
-      for ( unsigned int j = 0; j < CurWLen; j++) {
+      for ( unsigned int j = 0; j < CurWLen; ++j ) {
 	if( isdigit(current_word->the_word[j]) ){
 	  addChars[1] = 'N';
 	  break;
@@ -449,14 +448,13 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> parts;
-      int num = TiCC::split_at_first_of( line, parts, Separators );
-      if ( num != 2 ){
+      vector<string> parts = TiCC::split_at_first_of( line, Separators );
+      if ( parts.size() != 2 ){
 #pragma omp critical (errors)
 	{
 	  cerr << endl << "error in line " << line_no << " : '"
 	       << line << "' (skipping it)" << endl;
-	  if ( num == 1 ){
+	  if ( parts.size() == 1 ){
 	    cerr << "missing a tag ? " << endl;
 	  }
 	  else {
@@ -488,11 +486,10 @@ namespace Tagger {
 	}
 	continue;
       }
-      vector<string> parts;
-      TiCC::split_at_first_of( line, parts, " \t" );
+      vector<string> parts = TiCC::split_at_first_of( line, " \t" );
       line = "";
       bool terminated = false;
-      for ( auto p : parts ){
+      for ( const auto& p : parts ){
 	//	cerr << "bekijk " << p << endl;
 	if ( Utt_Terminator( p ) ){
 	  terminated = true;
@@ -520,7 +517,6 @@ namespace Tagger {
     string line;
     string Word;
     string Tag;
-    vector<string> extras;
     while( getline( infile, line ) ){
       ++line_no;
       line = TiCC::trim( line );
@@ -533,8 +529,8 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      size_t size = TiCC::split_at_first_of( line, extras, Separators );
-      if ( size >= 2 ){
+      vector<string> extras = TiCC::split_at_first_of( line, Separators );
+      if ( extras.size() >= 2 ){
 	Word = extras.front();
 	extras.erase(extras.begin()); // expensive, but allas. extras is small
 	Tag  = extras.back();
