@@ -270,7 +270,7 @@ struct more_second {
 	    }
 	  }
 	  if ( !skip )
-	    for( int f=0; f < nslots; f++){
+	    for( int f=0; f < nslots; ++f ){
 	      outfile << indexlex( TestPat[f], TheLex ) << " ";
 	    }
 	  int thisTagCode = -1;

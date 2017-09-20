@@ -71,7 +71,7 @@ namespace Tagger {
 
   BeamData::~BeamData(){
     if ( paths ){
-      for ( int q=0; q < size; q++ ){
+      for ( int q=0; q < size; ++q ){
 	delete n_best_array[q];
 	delete [] paths[q];
 	delete [] temppaths[q];
@@ -95,7 +95,7 @@ namespace Tagger {
 	return false;
       }
       else {
-	for ( int q=0; q < Size; q++ ){
+	for ( int q=0; q < Size; ++q ){
 	  paths[q] = 0;
 	  temppaths[q] = 0;
 	  if ( (n_best_array[q] = new n_best_tuple) == 0 ){
@@ -111,7 +111,7 @@ namespace Tagger {
 	delete [] temppaths[q];
       }
     }
-    for ( int q=0; q < Size; q++ ){
+    for ( int q=0; q < Size; ++q ){
       if ( (paths[q] = new int[noWords]) == 0 ||
 	   (temppaths[q] = new int[noWords]) == 0 ){
 	throw runtime_error( "Beam: not enough memory for N-best search tables" );
@@ -124,13 +124,13 @@ namespace Tagger {
 
   void BeamData::ClearBest(){
     DBG << "clearing n_best_array..." << endl;
-    for ( int i=0; i < size; i++ )
+    for ( int i=0; i < size; ++i )
       n_best_array[i]->clean();
   }
 
   void BeamData::Shift(	int no_words, int i_word ){
-    for ( int q1 = 0; q1 < no_words; q1++ ){
-      for ( int jb = 0; jb < size; jb++ ){
+    for ( int q1 = 0; q1 < no_words; ++q1 ){
+      for ( int jb = 0; jb < size; ++jb ){
 	path_prob[jb] = n_best_array[jb]->prob;
 	if ( n_best_array[jb]->path != EMPTY_PATH ){
 	  if ( q1 < i_word ){
@@ -150,8 +150,8 @@ namespace Tagger {
 	  temppaths[jb][q1] = EMPTY_PATH;
       }
     }
-    for ( int jb = 0; jb < size; jb++ ){
-      for ( int q1=0; q1 < no_words; q1++ )
+    for ( int jb = 0; jb < size; ++jb ){
+      for ( int q1=0; q1 < no_words; ++q1 )
 	paths[jb][q1] = temppaths[jb][q1];
     }
   }
@@ -276,7 +276,7 @@ namespace Tagger {
 	delete tmp_d_pnt;
 	jb++;
       }
-      for ( ; jb < size; jb++ ){
+      for ( ; jb < size; ++jb ){
 	paths[jb][0] = EMPTY_PATH;
 	path_prob[jb] = 0.0;
       }
@@ -304,7 +304,7 @@ namespace Tagger {
 	  double thisWProb = d_pnt->prob;
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
 	  int dtag = TheLex.Hash( d_pnt->name );
-	  for( int ane = size-1; ane >=0; ane-- ){
+	  for( int ane = size-1; ane >=0; --ane ){
 	    if ( thisPProb <= n_best_array[ane]->prob )
 	      break;
 	    if ( ane == 0 ||
@@ -317,7 +317,7 @@ namespace Tagger {
 		    << endl;
 	      // shift
 	      n_best_tuple *keep = n_best_array[size-1];
-	      for ( int ash = size-1; ash > ane; ash-- ){
+	      for ( int ash = size-1; ash > ane; --ash ){
 		n_best_array[ash] = n_best_array[ash-1];
 	      }
 	      n_best_array[ane] = keep;
@@ -362,7 +362,7 @@ namespace Tagger {
 
   void TaggerClass::ShowCats( ostream& os, const vector<int>& Pat, int slots ){
     os << "Pattern : ";
-    for( int slot=0; slot < slots; slot++){
+    for( int slot=0; slot < slots; ++slot ){
       os << indexlex( Pat[slot], TheLex )<< " ";
     }
     os << endl;
@@ -378,12 +378,12 @@ namespace Tagger {
     else
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     string line;
-    for( int f=0; f < slots; f++ ){
+    for( int f=0; f < slots; ++f ){
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
     const vector<string> enr = mySentence.getEnrichments(word);
-    for ( auto er: enr ){
+    for ( const auto& er: enr ){
       line += er + " ";
     }
     if ( input_kind != UNTAGGED )
@@ -396,7 +396,7 @@ namespace Tagger {
     // dump if desired
     //
     if ( dumpflag ){
-      for( int slot=0; slot < slots; slot++){
+      for( int slot=0; slot < slots; ++slot ){
 	cout << indexlex( pat[slot], TheLex );
       }
       cout << endl;
@@ -737,11 +737,11 @@ namespace Tagger {
 
 	  DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	  InitTest( mySentence, TestPat, Action );
-	  for ( unsigned int iword=1; iword < mySentence.size(); iword++ ){
+	  for ( unsigned int iword=1; iword < mySentence.size(); ++iword ){
 	    // clear best_array
 	    DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	    Beam->ClearBest();
-	    for ( int beam_count=0; beam_count < Beam_Size; beam_count++ ){
+	    for ( int beam_count=0; beam_count < Beam_Size; ++beam_count ){
 	      if ( !NextBest( mySentence, TestPat, iword, beam_count ) )
 		break;
 	    }
@@ -835,7 +835,7 @@ namespace Tagger {
 				int& no_correct_unknown ){
     string tagstring;
     //now some output
-    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); Wcnt++ ){
+    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       if ( mySentence.known(Wcnt) ){
 	no_known++;
