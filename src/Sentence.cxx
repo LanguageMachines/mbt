@@ -140,21 +140,31 @@ namespace Tagger {
 
   bool sentence::init_windowing( Lexicon &lex,
 				 StringHash& TheLex ) {
-    if ( UTAG == -1 )
-      UTAG = TheLex.Hash( UNKNOWN );
+    if ( UTAG == -1 ){
+#pragma omp critical (hasher)
+      {
+	UTAG = TheLex.Hash( UNKNOWN );
+      }
+    }
     if ( no_words == 0 ) {
       //    cerr << "ERROR: empty sentence?!" << endl;
       return false;
     }
     else {
       for ( const auto& cur_word : Words ){
-	cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+#pragma omp critical (hasher)
+	{
+	  cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+	}
 	// look up ambiguous tag in the dictionary
 	//
 	LexInfo *foundInfo = lex.Lookup( cur_word->the_word );
 	if ( foundInfo != NULL ){
 	  //	  cerr << "MT Lookup(" << cur_word->the_word << ") gave " << *foundInfo << endl;
-	  cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
+#pragma omp critical (hasher)
+	  {
+	    cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
+	  }
 	}
 	else  {
 	  // cerr << "MT Lookup(" << cur_word->the_word << ") gave NILL" << endl;
@@ -177,7 +187,12 @@ namespace Tagger {
       hap += 'N';
     if ( hap.length() == 6 )
       hap += '0';
-    return TheLex.Hash( hap );
+    int result = -1;
+#pragma omp critical (hasher)
+    {
+      result = TheLex.Hash( hap );
+    }
+    return result;
   }
 
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
@@ -222,7 +237,10 @@ namespace Tagger {
 	  addChars += current_word->the_word[j];
 	else
 	  addChars += '=';  // "_=" denotes "no value"
-	Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( addChars );
+	}
 	i_feature++;
       }
     }
@@ -260,7 +278,10 @@ namespace Tagger {
 	}
       }
       else {   // Out of context.
-	Pat[i_feature] = TheLex.Hash( DOT );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( DOT );
+	}
 	i_feature++;
       }
     } // i
@@ -303,7 +324,10 @@ namespace Tagger {
       }
       }
       else{   // Out of context.
-	Pat[i_feature] = TheLex.Hash( DOT );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( DOT );
+	}
 	i_feature++;
       }
     } // i
@@ -317,7 +341,10 @@ namespace Tagger {
 	  addChars  += current_word->the_word[CurWLen - j];
 	else
 	  addChars += '=';
-	Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( addChars );
+	}
 	i_feature++;
       }
     }
@@ -330,7 +357,10 @@ namespace Tagger {
 	addChars = "_H";
       else
 	addChars = "_0";
-      Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+      {
+	Pat[i_feature] = TheLex.Hash( addChars );
+      }
       i_feature++;
     }
 
@@ -342,7 +372,10 @@ namespace Tagger {
 	addChars += 'C';
       else
 	addChars += '0';
-      Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+      {
+	Pat[i_feature] = TheLex.Hash( addChars );
+      }
       i_feature++;
     }
 
@@ -356,7 +389,10 @@ namespace Tagger {
 	  break;
 	}
       }
-      Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+      {
+	Pat[i_feature] = TheLex.Hash( addChars );
+      }
       i_feature++;
     }
     //    cerr << "next_pat: i_feature = " << i_feature << endl;
@@ -416,7 +452,7 @@ namespace Tagger {
       vector<string> parts;
       int num = TiCC::split_at_first_of( line, parts, Separators );
       if ( num != 2 ){
-#pragma omp critical
+#pragma omp critical (errors)
 	{
 	  cerr << endl << "error in line " << line_no << " : '"
 	       << line << "' (skipping it)" << endl;

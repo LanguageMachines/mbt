@@ -273,7 +273,11 @@ struct more_second {
 	    for( int f=0; f < nslots; f++){
 	      outfile << indexlex( TestPat[f], TheLex ) << " ";
 	    }
-	  int thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	  int thisTagCode = -1;
+#pragma omp critical (hasher)
+	  {
+	    thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	  }
 	  if ( !skip ){
 	    for ( auto const& it : mySentence.getEnrichments(swcn) ){
 	      outfile << it << " ";
