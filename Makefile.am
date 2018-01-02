@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 SUBDIRS = src include docs example
 
-EXTRA_DIST = bootstrap.sh AUTHORS TODO NEWS mbt.pc
+EXTRA_DIST = bootstrap.sh AUTHORS TODO NEWS README.md mbt.pc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mbt.pc

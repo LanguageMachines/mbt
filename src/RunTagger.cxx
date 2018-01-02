@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1998 - 2017
+  Copyright (c) 1998 - 2018
   CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
@@ -1176,7 +1176,7 @@ namespace Tagger {
   void TaggerClass::manifest(){
     // present yourself to the user
     //
-    cerr << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2017." << endl
+    cerr << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2018." << endl
 	 << "Memory Based Tagger " << endl
 	 << "CLST  - Centre for Language and Speech Technology,"
 	 << "Radboud University" << endl
