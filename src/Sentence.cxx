@@ -191,7 +191,7 @@ namespace Tagger {
       hap += 'N';
     }
     if ( hap.length() == 6 ){
-      hap += '0';
+      hap += "0";
     }
     int result = -1;
 #pragma omp critical (hasher)
