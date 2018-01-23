@@ -178,15 +178,21 @@ namespace Tagger {
 
   int sentence::classify_hapax( const string& word, StringHash& TheLex ) const{
     string hap = "HAPAX-";
-    if ( word.find( "-" ) != string::npos ) // hyphen anywere
+    if ( word.find( "-" ) != string::npos ){
+      // hyphen anywere
       hap += 'H';
-    if ( isupper( word[0] ) ){ // Capitalized first letter?
+    }
+    if ( isupper( word[0] ) ){
+      // Capitalized first letter?
       hap += 'C';
     }
-    if ( word.find_first_of( "0123456789" ) != string::npos ) // digit anywhere
+    if ( word.find_first_of( "0123456789" ) != string::npos ) {
+      // digit anywhere
       hap += 'N';
-    if ( hap.length() == 6 )
+    }
+    if ( hap.length() == 6 ){
       hap += '0';
+    }
     int result = -1;
 #pragma omp critical (hasher)
     {
