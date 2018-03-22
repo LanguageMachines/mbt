@@ -425,7 +425,7 @@ namespace Tagger {
       getline( in, line );
       vector<string> tmp;
       size_t count = split_at_first_of( line, tmp, ",." );
-      if ( count <= 0 )
+      if ( count == 0 )
 	return false;
       for( size_t i = 0; i < count; ++i ){
 	if ( tmp[i].length() < 2 || tmp[i].length() > 3 )
