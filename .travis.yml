@@ -20,17 +20,20 @@ matrix:
   include:
     - os: linux
       compiler: g++
+      cache: ccache
       env:
         - SCAN=echo
 
     - os: linux
       compiler: clang++
+      cache: ccache
       env:
         - SCAN=scan-build
         - OPENMPFLAG=--disable-openmp
 
     - os: osx
       compiler: clang++
+      cache: ccache
       env:
         - SCAN=echo
 
@@ -73,6 +76,7 @@ before_install:
     - make
     - sudo make install
     - cd ..
+
 install:
     - bash bootstrap.sh
     - ./configure $OPENMPFLAG
