@@ -1,0 +1,102 @@
+{
+    "@context": [
+        "https://doi.org/10.5063/schema/codemeta-2.0",
+        "http://schema.org"
+    ],
+    "@type": "SoftwareSourceCode",
+    "identifier": "mbt",
+    "name": "mbt",
+    "version": "3.2.13",
+    "description": "MBT is a memory-based tagger-generator and tagger in one. The tagger-generator part can generate a sequence tagger on the basis of a training set of tagged sequences; the tagger part can tag new sequences. MBT can, for instance, be used to generate part-of-speech taggers or chunkers for natural language processing. It has also been used for named-entity recognition, information extraction in domain-specific texts, and disfluency chunking in transcribed speech. ",
+    "license": "https://spdx.org/licenses/GPL-3.0",
+	"url": "https://languagemachines.github.io/mbt",
+    "author": [
+		{
+			"@type": "Person",
+			"givenName": "Ko",
+			"familyName": "van der Sloot",
+			"email": "ko.vandersloot@let.ru.nl",
+			"affiliation": {
+				"@id": "https://www.ru.nl/clst",
+				"@type": "Organization",
+				"name": "Centre for Language and Speech Technology",
+				"url": "https://www.ru.nl/clst",
+				"parentOrganization": {
+					"@id": "https://www.ru.nl/cls",
+					"@type": "Organization",
+					"name": "Centre for Language Studies",
+					"url": "https://www.ru.nl/cls",
+					"parentOrganization": {
+						"@id": "https://www.ru.nl",
+						"name": "Radboud University",
+						"@type": "Organization",
+						"url": "https://www.ru.nl",
+						"location": {
+							"@type": "Place",
+							"name": "Nijmegen"
+						}
+					}
+
+				}
+			}
+		},
+		{
+			"@id": "https://orcid.org/0000-0003-2493-656X",
+			"@type": "Person",
+			"givenName": "Antal",
+			"familyName": "van den Bosch",
+			"email": "antal.vandenbosch@let.ru.nl",
+			"affiliation": { "@id": "https://cls.ru.nl" }
+		},
+		{
+			"@type": "Person",
+			"givenName": "Walter",
+			"familyName": "Daelemans"
+		},
+		{
+			"@type": "Person",
+			"givenName": "Jakub",
+			"familyName": "Zavrel"
+		}
+	],
+	"sourceOrganization": { "@id": "https://www.ru.nl/clst" },
+	"programmingLanguage": {
+		"@type": "ComputerLanguage",
+		"identifier": "c++",
+		"name": "C++"
+	},
+	"operatingSystem": "POSIX",
+	"codeRepository": "https://github.com/LanguageMachines/mbt",
+    "softwareRequirements": [
+        {
+			"@type": "SoftwareApplication",
+			"identifier": "libxml2",
+			"name": "libxml2"
+		},
+        {
+			"@type": "SoftwareApplication",
+			"identifier": "ticcutils",
+			"name": "ticcutils"
+		},
+        {
+			"@type": "SoftwareApplication",
+			"identifier": "timbl",
+			"name": "timbl"
+		}
+	],
+	"readme": "https://github.com/LanguageMachines/mbt/blob/master/README",
+	"issueTracker": "https://github.com/LanguageMachines/mbt/issues",
+	"contIntegration": "https://travis-ci.org/LanguageMachines/mbt",
+	"releaseNotes": "https://github.com/LanguageMachines/mbt/releases",
+	"developmentStatus": "active",
+	"keywords":  [ "nlp", "natural language processing", "memory based learning", "tagger", "machine learning" ],
+    "referencePublication": [
+		{
+			"@type": "Book",
+			"name": "Memory-Based Language Processing",
+			"author": [ "Walter Daelemans", "Antal van den Bosch" ],
+			"url": "http://ilk.uvt.nl/mblp",
+            "publisher": "Cambridge University Press"
+		}
+	]
+}
