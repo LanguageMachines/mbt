@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <algorithm>
@@ -41,7 +40,6 @@
 
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"
@@ -83,27 +81,15 @@ namespace Tagger {
     FilterThreshold = 5;
     Npax = 5;
     TopNumber = 100;
-    DoSort = false;
     DoTop = false;
     DoNpax = true;
+    DoTagList = false;
     KeepIntermediateFiles = false;
 
     KtmplStr = "ddfa";
     UtmplStr = "dFapsss";
     L_option_name = "";
     EosMark = "<utt>";
-
-    UnknownTreeName = "";
-    KnownTreeName = "";
-    LexFileName = "";
-    MTLexFileName = "";
-    TopNFileName = "";
-    NpaxFileName = "";
-    TestFileName = "";
-    TestFilePath = "";
-    OutputFileName = "";
-    SettingsFileName = "";
-    SettingsFilePath = "";
 
     initialized = false;
     Beam_Size = 1;
@@ -129,60 +115,64 @@ namespace Tagger {
     cloned = false;
   }
 
-  TaggerClass::TaggerClass( const TaggerClass& in ){
-    cur_log = in.cur_log;
-    KnownTree = in.KnownTree;
-    unKnownTree = in.unKnownTree;
-    TimblOptStr = in.TimblOptStr;
-    FilterThreshold = in.FilterThreshold;
-    Npax = in.Npax;
-    TopNumber = in.TopNumber;
-    DoSort = in.DoSort;
-    DoTop = in.DoTop;
-    DoNpax = in.DoNpax;
-    KeepIntermediateFiles = in.KeepIntermediateFiles;
-
-    KtmplStr = in.KtmplStr;
-    UtmplStr = in.UtmplStr;
-    L_option_name = in.L_option_name;
-    EosMark = in.EosMark;
-
-    Ktemplate = in.Ktemplate;
-    Utemplate = in.Utemplate;
-
-    UnknownTreeName = in.UnknownTreeName;
-    KnownTreeName = in.KnownTreeName;
-    LexFileName = in.LexFileName;
-    MTLexFileName = in.MTLexFileName;
-    TopNFileName = in.TopNFileName;
-    NpaxFileName = in.NpaxFileName;
-    TestFileName = in.TestFileName;
-    TestFilePath = in.TestFilePath;
-    OutputFileName = in.OutputFileName;
-    SettingsFileName = in.SettingsFileName;
-    SettingsFilePath = in.SettingsFilePath;
-
-    initialized = in.initialized;
-    Beam_Size = in.Beam_Size;
-    Beam = 0;
-    MT_lexicon = in.MT_lexicon;
-    kwordlist = in.kwordlist;
-    piped_input = in.piped_input;
-    input_kind = in.input_kind;
-    lexflag = in.lexflag;
-    knowntreeflag = in.knowntreeflag;
-    unknowntreeflag = in.unknowntreeflag;
-    knowntemplateflag = in.knowntemplateflag;
-    unknowntemplateflag = in.unknowntemplateflag;
-    knownoutfileflag = in.knownoutfileflag;
-    unknownoutfileflag = in.unknownoutfileflag;
-    reverseflag = in.reverseflag;
-    dumpflag = in.dumpflag;
-    distance_flag = in.distance_flag;
-    distrib_flag = in.distrib_flag;
-    confidence_flag = in.confidence_flag;
-    klistflag = in.klistflag;
-    cloned = true;
+  TaggerClass::TaggerClass( const TaggerClass& in ):
+    cur_log( in.cur_log ),
+    KnownTree( in.KnownTree ),
+    unKnownTree( in.unKnownTree ),
+    initialized( in.initialized ),
+    kwordlist( in.kwordlist ),
+    uwordlist( in.uwordlist ),
+    Beam( 0 ),
+    input_kind( in.input_kind ),
+    piped_input( in.piped_input ),
+    lexflag( in.lexflag ),
+    knowntreeflag( in.knowntreeflag ),
+    unknowntreeflag( in.unknowntreeflag ),
+    knowntemplateflag( in.knowntemplateflag ),
+    unknowntemplateflag( in.unknowntemplateflag ),
+    knownoutfileflag( in.knownoutfileflag ),
+    unknownoutfileflag( in.unknownoutfileflag ),
+    reverseflag( in.reverseflag ),
+    dumpflag( in.dumpflag ),
+    distance_flag( in.distance_flag ),
+    distrib_flag( in.distrib_flag ),
+    confidence_flag( in.confidence_flag ),
+    klistflag( in.klistflag ),
+    Beam_Size( in.Beam_Size ),
+    TimblOptStr( in.TimblOptStr ),
+    FilterThreshold( in.FilterThreshold ),
+    Npax( in.Npax ),
+    TopNumber( in.TopNumber ),
+    DoTop( in.DoTop ),
+    DoNpax( in.DoNpax ),
+    DoTagList( in.DoTagList ),
+    KeepIntermediateFiles( in.KeepIntermediateFiles ),
+    KtmplStr( in.KtmplStr ),
+    UtmplStr( in.UtmplStr ),
+    L_option_name( in.L_option_name ),
+    EosMark( in.EosMark ),
+    Ktemplate( in.Ktemplate ),
+    Utemplate( in.Utemplate ),
+    MT_lexicon( in.MT_lexicon ),
+    UnknownTreeBaseName( in.UnknownTreeBaseName ),
+    KnownTreeBaseName( in.KnownTreeBaseName ),
+    LexFileBaseName( in.LexFileBaseName ),
+    MTLexFileBaseName( in.MTLexFileBaseName ),
+    TopNFileBaseName( in.TopNFileBaseName ),
+    NpaxFileBaseName( in.NpaxFileBaseName),
+    UnknownTreeName( in.UnknownTreeName),
+    KnownTreeName( in.KnownTreeName),
+    LexFileName( in.LexFileName),
+    MTLexFileName( in.MTLexFileName),
+    TopNFileName( in.TopNFileName),
+    NpaxFileName( in.NpaxFileName),
+    TestFileName( in.TestFileName),
+    TestFilePath( in.TestFilePath),
+    OutputFileName( in.OutputFileName),
+    SettingsFileName( in.SettingsFileName),
+    SettingsFilePath( in.SettingsFilePath ),
+    cloned( true )
+  {
   }
 
   bool TaggerClass::setLog( LogStream& os ){
@@ -190,6 +180,12 @@ namespace Tagger {
       delete cur_log;
     cur_log = new LogStream( os, "mbt-" );
     return true;
+  }
+
+  string TaggerClass::set_eos_mark( const string& eos ){
+    string tmp = EosMark;
+    EosMark = eos;
+    return tmp;
   }
 
   const string& indexlex( const unsigned int index,
@@ -294,14 +290,17 @@ namespace Tagger {
    *      (C: or X: in windows cygwin) are considered to be relative paths
    */
 
-  void prefixWithAbsolutePath( string& fileName,
-			       const string& prefix ) {
+  string prefixWithAbsolutePath( const string& fileName,
+				 const string& prefix ) {
     //    default_log << fileName << endl;
-    if ( ( fileName[0] != '/' && fileName[1] != ':' )
+    string result = fileName;
+    if ( ( fileName.size() > 1 )
+	 && ( fileName[0] != '/' && fileName[1] != ':' )
 	 && !( fileName[0]== '.' && fileName[1] == '/' ) ){
-      fileName = prefix + fileName;
+      result = prefix + fileName;
     }
-    //    default_log << fileName << endl;
+    //    default_log << result << endl;
+    return result;
   }
 
   bool TaggerClass::set_default_filenames( ){
@@ -326,56 +325,56 @@ namespace Tagger {
       }
     }
     char affix[32];
-    LexFileName = TestFileName;
-    prefixWithAbsolutePath( LexFileName, SettingsFilePath );
-    LexFileName += ".lex";
+    LexFileBaseName = TestFileName;
+    LexFileBaseName += ".lex";
+    LexFileName = prefixWithAbsolutePath( LexFileBaseName, SettingsFilePath );
     if ( FilterThreshold < 10 )
       sprintf( affix, ".0%1i",  FilterThreshold );
     else
       sprintf( affix, ".%2i",  FilterThreshold );
     if( !knownoutfileflag ){
-      K_option_name = TestFileName;
-      prefixWithAbsolutePath( K_option_name, SettingsFilePath );
-      K_option_name += ".known.inst.";
-      K_option_name += KtmplStr;
+      K_option_name = TestFileName + ".known.inst." + KtmplStr;
+      K_option_name = prefixWithAbsolutePath( K_option_name,
+					      SettingsFilePath );
     }
     if ( !knowntreeflag ){
-      KnownTreeName = TestFileName;
-      prefixWithAbsolutePath( KnownTreeName, SettingsFilePath );
-      KnownTreeName += ".known.";
-      KnownTreeName += KtmplStr;
+      KnownTreeBaseName = TestFileName + ".known." + KtmplStr;
+      KnownTreeName = prefixWithAbsolutePath( KnownTreeBaseName,
+					      SettingsFilePath );
     }
     if( !unknownoutfileflag ){
-      U_option_name = TestFileName;
-      prefixWithAbsolutePath( U_option_name, SettingsFilePath );
-      U_option_name += ".unknown.inst.";
-      U_option_name += UtmplStr;
+      U_option_name = TestFileName + ".unknown.inst." + UtmplStr;
+      U_option_name = prefixWithAbsolutePath( U_option_name,
+					      SettingsFilePath );
     }
     if ( !unknowntreeflag ){
-      UnknownTreeName = TestFileName;
-      prefixWithAbsolutePath( UnknownTreeName, SettingsFilePath );
-      UnknownTreeName += ".unknown.";
-      UnknownTreeName += UtmplStr;
+      UnknownTreeBaseName = TestFileName + ".unknown." + UtmplStr;
+      UnknownTreeName = prefixWithAbsolutePath( UnknownTreeBaseName,
+						SettingsFilePath );
     }
     if( lexflag ){
-      MTLexFileName = l_option_name;
+      MTLexFileBaseName = l_option_name;
+      MTLexFileName = MTLexFileBaseName;
     }
     else {
-      MTLexFileName = TestFileName;
-      prefixWithAbsolutePath( MTLexFileName, SettingsFilePath );
-      MTLexFileName += ".lex.ambi";
-      MTLexFileName +=  affix;
+      MTLexFileBaseName = TestFileName + ".lex.ambi" + affix;
+      MTLexFileName = prefixWithAbsolutePath( MTLexFileBaseName,
+					      SettingsFilePath );
     }
-    if ( !L_option_name.empty() )
-      TopNFileName = L_option_name;
+    if ( !L_option_name.empty() ){
+      TopNFileBaseName = L_option_name;
+      TopNFileName = TopNFileBaseName;
+    }
     else {
       sprintf( affix, ".top%d",  TopNumber );
-      TopNFileName = TestFileName + affix;
-      prefixWithAbsolutePath( TopNFileName, SettingsFilePath );
+      TopNFileBaseName = TestFileName + affix;
+      TopNFileName = prefixWithAbsolutePath( TopNFileBaseName,
+					     SettingsFilePath );
     }
     sprintf( affix, ".%dpaxes",  Npax );
-    NpaxFileName = TestFileName + affix;
-    prefixWithAbsolutePath( NpaxFileName, SettingsFilePath );
+    NpaxFileBaseName = TestFileName + affix;
+    NpaxFileName = prefixWithAbsolutePath( NpaxFileBaseName,
+					   SettingsFilePath );
     return true;
   }
 

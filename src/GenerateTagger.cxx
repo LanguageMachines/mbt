@@ -1,8 +1,6 @@
 /*
-  $Id: Tagger.cxx 18614 2015-09-10 15:26:12Z sloot $
-  $URL: https://ilk.uvt.nl/svn/trunk/sources/Mbt3/src/Tagger.cxx $
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,12 +20,15 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <algorithm>
+#include <vector>
+#include <map>
 #include <fstream>
 #include <iostream>
 #include <cerrno>
@@ -78,6 +79,14 @@ namespace Tagger {
     return false;
   }
 
+template <typename T1, typename T2>
+struct more_second {
+    typedef pair<T1, T2> type;
+    bool operator ()(type const& a, type const& b) const {
+        return a.second > b.second;
+    }
+};
+
   void TaggerClass::create_lexicons(){
     TagLex TaggedLexicon;
     ifstream lex_file;
@@ -91,41 +100,45 @@ namespace Tagger {
 	     << filename << "'" << endl;
 	exit(EXIT_FAILURE);
       }
-      cout << "Constructing a tagger from: " << filename << endl;
+      COUT << "Constructing a tagger from: " << filename << endl;
     }
     else {
       cerr << "couldn't open inputfile " << filename << endl;
       exit(EXIT_FAILURE);
     }
+
+    map<string,unsigned int> TagList;
     string Word, Tag;
     while ( getline( lex_file, Buffer ) ){
       if ( split_special( Buffer, Word, Tag ) ){
 	TaggedLexicon.Store( Word, Tag );
+	TagList[Tag]++;
       }
     }
-    int LexSize = TaggedLexicon.numOfLexiconEntries();
     vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
     if ( (out_file.open( LexFileName, ios::out ),
 	  out_file.good() ) ){
-      cout << "  Creating lexicon: "  << LexFileName << " of "
-	   << LexSize << " entries." << endl;
-      for ( int i=0; i < LexSize; i++ )
-	out_file << TagVect[i]->Freq() << " " << TagVect[i]->Word
-		 << " " << TagVect[i]->DisplayTagFreqs() << endl;
+      COUT << "  Creating lexicon: "  << LexFileName << " of "
+	   << TagVect.size() << " entries." << endl;
+      for ( auto const& tv : TagVect ){
+	out_file << tv->Freq() << " " << tv->Word
+		 << " " << tv->DisplayTagFreqs() << endl;
+      }
       out_file.close();
     }
     else {
       cerr << "couldn't create lexiconfile " << LexFileName << endl;
       exit(EXIT_FAILURE);
     }
-    for ( int i=0; i < LexSize; i++ )
-      ProcessTags( TagVect[i] );
+    for ( auto const& tv : TagVect ){
+      ProcessTags( tv );
+    }
     if ( (out_file.open( MTLexFileName, ios::out ),
 	  out_file.good() ) ){
-      cout << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
-      for ( int j=0; j < LexSize; j++ ){
-	out_file << TagVect[j]->Word << " " << TagVect[j]->stringRep() << endl;
-	MT_lexicon->Store(TagVect[j]->Word, TagVect[j]->stringRep() );
+      COUT << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
+      for ( const auto& tv : TagVect ){
+	out_file << tv->Word << " " << tv->stringRep() << endl;
+	MT_lexicon->Store( tv->Word, tv->stringRep() );
       }
       out_file.close();
     }
@@ -135,10 +148,13 @@ namespace Tagger {
     }
     if ( (out_file.open( TopNFileName, ios::out ),
 	  out_file.good() ) ){
-      cout << "  Creating list of most frequent words: "  << TopNFileName << endl;
-      for ( int k=0; k < LexSize && k < TopNumber; k++ ){
-	out_file << TagVect[k]->Word << endl;
-	kwordlist->Hash( TagVect[k]->Word );
+      COUT << "  Creating list of most frequent words: "  << TopNFileName << endl;
+      int k = 0;
+      for ( auto const& tv : TagVect ){
+	if ( ++k > TopNumber )
+	  break;
+	out_file << tv->Word << endl;
+	kwordlist->Hash( tv->Word );
       }
       out_file.close();
     }
@@ -150,19 +166,33 @@ namespace Tagger {
       if ( (out_file.open( NpaxFileName, ios::out ),
 	    out_file.good() ) ){
 	int np_cnt = 0;
-	//	cout << "  Creating Npax file: "  << NpaxFileName;
-	for ( int l=0; l < LexSize; l++ ){
-	  if ( TagVect[l]->Freq() > Npax ) continue;
-	  out_file << TagVect[l]->Word << endl;
-	  uwordlist->Hash( TagVect[l]->Word );
+	//	COUT << "  Creating Npax file: "  << NpaxFileName;
+	for ( const auto& tv : TagVect ){
+	  if ( tv->Freq() > Npax )
+	    continue;
+	  out_file << tv->Word << endl;
+	  uwordlist->Hash( tv->Word );
 	  np_cnt++;
 	}
 	out_file.close();
-	//	cout << "( " << np_cnt << " entries)" << endl;
+	//	COUT << "( " << np_cnt << " entries)" << endl;
       }
       else {
 	cerr << "couldn't open file: " << NpaxFileName << endl;
 	exit(EXIT_FAILURE);
+      }
+    }
+    if ( DoTagList ){
+      vector<pair<string,unsigned int>> si_vec( TagList.begin(), TagList.end() );
+      sort(si_vec.begin(), si_vec.end(), more_second<string, unsigned int>());
+      ofstream os( TagListName );
+      if ( os ){
+	for ( const auto& it: si_vec ){
+	  os << it.first << "\t" << it.second << endl;
+	}
+      }
+      else {
+	cerr << "couldn't open outputfile: " << TagListName << endl;
       }
     }
   }
@@ -230,7 +260,6 @@ namespace Tagger {
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
-	int thisTagCode;
 	while( mySentence.nextpat( Action, TestPat,
 				   *kwordlist, TheLex,
 				   swcn ) ){
@@ -241,10 +270,14 @@ namespace Tagger {
 	    }
 	  }
 	  if ( !skip )
-	    for( int f=0; f < nslots; f++){
+	    for( int f=0; f < nslots; ++f ){
 	      outfile << indexlex( TestPat[f], TheLex ) << " ";
 	    }
-	  thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	  int thisTagCode = -1;
+#pragma omp critical (hasher)
+	  {
+	    thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	  }
 	  if ( !skip ){
 	    for ( auto const& it : mySentence.getEnrichments(swcn) ){
 	      outfile << it << " ";
@@ -321,7 +354,7 @@ namespace Tagger {
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
-	// default_cout << "    Processing data from the file " << inname << "...";
+	// COUT << "    Processing data from the file " << inname << "...";
 	// default_cout.flush();
 	nwords = makedataset( infile, false );
       }
@@ -331,7 +364,7 @@ namespace Tagger {
       }
       COUT << endl << "    Creating case base: " << UnknownTreeName << endl;
       UKtree->Learn( U_option_name );
-      //      UKtree->ShowSettings( default_cout );
+      //      UKtree->ShowSettings( COUT );
       UKtree->WriteInstanceBase( UnknownTreeName );
       if ( !uwf.empty() )
 	UKtree->SaveWeights( uwf );
@@ -359,22 +392,22 @@ namespace Tagger {
       if ( input_kind == ENRICHED )
 	out_file << "ENRICHED" << endl;
       out_file << "e " << EosMark << endl;
-      out_file << "l " << MTLexFileName << endl;
-      out_file << "k " << KnownTreeName << endl;
-      out_file << "u " << UnknownTreeName << endl;
+      out_file << "l " << MTLexFileBaseName << endl;
+      out_file << "k " << KnownTreeBaseName << endl;
+      out_file << "u " << UnknownTreeBaseName << endl;
       out_file << "p " << KtmplStr << endl;
       out_file << "P " << UtmplStr << endl;
       out_file << "O " << Timbl_Options << endl;
-      out_file << "L " << TopNFileName << endl;
+      out_file << "L " << TopNFileBaseName << endl;
       out_file.close();
-      cout << endl << "  Created settings file '"
+      COUT << endl << "  Created settings file '"
 			 << SettingsFileName << "'" << endl;
     }
   }
 
   //**** stuff to process commandline options *****************************
 
-  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:M:n:o:O:p:P:r:s:T:u:U:XD:";
+  const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:M:n:o:O:p:P:r:s:t:T:u:U:XD:";
   const string mbt_create_long = "version";
 
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
@@ -442,6 +475,10 @@ namespace Tagger {
       else
 	SettingsFilePath = "";
     }
+    if ( opts.extract( 't', value ) ){
+      TagListName = value;
+      DoTagList = true; // we want a TagList
+    }
     if ( opts.extract( 'E', value ) ){
       TestFileName = value;
       // extract the absolute path to the testfile
@@ -480,14 +517,26 @@ namespace Tagger {
       KeepIntermediateFiles = true;
     }
     if ( opts.extract( 'D', value ) ){
-      if ( value == "LogNormal" )
+      if ( value == "LogSilent" ){
+	cur_log->setlevel( LogSilent );
+	default_cout.setlevel( LogSilent );
+      }
+      else if ( value == "LogNormal" ){
 	cur_log->setlevel( LogNormal );
-      else if ( value == "LogDebug" )
+	default_cout.setlevel( LogNormal );
+      }
+      else if ( value == "LogDebug" ){
 	cur_log->setlevel( LogDebug );
-      else if ( value == "LogHeavy" )
+	default_cout.setlevel( LogDebug );
+      }
+      else if ( value == "LogHeavy" ){
 	cur_log->setlevel( LogHeavy );
-      else if ( value == "LogExtreme" )
+	default_cout.setlevel( LogHeavy );
+      }
+      else if ( value == "LogExtreme" ){
 	cur_log->setlevel( LogExtreme );
+	default_cout.setlevel( LogExtreme );
+      }
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;
       }
@@ -512,6 +561,7 @@ namespace Tagger {
 	 << "\t   valid Timl options: a d k m q v w x -\n"
 	 << "\t-p pattern for known words (default ddfa)\n"
 	 << "\t-P pattern for unknown words (default dFapsss)\n"
+	 << "\t-D <loglevel> (possible values are 'LogSilent', 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
 	 << "\t-e <sentence delimiter> (default '<utt>')\n"
 	 << "\t-L <file with list of frequent words>\n"
 	 << "\t-M <number of most frequent words> (default 100)\n"
@@ -527,7 +577,6 @@ namespace Tagger {
   }
 
   int TaggerClass::CreateTagger( TiCC::CL_Options& opts ){
-    string value;
     if ( opts.is_present( 'h' ) ||
 	 opts.is_present( "help" ) ){
       gen_usage( "mbtg" );
@@ -536,11 +585,13 @@ namespace Tagger {
     //
     // present yourself to the user
     //
-    cerr << "mbtg " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
+    cerr << "mbtg " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2018." << endl
 	 << "Memory Based Tagger Generator" << endl
-	 << "Induction of Linguistic Knowledge Research Group,"
+	 << "CLST  - Centre for Language and Speech Technology,"
+	 << "Radboud University" << endl
+	 << "ILK   - Induction of Linguistic Knowledge Research Group,"
 	 << "Tilburg University" << endl
-	 << "CLiPS Computational Linguistics Group, University of Antwerp"
+	 << "CLiPS - Computational Linguistics Group, University of Antwerp"
 	 << endl
 	 << "Based on " << Timbl::VersionName()
 	 << endl << endl;
@@ -564,7 +615,7 @@ namespace Tagger {
 	uwords = tagger.CreateUnknown();
       }
     }
-    cout << "      ready: " << kwords << " words processed."
+    COUT << "      ready: " << kwords << " words processed."
 	 << endl;
     tagger.CreateSettingsFile();
     return kwords + uwords;

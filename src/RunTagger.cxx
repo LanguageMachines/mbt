@@ -1,8 +1,6 @@
 /*
-  $Id: Tagger.cxx 18614 2015-09-10 15:26:12Z sloot $
-  $URL: https://ilk.uvt.nl/svn/trunk/sources/Mbt3/src/Tagger.cxx $
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <algorithm>
@@ -41,7 +40,6 @@
 
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "mbt/TagLex.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"
@@ -73,7 +71,7 @@ namespace Tagger {
 
   BeamData::~BeamData(){
     if ( paths ){
-      for ( int q=0; q < size; q++ ){
+      for ( int q=0; q < size; ++q ){
 	delete n_best_array[q];
 	delete [] paths[q];
 	delete [] temppaths[q];
@@ -97,7 +95,7 @@ namespace Tagger {
 	return false;
       }
       else {
-	for ( int q=0; q < Size; q++ ){
+	for ( int q=0; q < Size; ++q ){
 	  paths[q] = 0;
 	  temppaths[q] = 0;
 	  if ( (n_best_array[q] = new n_best_tuple) == 0 ){
@@ -113,7 +111,7 @@ namespace Tagger {
 	delete [] temppaths[q];
       }
     }
-    for ( int q=0; q < Size; q++ ){
+    for ( int q=0; q < Size; ++q ){
       if ( (paths[q] = new int[noWords]) == 0 ||
 	   (temppaths[q] = new int[noWords]) == 0 ){
 	throw runtime_error( "Beam: not enough memory for N-best search tables" );
@@ -126,13 +124,13 @@ namespace Tagger {
 
   void BeamData::ClearBest(){
     DBG << "clearing n_best_array..." << endl;
-    for ( int i=0; i < size; i++ )
+    for ( int i=0; i < size; ++i )
       n_best_array[i]->clean();
   }
 
   void BeamData::Shift(	int no_words, int i_word ){
-    for ( int q1 = 0; q1 < no_words; q1++ ){
-      for ( int jb = 0; jb < size; jb++ ){
+    for ( int q1 = 0; q1 < no_words; ++q1 ){
+      for ( int jb = 0; jb < size; ++jb ){
 	path_prob[jb] = n_best_array[jb]->prob;
 	if ( n_best_array[jb]->path != EMPTY_PATH ){
 	  if ( q1 < i_word ){
@@ -152,8 +150,8 @@ namespace Tagger {
 	  temppaths[jb][q1] = EMPTY_PATH;
       }
     }
-    for ( int jb = 0; jb < size; jb++ ){
-      for ( int q1=0; q1 < no_words; q1++ )
+    for ( int jb = 0; jb < size; ++jb ){
+      for ( int q1=0; q1 < no_words; ++q1 )
 	paths[jb][q1] = temppaths[jb][q1];
     }
   }
@@ -192,13 +190,16 @@ namespace Tagger {
 
   class name_prob_pair{
   public:
-    name_prob_pair( const string& n, double p ){
-      name = n; prob = p; next = 0;
+    name_prob_pair( const string& n, double p ): name(n),prob(p){
+      next = 0;
     }
     ~name_prob_pair(){};
     string name;
     double prob;
     name_prob_pair *next;
+  private:
+    name_prob_pair( const name_prob_pair& ); // inhibit copies
+    name_prob_pair operator=( const name_prob_pair& ); // inhibit copies
   };
 
   name_prob_pair *add_descending( name_prob_pair *n, name_prob_pair *lst ){
@@ -224,18 +225,20 @@ namespace Tagger {
     // While we will use only the first BeamSize entries, don't forget
     // the most important one...!
     name_prob_pair *result = 0, *tmp, *Pref = 0;
+    if ( !Dist ){
+      return 0;
+    }
     double sum_freq = 0.0;
-    ValueDistribution::dist_iterator it = Dist->begin();
-    while ( it != Dist->end() ){
-      string name = (*it).second->Value()->Name();
-      double freq = (*it).second->Weight();
+    for ( const auto& it : *Dist ){
+      string name = it.second->Value()->Name();
+      //      string name = (*it).second->Value()->Name();
+      double freq = it.second->Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
       if ( name == PrefClass->Name() )
 	Pref = tmp;
       else
 	result = add_descending( tmp, result );
-      ++it;
     }
     if ( Pref ){
       Pref->next = result;
@@ -259,7 +262,7 @@ namespace Tagger {
       path_prob[0] = 1.0;
     }
     else {
-      name_prob_pair *d_pnt, *tmp_d_pnt, *Distr;
+      name_prob_pair *d_pnt, *Distr;
       Distr = break_down( distrib, answer );
       d_pnt = Distr;
       int jb = 0;
@@ -268,12 +271,12 @@ namespace Tagger {
 	  paths[jb][0] =  TheLex.Hash( d_pnt->name );
 	  path_prob[jb] = d_pnt->prob;
 	}
-	tmp_d_pnt = d_pnt;
+	name_prob_pair *tmp_d_pnt = d_pnt;
 	d_pnt = d_pnt->next;
 	delete tmp_d_pnt;
 	jb++;
       }
-      for ( ; jb < size; jb++ ){
+      for ( ; jb < size; ++jb ){
 	paths[jb][0] = EMPTY_PATH;
 	path_prob[jb] = 0.0;
       }
@@ -292,7 +295,7 @@ namespace Tagger {
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
 	  << distrib << " )" << endl;
-      name_prob_pair *d_pnt, *tmp_d_pnt, *Distr;
+      name_prob_pair *d_pnt, *Distr;
       Distr = break_down( distrib, answer );
       d_pnt = Distr;
       int ab = 0;
@@ -301,7 +304,7 @@ namespace Tagger {
 	  double thisWProb = d_pnt->prob;
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
 	  int dtag = TheLex.Hash( d_pnt->name );
-	  for( int ane = size-1; ane >=0; ane-- ){
+	  for( int ane = size-1; ane >=0; --ane ){
 	    if ( thisPProb <= n_best_array[ane]->prob )
 	      break;
 	    if ( ane == 0 ||
@@ -314,7 +317,7 @@ namespace Tagger {
 		    << endl;
 	      // shift
 	      n_best_tuple *keep = n_best_array[size-1];
-	      for ( int ash = size-1; ash > ane; ash-- ){
+	      for ( int ash = size-1; ash > ane; --ash ){
 		n_best_array[ash] = n_best_array[ash-1];
 	      }
 	      n_best_array[ane] = keep;
@@ -324,7 +327,7 @@ namespace Tagger {
 	    }
 	  }
 	}
-	tmp_d_pnt = d_pnt;
+	name_prob_pair *tmp_d_pnt = d_pnt;
 	d_pnt = d_pnt->next;
 	delete tmp_d_pnt;
 	++ab;
@@ -343,7 +346,6 @@ namespace Tagger {
     int no_words=0;
     // loop as long as you get non empty sentences
     //
-    string tagged_sentence;
     string line;
     while ( getline(is, line ) ){
       vector<TagResult> res = tagLine( line );
@@ -360,7 +362,7 @@ namespace Tagger {
 
   void TaggerClass::ShowCats( ostream& os, const vector<int>& Pat, int slots ){
     os << "Pattern : ";
-    for( int slot=0; slot < slots; slot++){
+    for( int slot=0; slot < slots; ++slot ){
       os << indexlex( Pat[slot], TheLex )<< " ";
     }
     os << endl;
@@ -376,15 +378,15 @@ namespace Tagger {
     else
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     string line;
-    for( int f=0; f < slots; f++ ){
+    for( int f=0; f < slots; ++f ){
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
     const vector<string> enr = mySentence.getEnrichments(word);
-    for ( auto er: enr ){
+    for ( const auto& er: enr ){
       line += er + " ";
     }
-    if ( input_kind == TAGGED )
+    if ( input_kind != UNTAGGED )
       line += mySentence.gettag(word);
     else
       line += "??";
@@ -394,7 +396,7 @@ namespace Tagger {
     // dump if desired
     //
     if ( dumpflag ){
-      for( int slot=0; slot < slots; slot++){
+      for( int slot=0; slot < slots; ++slot ){
 	cout << indexlex( pat[slot], TheLex );
       }
       cout << endl;
@@ -423,7 +425,7 @@ namespace Tagger {
       getline( in, line );
       vector<string> tmp;
       size_t count = split_at_first_of( line, tmp, ",." );
-      if ( count <= 0 )
+      if ( count == 0 )
 	return false;
       for( size_t i = 0; i < count; ++i ){
 	if ( tmp[i].length() < 2 || tmp[i].length() > 3 )
@@ -559,12 +561,14 @@ namespace Tagger {
   int TaggerClass::Run(){
     int result = -1;
     if ( initialized ){
+      bool out_to_file = OutputFileName != "";
       ostream *os;
-      if ( OutputFileName != "" ){
+      if ( out_to_file ){
 	os = new ofstream( OutputFileName );
       }
-      else
+      else {
 	os = &default_cout;
+      }
       ifstream infile;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
@@ -588,7 +592,7 @@ namespace Tagger {
 	else
 	  result = ProcessFile( cin, *os );
       }
-      if ( OutputFileName != "" ){
+      if ( out_to_file ){
 	delete os;
       }
     }
@@ -620,7 +624,6 @@ namespace Tagger {
 #endif
     if ( !answer ){
       throw runtime_error( "Tagger: A classifying problem prevented continuing. Sorry!" );
-      exit(EXIT_FAILURE);
     }
     return answer;
   }
@@ -643,10 +646,10 @@ namespace Tagger {
 	distribution_array[0] = distribution->DistToString();
       if ( confidence_flag )
 	confidence_array[0] = distribution->Confidence( answer );
-    }
-    if ( IsActive( DBG ) ){
-      LOG << "BeamData::InitPaths( " << mySentence << endl;
-      LOG << " , " << answer << " , " << distribution << " )" << endl;
+      if ( IsActive( DBG ) ){
+	LOG << "BeamData::InitPaths( " << mySentence << endl;
+	LOG << " , " << answer << " , " << distribution << " )" << endl;
+      }
     }
     Beam->InitPaths( TheLex, answer, distribution );
     if ( IsActive( DBG ) ){
@@ -734,11 +737,11 @@ namespace Tagger {
 
 	  DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	  InitTest( mySentence, TestPat, Action );
-	  for ( unsigned int iword=1; iword < mySentence.size(); iword++ ){
+	  for ( unsigned int iword=1; iword < mySentence.size(); ++iword ){
 	    // clear best_array
 	    DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	    Beam->ClearBest();
-	    for ( int beam_count=0; beam_count < Beam_Size; beam_count++ ){
+	    for ( int beam_count=0; beam_count < Beam_Size; ++beam_count ){
 	      if ( !NextBest( mySentence, TestPat, iword, beam_count ) )
 		break;
 	    }
@@ -782,12 +785,12 @@ namespace Tagger {
       return eom;
   }
 
-  string TaggerClass::TRtoString( const vector<TagResult>& tr ) const {
+  string TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
     string result;
-    for ( unsigned int Wcnt=0; Wcnt < tr.size(); ++Wcnt ){
+    for ( const auto& tr : trs ){
       // lookup the assigned category
-      result += tr[Wcnt].word();
-      if ( tr[Wcnt].isKnown() ){
+      result += tr.word();
+      if ( tr.isKnown() ){
 	if ( input_kind == UNTAGGED )
 	  result += "/";
 	else
@@ -802,22 +805,22 @@ namespace Tagger {
       // output the correct tag if possible
       //
       if ( input_kind == ENRICHED )
-	result = result + tr[Wcnt].enrichment() + "\t";
+	result = result + tr.enrichment() + "\t";
       if ( input_kind == TAGGED ||
 	   input_kind == ENRICHED ){
-	result += tr[Wcnt].inputTag() + "\t" + tr[Wcnt].assignedTag();
+	result += tr.inputTag() + "\t" + tr.assignedTag();
 	if ( confidence_flag )
-	  result += " [" + toString( tr[Wcnt].confidence() ) + "]";
+	  result += " [" + toString( tr.confidence() ) + "]";
 	if ( distrib_flag )
-	  result += " " + tr[Wcnt].distribution();
+	  result += " " + tr.distribution();
 	if ( distance_flag )
-	  result += " " + toString( tr[Wcnt].distance() );
+	  result += " " + toString( tr.distance() );
 	result += "\n";
       }
       else {
-	result += tr[Wcnt].assignedTag();
+	result += tr.assignedTag();
 	if ( confidence_flag )
-	  result += "/" + toString( tr[Wcnt].confidence() );
+	  result += "/" + toString( tr.confidence() );
 	result += " ";
       }
     } // end of output loop through one sentence
@@ -830,10 +833,9 @@ namespace Tagger {
 				int& no_known, int& no_unknown,
 				int& no_correct_known,
 				int& no_correct_unknown ){
-    string result;
     string tagstring;
     //now some output
-    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); Wcnt++ ){
+    for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
       if ( mySentence.known(Wcnt) ){
 	no_known++;
@@ -869,7 +871,6 @@ namespace Tagger {
 	    mySentence.read(infile, input_kind, EosMark, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
-      string tagged_sentence;
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
       }
@@ -879,7 +880,7 @@ namespace Tagger {
 	continue;
       }
       vector<TagResult> res = tagSentence( mySentence );
-      tagged_sentence = TRtoString( res );
+      string tagged_sentence = TRtoString( res );
       if ( !tagged_sentence.empty() ){
 	// show the results of 1 sentence
 	statistics( mySentence,
@@ -936,7 +937,7 @@ namespace Tagger {
     while(setfile.getline(SetBuffer,511,'\n')){
       switch (SetBuffer[0]) {
       case 'B':
-	if ( sscanf(SetBuffer,"B %d", &Beam_Size ) != 1 )
+	if ( sscanf(SetBuffer,"B %40d", &Beam_Size ) != 1 )
 	  Beam_Size = 1;
 	break;
       case 'd':
@@ -944,32 +945,36 @@ namespace Tagger {
 	cerr << "  Dumpflag ON" << endl;
 	break;
       case 'e': {
-	sscanf( SetBuffer, "e %s", value );
+	sscanf( SetBuffer, "e %40s", value );
 	EosMark = value;
 	break;
       }
       case 'k':
-	sscanf(SetBuffer,"k %s", value );
-	KnownTreeName = value;
-	prefixWithAbsolutePath( KnownTreeName, SettingsFilePath );
+	sscanf(SetBuffer,"k %300s", value );
+	KnownTreeBaseName = value;
+	KnownTreeName = prefixWithAbsolutePath( KnownTreeBaseName,
+						SettingsFilePath );
 	knowntreeflag = true; // there is a knowntreefile specified
 	break;
       case 'l':
-	sscanf(SetBuffer,"l %s", value );
+	sscanf(SetBuffer,"l %300s", value );
 	l_option_name = value;
-	prefixWithAbsolutePath(l_option_name, SettingsFilePath );
+	l_option_name = prefixWithAbsolutePath( l_option_name,
+						SettingsFilePath );
 	lexflag = true; // there is a lexicon specified
 	break;
       case 'L':
-	sscanf(SetBuffer,"L %s", value );
+	sscanf(SetBuffer,"L %300s", value );
 	L_option_name = value;
-	prefixWithAbsolutePath(L_option_name, SettingsFilePath );
+	L_option_name = prefixWithAbsolutePath( L_option_name,
+						SettingsFilePath );
 	klistflag = true;
 	break;
       case 'o':
-	sscanf(SetBuffer,"t %s", value );
+	sscanf(SetBuffer,"t %300s", value );
 	OutputFileName = value;
-	prefixWithAbsolutePath(OutputFileName, SettingsFilePath );
+	OutputFileName = prefixWithAbsolutePath( OutputFileName,
+						 SettingsFilePath );
 	break;
       case 'O':  // Option string for Timbl
 	TimblOptStr = string(SetBuffer+1);
@@ -981,9 +986,10 @@ namespace Tagger {
 	UtmplStr = string( SetBuffer+2 );
 	break;
       case 'r':
-	sscanf(SetBuffer,"r %s", value );
+	sscanf(SetBuffer,"r %300s", value );
 	r_option_name = value;
-	prefixWithAbsolutePath(r_option_name, SettingsFilePath );
+	r_option_name = prefixWithAbsolutePath( r_option_name,
+						SettingsFilePath );
 	reverseflag = true;
 	break;
       case 'S':
@@ -993,15 +999,17 @@ namespace Tagger {
 	exit(EXIT_FAILURE);
 	break;
       case 't':
-	sscanf(SetBuffer,"t %s", value );
+	sscanf(SetBuffer,"t %300s", value );
 	TestFileName = value;
-	prefixWithAbsolutePath(TestFileName, SettingsFilePath );
+	TestFileName = prefixWithAbsolutePath( TestFileName,
+					       SettingsFilePath );
 	piped_input = false; // there is a test file specified
 	break;
       case 'E':
-	if ( SetBuffer[1] == ' ' && sscanf(SetBuffer,"E %s", value ) > 0 ){
+	if ( SetBuffer[1] == ' ' && sscanf(SetBuffer,"E %300s", value ) > 0 ){
 	  TestFileName = value;
-	  prefixWithAbsolutePath(TestFileName, SettingsFilePath );
+	  TestFileName = prefixWithAbsolutePath( TestFileName,
+						 SettingsFilePath );
 	  piped_input = false;
 	  input_kind = ENRICHED; // an enriched tagged test file specified
 	}
@@ -1014,16 +1022,18 @@ namespace Tagger {
 	}
 	break;
       case 'T':
-	sscanf(SetBuffer,"T %s", value );
+	sscanf(SetBuffer,"T %300s", value );
 	TestFileName = value;
-	prefixWithAbsolutePath(TestFileName, SettingsFilePath );
+	TestFileName = prefixWithAbsolutePath( TestFileName,
+					       SettingsFilePath );
 	piped_input = false;
 	input_kind = TAGGED; // there is a tagged test file specified
 	break;
       case 'u':
-	sscanf(SetBuffer,"u %s", value );
-	UnknownTreeName = value;
-	prefixWithAbsolutePath(UnknownTreeName, SettingsFilePath );
+	sscanf(SetBuffer,"u %300s", value );
+	UnknownTreeBaseName = value;
+	UnknownTreeName = prefixWithAbsolutePath( UnknownTreeBaseName,
+						  SettingsFilePath );
 	unknowntreeflag = true; // there is a unknowntreefile file specified
 	break;
       default:
@@ -1065,7 +1075,9 @@ namespace Tagger {
       cerr << "  Dumpflag ON" << endl;
     }
     if ( Opts.extract( 'D', value ) ){
-      if ( value == "LogNormal" )
+      if ( value == "LogSilent" )
+	cur_log->setlevel( LogSilent );
+      else if ( value == "LogNormal" )
 	cur_log->setlevel( LogNormal );
       else if ( value == "LogDebug" )
 	cur_log->setlevel( LogDebug );
@@ -1132,14 +1144,17 @@ namespace Tagger {
     }
     if ( Opts.extract( 'v', value ) ){
       vector<string> opts;
-      size_t num = split_at( value, opts, "+" );
-      for ( size_t i = 0; i < num; ++i ){
-	if ( opts[i] == "di" )
+      split_at( value, opts, "+" );
+      for ( const auto& o : opts ){
+	if ( o == "di" ){
 	  distance_flag = true;
-	if ( opts[i] == "db" )
+	}
+	else if ( o == "db" ){
 	  distrib_flag = true;
-	if ( opts[i] == "cf" )
+	}
+	else if ( o == "cf" ){
 	  confidence_flag = true;
+	}
       }
     };
     if ( cloned && input_kind == ENRICHED ){
@@ -1161,10 +1176,13 @@ namespace Tagger {
   void TaggerClass::manifest(){
     // present yourself to the user
     //
-    cout << "mbt " << VERSION << " (c) ILK and CLiPS 1998 - 2015." << endl
+    cerr << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2018." << endl
 	 << "Memory Based Tagger " << endl
+	 << "CLST  - Centre for Language and Speech Technology,"
+	 << "Radboud University" << endl
+	 << "ILK   - Induction of Linguistic Knowledge Research Group,"
 	 << "Tilburg University" << endl
-	 << "CLiPS Computational Linguistics Group, University of Antwerp"
+	 << "CLiPS - Computational Linguistics Group, University of Antwerp"
 	 << endl
 	 << "Based on " << Timbl::VersionName()
 	 << endl << endl;
@@ -1180,7 +1198,7 @@ namespace Tagger {
 	 << "\t-r <ambitagfile>\n"
 	 << "\t-k <known words case base>\n"
 	 << "\t-u <unknown words case base>\n"
-	 << "\t-D <loglevel> (possible values are 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
+	 << "\t-D <loglevel> (possible values are 'LogSilent', 'LogNormal', 'LogDebug', 'LogHeavy' and 'LogExtreme')\n"
 	 << "\t-e <sentence delimiter> (default '<utt>')\n"
 	 << "\t-E <enriched tagged testfile>\n "
 	 << "\t-t <testfile> | -T <tagged testfile> "
@@ -1200,37 +1218,8 @@ namespace Tagger {
 	 << endl;
   }
 
-  TaggerClass *TaggerClass::StartTagger( int argc, char*argv[], LogStream* os ){
-    TiCC::CL_Options opts;
-    opts.allow_args( mbt_short_opts, mbt_long_opts );
-    opts.parse_args( argc, argv );
-    string progname = opts.prog_name();
-    if ( opts.extract('h') || opts.extract("help") ){
-      run_usage( progname );
-      return 0;
-    }
-    if ( opts.extract('V') || opts.extract("version") ){
-      manifest();
-      return 0;
-    }
-    TaggerClass *tagger = new TaggerClass;
-    if ( !tagger->parse_run_args( opts ) ){
-      delete tagger;
-      return 0;
-    }
-    if ( os )
-      tagger->setLog( *os );
-    else // only manifest() when running 'standalone'
-      manifest();
-    tagger->set_default_filenames();
-    tagger->InitTagging();
-    return tagger;
-  }
-
-  TaggerClass *TaggerClass::StartTagger( const string& optline, LogStream* os ){
-    TiCC::CL_Options opts;
-    opts.allow_args( mbt_short_opts, mbt_long_opts );
-    opts.parse_args( optline );
+  TaggerClass *TaggerClass::StartTagger( TiCC::CL_Options& opts,
+					 LogStream* os ){
     string progname = opts.prog_name();
     if ( opts.extract('h') || opts.extract("help") ){
       run_usage( progname );

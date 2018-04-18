@@ -1,10 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id$
-# $URL$
 
 AC_PREREQ(2.61)
-AC_INIT([mbt],[3.2.13],[timbl@uvt.nl])
+AC_INIT([mbt],[3.4],[lamasoftware@science.ru.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -47,34 +45,22 @@ if test x"$acx_pthread_ok" = xyes; then
 fi
 
 PKG_PROG_PKG_CONFIG
-# Checks for timbl library.
 
-# inspired by feh-1.3.4/configure.ac.  Tnx Tom Gilbert and feh hackers.
-
-# ugly hack when PKG_CONFIG_PATH isn't defined.
-# couldn't get it to work otherwise
-if test "x$PKG_CONFIG_PATH" = x; then
-     export PKG_CONFIG_PATH=""
+if test "x$prefix" = "xNONE"; then
+   prefix="/usr/local"
 fi
-AC_ARG_WITH(timbl,
-       [  --with-timbl=DIR       use timbl installed in <DIR>;
-               note that you can install timbl in a non-default directory with
-               ./configure --prefix=<DIR> in the timbl installation directory],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
-#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
+
+if test "x$PKG_CONFIG_PATH" = x; then
+    export PKG_CONFIG_PATH="$prefix/lib/pkgconfig"
+else
+    export PKG_CONFIG_PATH="$prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
+fi
+
 PKG_CHECK_MODULES([timbl], [timbl >= 6.4.4] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
-AC_ARG_WITH(ticcutils,
-       [  --with-ticcutils=DIR       use ticcutils installed in <DIR>;
-               note that you can install ticcutils in a non-default directory with
-               ./configure --prefix=<DIR> in the ticcutils installation directory],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
-#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.4] )
+PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.16] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
 

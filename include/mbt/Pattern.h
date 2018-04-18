@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,9 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
 */
 #ifndef MBT_PATTERN_H
 #define MBT_PATTERN_H
@@ -33,7 +31,6 @@ class PatTemplate {
  public:
   std::string templatestring;
   std::string word_templatestring;
-  size_t tlen;
   size_t numslots;
   size_t wordslots;
   int focuspos;

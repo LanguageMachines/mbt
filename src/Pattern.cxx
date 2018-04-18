@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <cstdlib>
@@ -53,24 +52,21 @@ PatTemplate::PatTemplate()
   hyphen   = 0;
   capital  = 0;
   numeric  = 0;
+  compensation = 0;
   wordfocus = 0;
-  templatestring = "";
-  word_templatestring = "";
 }
 
 bool PatTemplate::set( const string& tempstr ){
   // reads a format string and figures out a template for the patterns from
   // this
-  tlen = tempstr.length();
-
   // Find the position of the focus.
   // Seperate string is built for the word-context.
   int j = 0;
   int k = 0;
   bool focus = false;
   compensation = 0;
-  for ( size_t i = 0; i < tlen; i++) {
-    switch(tempstr[i]){
+  for ( const auto& c : tempstr ){
+    switch( c ){
     case 'f':
       if ( focus ){
 	cerr << "more than 1 focus position in Pattern! " << tempstr << endl;
@@ -78,8 +74,8 @@ bool PatTemplate::set( const string& tempstr ){
       }
       focuspos = j;
       skipfocus=0;
-      templatestring += tempstr[i];
-      word_templatestring += tempstr[i];
+      templatestring += c;
+      word_templatestring += c;
       word_focuspos = k;
       ++numslots;
       ++j;
@@ -95,8 +91,8 @@ bool PatTemplate::set( const string& tempstr ){
       }
       focuspos = j;
       skipfocus=1;
-      templatestring += tempstr[i];
-      word_templatestring += tempstr[i];
+      templatestring += c;
+      word_templatestring += c;
       word_focuspos = k;
       ++numslots;
       ++j;
@@ -106,12 +102,12 @@ bool PatTemplate::set( const string& tempstr ){
       focus = true;
       break;
     case 'd':
-      templatestring += tempstr[i];
+      templatestring += c;
       ++numslots;
       ++j;
       break;
     case 'a':
-      templatestring += tempstr[i];
+      templatestring += c;
       ++numslots;
       ++j;
       break;
@@ -131,7 +127,7 @@ bool PatTemplate::set( const string& tempstr ){
       numeric = 1;
       break;
     case 'w':
-      word_templatestring += tempstr[i];
+      word_templatestring += c;
       ++wordslots;
       ++k;
       break;
@@ -168,7 +164,7 @@ bool PatTemplate::set( const string& tempstr ){
       }
       break;
     default:
-      cerr << "ERROR: illegal symbol '" << tempstr[i]
+      cerr << "ERROR: illegal symbol '" << c
 	   << "' in context string'" << endl;
       return false;
     }

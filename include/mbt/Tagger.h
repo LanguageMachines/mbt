@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,30 +20,25 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 #ifndef MBT_TAGGER_H
 #define MBT_TAGGER_H
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
-#include "mbt/TagLex.h"
-#include "mbt/Logging.h"
 #include "timbl/TimblAPI.h"
 
-extern TiCC::LogStream default_log;
-extern TiCC::LogStream default_cout;
-
-#define COUT *Log(default_cout)
-
-extern TiCC::LogStream *cur_log;
-
-extern LogLevel internal_default_level;
-extern LogLevel Tagger_Log_Level;
+namespace TiCC {
+  class LogStream;
+}
 
 namespace Tagger {
+
+  class TagInfo;
 
   std::string Version();
   std::string VersionName();
@@ -74,7 +67,7 @@ namespace Tagger {
 		    const Timbl::ValueDistribution * );
     void NextPath( StringHash&,
 		   const Timbl::TargetValue *,
-		   const Timbl::ValueDistribution*,
+		   const Timbl::ValueDistribution *,
 		   int );
     void ClearBest();
     void Shift( int, int );
@@ -85,6 +78,9 @@ namespace Tagger {
     int **temppaths;
     double *path_prob;
     n_best_tuple **n_best_array;
+  private:
+    BeamData( const BeamData& ); // inhibit copies
+    BeamData& operator=( const BeamData& ); // inhibit copies
   };
 
   class TagResult;
@@ -110,6 +106,7 @@ namespace Tagger {
     int CreateKnown();
     int CreateUnknown();
     void CreateSettingsFile();
+    std::string set_eos_mark( const std::string& );
     bool set_default_filenames();
     bool parse_create_args( TiCC::CL_Options& );
     bool parse_run_args( TiCC::CL_Options&, bool = false );
@@ -119,13 +116,13 @@ namespace Tagger {
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
-    static TaggerClass *StartTagger( const std::string&, TiCC::LogStream* = 0 );
-    static TaggerClass *StartTagger( int, char**, TiCC::LogStream* = 0 );
+    static TaggerClass *StartTagger( TiCC::CL_Options&, TiCC::LogStream* = 0 );
     static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
     static int CreateTagger( int, char** );
     bool isInit() const { return initialized; };
   private:
+    TaggerClass& operator=( const TaggerClass& ); // inhibit copy-assignment
     TiCC::LogStream *cur_log;
     Timbl::TimblAPI *KnownTree;
     Timbl::TimblAPI *unKnownTree;
@@ -185,9 +182,9 @@ namespace Tagger {
     int FilterThreshold;
     int Npax;
     int TopNumber;
-    bool DoSort;
     bool DoTop;
     bool DoNpax;
+    bool DoTagList;
     bool KeepIntermediateFiles;
 
     std::string KtmplStr;
@@ -203,6 +200,12 @@ namespace Tagger {
     PatTemplate Utemplate;
     Lexicon *MT_lexicon;
 
+    std::string UnknownTreeBaseName;
+    std::string KnownTreeBaseName;
+    std::string LexFileBaseName;
+    std::string MTLexFileBaseName;
+    std::string TopNFileBaseName;
+    std::string NpaxFileBaseName;
     std::string UnknownTreeName;
     std::string KnownTreeName;
     std::string LexFileName;
@@ -212,6 +215,7 @@ namespace Tagger {
     std::string TestFileName;
     std::string TestFilePath;
     std::string OutputFileName;
+    std::string TagListName;
     std::string SettingsFileName;
     std::string SettingsFilePath;
 
@@ -249,7 +253,7 @@ namespace Tagger {
   void get_weightsfile_name( std::string& opts, std::string& );
   void splits( const std::string& , std::string& common,
 	       std::string& known, std::string& unknown );
-  void prefixWithAbsolutePath( std::string& , const std::string& );
+  std::string prefixWithAbsolutePath( const std::string& , const std::string& );
 
 }
 

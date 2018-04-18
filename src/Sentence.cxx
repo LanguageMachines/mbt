@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <fstream>
@@ -45,15 +44,19 @@ namespace Tagger {
   using namespace std;
 
   const string Separators = "\t \n";
-  const int MAXTCPBUF   = 65536;
 
   // New enriched word.
   //
-  word::word( const string& some_word, const vector<string>& extra_features, const string& some_tag){
-    the_word =  some_word;
-    word_tag = some_tag;
+  word::word( const string& some_word,
+	      const vector<string>& extra_features,
+	      const string& some_tag ):
+    the_word( some_word ),
+    word_tag( some_tag ),
+    word_amb_tag( -1 ),
+    word_ass_tag( -1 ),
+    extraFeatures( extra_features )
+  {
     the_word_index = -1;
-    extraFeatures = extra_features;
   }
 
   // Delete a word
@@ -74,8 +77,9 @@ namespace Tagger {
   }
 
   void sentence::clear(){
-    for ( unsigned int i=0; i < no_words; i++ )
-      delete Words[i];
+    for ( const auto& w : Words ){
+      delete w;
+    }
     Words.clear();
     no_words = 0;
   }
@@ -88,7 +92,6 @@ namespace Tagger {
   string sentence::getenr( unsigned int index ){
     string result;
     if ( index < no_words ){
-      const std::vector<std::string> enr = getEnrichments( index );
       auto it = Words[index]->extraFeatures.cbegin();
       while( it != Words[index]->extraFeatures.cend() ){
 	result += *it;
@@ -104,10 +107,10 @@ namespace Tagger {
   //
   void sentence::print( ostream &os ) const{
     os << "Sentence :'";
-    if ( no_words != 0 ){
-      for ( unsigned int i = 0; i < no_words-1; i++ )
-	os << Words[i]->the_word << ", ";
-      os << Words[no_words-1]->the_word;
+    for ( const auto& w : Words ){
+      os << w->the_word;
+      if ( &w != &Words.back() )
+	os << ", ";
     }
     os << "'";
   }
@@ -137,24 +140,31 @@ namespace Tagger {
 
   bool sentence::init_windowing( Lexicon &lex,
 				 StringHash& TheLex ) {
-    if ( UTAG == -1 )
-      UTAG = TheLex.Hash( UNKNOWN );
+    if ( UTAG == -1 ){
+#pragma omp critical (hasher)
+      {
+	UTAG = TheLex.Hash( UNKNOWN );
+      }
+    }
     if ( no_words == 0 ) {
       //    cerr << "ERROR: empty sentence?!" << endl;
       return false;
     }
     else {
-      LexInfo * foundInfo;
-      word *cur_word;
-      for ( unsigned int wpos = 0; wpos < no_words; ++wpos ){
-	cur_word = Words[wpos];
-	cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+      for ( const auto& cur_word : Words ){
+#pragma omp critical (hasher)
+	{
+	  cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+	}
 	// look up ambiguous tag in the dictionary
 	//
-	foundInfo = lex.Lookup( cur_word->the_word );
-	if( foundInfo != NULL ){
+	LexInfo *foundInfo = lex.Lookup( cur_word->the_word );
+	if ( foundInfo != NULL ){
 	  //	  cerr << "MT Lookup(" << cur_word->the_word << ") gave " << *foundInfo << endl;
-	  cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
+#pragma omp critical (hasher)
+	  {
+	    cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
+	  }
 	}
 	else  {
 	  // cerr << "MT Lookup(" << cur_word->the_word << ") gave NILL" << endl;
@@ -168,16 +178,27 @@ namespace Tagger {
 
   int sentence::classify_hapax( const string& word, StringHash& TheLex ) const{
     string hap = "HAPAX-";
-    if ( word.find( "-" ) != string::npos ) // hyphen anywere
+    if ( word.find( "-" ) != string::npos ){
+      // hyphen anywere
       hap += 'H';
-    if ( isupper( word[0] ) ){ // Capitalized first letter?
+    }
+    if ( isupper( word[0] ) ){
+      // Capitalized first letter?
       hap += 'C';
     }
-    if ( word.find_first_of( "0123456789" ) != string::npos ) // digit anywhere
+    if ( word.find_first_of( "0123456789" ) != string::npos ) {
+      // digit anywhere
       hap += 'N';
-    if ( hap.length() == 6 )
-      hap += '0';
-    return TheLex.Hash( hap );
+    }
+    if ( hap.length() == 6 ){
+      hap += "0";
+    }
+    int result = -1;
+#pragma omp critical (hasher)
+    {
+      result = TheLex.Hash( hap );
+    }
+    return result;
   }
 
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
@@ -215,21 +236,23 @@ namespace Tagger {
     // Prefix?
     //
     if (aTemplate->numprefix > 0) {
-      for ( size_t j = 0;
-	    j < (size_t)aTemplate->numprefix; j++) {
+      for ( size_t j = 0; j < (size_t)aTemplate->numprefix; ++j ) {
 	string addChars = "_";
 	if ( j < CurWLen )
 	  addChars += current_word->the_word[j];
 	else
 	  addChars += '=';  // "_=" denotes "no value"
-	Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( addChars );
+	}
 	i_feature++;
       }
     }
 
     for ( unsigned int i = 0, c_pos = position - aTemplate->word_focuspos;
 	  i < aTemplate->wordslots;
-	  i++, c_pos++) {
+	  ++i, ++c_pos ) {
       // Now loop.
       //
       // depending on the slot type, transfer the appropriate
@@ -260,7 +283,10 @@ namespace Tagger {
 	}
       }
       else {   // Out of context.
-	Pat[i_feature] = TheLex.Hash( DOT );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( DOT );
+	}
 	i_feature++;
       }
     } // i
@@ -269,7 +295,7 @@ namespace Tagger {
     //
     for ( unsigned int ii = 0, cc_pos = position - aTemplate->focuspos;
 	  ii < aTemplate->numslots;
-	  ii++, cc_pos++ ) {
+	  ++ii, ++cc_pos ) {
 
       // move a pointer to the position of the word that
       // should occupy the present template slot
@@ -303,7 +329,10 @@ namespace Tagger {
       }
       }
       else{   // Out of context.
-	Pat[i_feature] = TheLex.Hash( DOT );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( DOT );
+	}
 	i_feature++;
       }
     } // i
@@ -311,13 +340,16 @@ namespace Tagger {
     // Suffix?
     //
     if (aTemplate->numsuffix > 0) {
-      for ( size_t j = aTemplate->numsuffix; j > 0; j--) {
+      for ( size_t j = aTemplate->numsuffix; j > 0; --j ) {
 	string addChars = "_";
 	if ( j <= CurWLen )
 	  addChars  += current_word->the_word[CurWLen - j];
 	else
 	  addChars += '=';
-	Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+	{
+	  Pat[i_feature] = TheLex.Hash( addChars );
+	}
 	i_feature++;
       }
     }
@@ -330,7 +362,10 @@ namespace Tagger {
 	addChars = "_H";
       else
 	addChars = "_0";
-      Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+      {
+	Pat[i_feature] = TheLex.Hash( addChars );
+      }
       i_feature++;
     }
 
@@ -342,7 +377,10 @@ namespace Tagger {
 	addChars += 'C';
       else
 	addChars += '0';
-      Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+      {
+	Pat[i_feature] = TheLex.Hash( addChars );
+      }
       i_feature++;
     }
 
@@ -350,13 +388,16 @@ namespace Tagger {
     //
     if (aTemplate->numeric) {
       string addChars = "_0";
-      for ( unsigned int j = 0; j < CurWLen; j++) {
+      for ( unsigned int j = 0; j < CurWLen; ++j ) {
 	if( isdigit(current_word->the_word[j]) ){
 	  addChars[1] = 'N';
 	  break;
 	}
       }
-      Pat[i_feature] = TheLex.Hash( addChars );
+#pragma omp critical (hasher)
+      {
+	Pat[i_feature] = TheLex.Hash( addChars );
+      }
       i_feature++;
     }
     //    cerr << "next_pat: i_feature = " << i_feature << endl;
@@ -413,14 +454,13 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> parts;
-      int num = TiCC::split_at_first_of( line, parts, Separators );
-      if ( num != 2 ){
-#pragma omp critical
+      vector<string> parts = TiCC::split_at_first_of( line, Separators );
+      if ( parts.size() != 2 ){
+#pragma omp critical (errors)
 	{
 	  cerr << endl << "error in line " << line_no << " : '"
 	       << line << "' (skipping it)" << endl;
-	  if ( num == 1 ){
+	  if ( parts.size() == 1 ){
 	    cerr << "missing a tag ? " << endl;
 	  }
 	  else {
@@ -452,11 +492,10 @@ namespace Tagger {
 	}
 	continue;
       }
-      vector<string> parts;
-      TiCC::split_at_first_of( line, parts, " \t" );
+      vector<string> parts = TiCC::split_at_first_of( line, " \t" );
       line = "";
       bool terminated = false;
-      for ( auto p : parts ){
+      for ( const auto& p : parts ){
 	//	cerr << "bekijk " << p << endl;
 	if ( Utt_Terminator( p ) ){
 	  terminated = true;
@@ -470,7 +509,7 @@ namespace Tagger {
 	  }
 	}
       }
-      if ( terminated )
+      if ( terminated || InternalEosMark == "NL" )
 	return true;
     }
     return true;
@@ -484,7 +523,6 @@ namespace Tagger {
     string line;
     string Word;
     string Tag;
-    vector<string> extras;
     while( getline( infile, line ) ){
       ++line_no;
       line = TiCC::trim( line );
@@ -497,8 +535,8 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      size_t size = TiCC::split_at_first_of( line, extras, Separators );
-      if ( size >= 2 ){
+      vector<string> extras = TiCC::split_at_first_of( line, Separators );
+      if ( extras.size() >= 2 ){
 	Word = extras.front();
 	extras.erase(extras.begin()); // expensive, but allas. extras is small
 	Tag  = extras.back();

@@ -1,11 +1,9 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 #ifndef MBT_TAGLEX_H
 #define MBT_TAGLEX_H
@@ -53,7 +52,7 @@ namespace Tagger {
     std::string StringRepr;
     std::map<std::string, int> TagFreqs;
   };
-  
+
   class TagLex {
     friend std::ostream& operator<< ( std::ostream&, TagLex * );
   public:
@@ -64,9 +63,11 @@ namespace Tagger {
     std::vector<TagInfo *> CreateSortedVector();
     int numOfLexiconEntries() const { return NumOfEntries; };
   private:
+    TagLex( const TagLex& ); // inhibit copies
+    TagLex& operator=( const TagLex& ); // inhibit copies
     Trie<TagInfo> *TagTree;
     int NumOfEntries;
   };
-  
+
 }
 #endif

@@ -1,11 +1,9 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbt
 
   mbt is free software; you can redistribute it and/or modify
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #ifndef MBT_LOGGING_H
@@ -34,11 +33,16 @@
 
 extern TiCC::LogStream default_log;
 extern TiCC::LogStream *cur_log;
+extern TiCC::LogStream default_cout;
 extern LogLevel Tagger_Log_Level;
 
 #define LOG (*TiCC::Log(cur_log))
 #define DBG (*TiCC::Dbg(cur_log))
 #define xDBG (*TiCC::xDbg(cur_log))
 #define xxDBG (*TiCC::xxDbg(cur_log))
+#define COUT *Log(default_cout)
+
+extern LogLevel internal_default_level;
+extern LogLevel Tagger_Log_Level;
 
 #endif // LOGGING_H

@@ -84,7 +84,7 @@
 			"name": "timbl"
 		}
 	],
-	"readme": "https://github.com/LanguageMachines/mbt/blob/master/README",
+	"readme": "https://github.com/LanguageMachines/mbt/blob/master/README.md",
 	"issueTracker": "https://github.com/LanguageMachines/mbt/issues",
 	"contIntegration": "https://travis-ci.org/LanguageMachines/mbt",
 	"releaseNotes": "https://github.com/LanguageMachines/mbt/releases",

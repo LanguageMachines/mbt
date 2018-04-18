@@ -1,7 +1,6 @@
 /*
-  $Id$
-  $URL$
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -21,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <iostream>
@@ -43,11 +43,20 @@ using std::endl;
 using std::string;
 using std::vector;
 
-MbtAPI::MbtAPI( const std::string& opts ){
+using namespace Tagger;
+using namespace TiCC;
+
+MbtAPI::MbtAPI( const std::string& optstring ){
+  TiCC::CL_Options opts;
+  opts.allow_args( mbt_short_opts, mbt_long_opts );
+  opts.parse_args( optstring );
   tagger = TaggerClass::StartTagger( opts );
 }
 
-MbtAPI::MbtAPI( const std::string& opts, LogStream& ls ){
+MbtAPI::MbtAPI( const std::string& optstring, LogStream& ls ){
+  TiCC::CL_Options opts;
+  opts.allow_args( mbt_short_opts, mbt_long_opts );
+  opts.parse_args( optstring );
   tagger = TaggerClass::StartTagger( opts, &ls );
 }
 
@@ -78,6 +87,14 @@ vector<TagResult> MbtAPI::TagLine( const string& inp ){
 string MbtAPI::getResult( const vector<TagResult>& v ) const {
   if ( tagger )
     return tagger->TRtoString( v );
+  else {
+    throw std::runtime_error( "No tagger initialized yet...." );
+  }
+}
+
+string MbtAPI::set_eos_mark( const std::string& eos ){
+  if ( tagger )
+    return tagger->set_eos_mark( eos );
   else {
     throw std::runtime_error( "No tagger initialized yet...." );
   }
@@ -129,7 +146,10 @@ bool MbtAPI::GenerateTagger( const std::string& arg ) {
 bool MbtAPI::RunTagger( int argc, char **argv ){
   time_t timebefore, timeafter, timediff;
   time(&timebefore);
-  TaggerClass *tagger = TaggerClass::StartTagger( argc, argv );
+  TiCC::CL_Options opts;
+  opts.allow_args( mbt_short_opts, mbt_long_opts );
+  opts.parse_args( argc, argv );
+  TaggerClass *tagger = TaggerClass::StartTagger( opts );
   if ( !tagger ){
     return false;
   }

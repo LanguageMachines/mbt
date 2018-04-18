@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2018
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 
 #include <algorithm>
@@ -41,9 +40,8 @@
 namespace Tagger {
   using namespace std;
 
-  TagInfo::TagInfo( const string& name, const string& tag ){
-    Word = name;
-    WordFreq = 0;
+  TagInfo::TagInfo( const string& name, const string& tag ):
+    Word(name), WordFreq(0) {
     Update( tag );
   }
 
@@ -52,13 +50,7 @@ namespace Tagger {
 
   void TagInfo::Update( const string& tag ){
     ++WordFreq;
-    auto it = TagFreqs.find( tag );
-    if ( it != TagFreqs.end() ){
-      ++it->second;
-    }
-    else {
-      TagFreqs[tag] = 1;
-    }
+    ++TagFreqs[tag];
   }
 
   void TagInfo::Prune( int Threshold ){
@@ -81,7 +73,7 @@ namespace Tagger {
   }
 
   struct FS {
-    FS( int f, string s ):freq(f), str(s) {};
+    FS( int f, const string& s ):freq(f), str(s) {};
     int freq;
     string str;
   };
@@ -98,9 +90,11 @@ namespace Tagger {
     sort( FreqTags.begin(), FreqTags.end(), cmpFreq );
     string tmpstr;
     for ( auto const& it2 : FreqTags ){
-      tmpstr += it2.str + ";";
+      tmpstr += it2.str;
+      if ( &it2 != &FreqTags.back() ){
+	tmpstr += ";";
+      }
     }
-    tmpstr.erase(tmpstr.length()-1); //remove last ';'
     StringRepr = tmpstr;
   }
 
@@ -122,7 +116,7 @@ namespace Tagger {
   }
 
   TagInfo *TagLex::Lookup( const string& name ){
-    return (TagInfo *)TagTree->Retrieve( name );
+    return reinterpret_cast<TagInfo *>(TagTree->Retrieve( name ));
   }
 
   TagInfo *TagLex::Store( const string& name, const string& tag ){
