@@ -1,4 +1,13 @@
-mbt version 3.3.1 2016-07-11
+mbt version 3.3.2 2018-05-16
+[Ko van der Sloot]
+Maintenance release:
+- updated configure/build/test
+- typos in man pages corrected
+
+[Maarten van Gompel]
+- Added codemeta.json
+
+mbt version 3.3.1 2017-11-08
 [Ko van der Sloot]
 Bug fix release:
 A 3.2.17 tarball was released with the tag v3.3 which is confusing.
