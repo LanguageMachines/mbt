@@ -418,29 +418,6 @@ namespace Tagger {
 	<< no_words << " words)." << endl;
   }
 
-  bool old_style( const string& name ){
-    string line;
-    ifstream in( name );
-    if ( in ){
-      getline( in, line );
-      vector<string> tmp;
-      size_t count = split_at_first_of( line, tmp, ",." );
-      if ( count == 0 )
-	return false;
-      for( size_t i = 0; i < count; ++i ){
-	if ( tmp[i].length() < 2 || tmp[i].length() > 3 )
-	  return false;
-	if ( !isalpha(tmp[i][0]) || !isalpha(tmp[i][1] ) )
-	  return false;
-	if ( tmp[i].length() == 3 && !isalpha(tmp[i][2] ) )
-	  return false;
-      }
-      return true;
-    }
-    else
-      return false;
-  }
-
   //
   // File should contain one word per line.
   //
@@ -1143,8 +1120,7 @@ namespace Tagger {
       unknowntreeflag = true; // there is a unknowntreefile file specified
     }
     if ( Opts.extract( 'v', value ) ){
-      vector<string> opts;
-      split_at( value, opts, "+" );
+      vector<string> opts = split_at( value, "+" );
       for ( const auto& o : opts ){
 	if ( o == "di" ){
 	  distance_flag = true;
