@@ -195,6 +195,7 @@ namespace Tagger {
     std::string r_option_name;
     std::string L_option_name;
     std::string EosMark;
+    std::string Separators;
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;

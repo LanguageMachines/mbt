@@ -43,8 +43,6 @@ namespace Tagger {
   using namespace Hash;
   using namespace std;
 
-  const string Separators = "\t \n";
-
   // New enriched word.
   //
   word::word( const string& some_word,
@@ -421,22 +419,26 @@ namespace Tagger {
   }
 
   bool sentence::read( istream &infile, input_kind_type kind,
-		       const string& eom, size_t& line ){
+		       const string& eom,
+		       const string& seps,
+		       size_t& line ){
     if ( !infile )
       return false;
     InternalEosMark = eom;
     //    cerr << "READ zet InternalEosMark = " << eom << endl;
     if ( kind == TAGGED ){
-      return read_tagged( infile, line );
+      return read_tagged( infile, seps, line );
     }
     else if ( kind == UNTAGGED ){
-      return read_untagged( infile, line );
+      return read_untagged( infile, seps, line );
     }
     else
-      return read_enriched( infile, line );
+      return read_enriched( infile, seps, line );
   }
 
-  bool sentence::read_tagged( istream &infile, size_t& line_no ){
+  bool sentence::read_tagged( istream &infile,
+			      const string& seps,
+			      size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
     clear();
@@ -454,7 +456,7 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> parts = TiCC::split_at_first_of( line, Separators );
+      vector<string> parts = TiCC::split_at_first_of( line, seps );
       if ( parts.size() != 2 ){
 #pragma omp critical (errors)
 	{
@@ -467,15 +469,18 @@ namespace Tagger {
 	    cerr << "extra values found " << endl;
 	  }
 	}
-	continue;
       }
-      add( parts[0], parts[1] );
+      else {
+	add( TiCC::trim(parts[0]), TiCC::trim(parts[1]) );
+      }
     }
     //    cerr << "read a sentence: " << *this << endl;
     return true;
   }
 
-  bool sentence::read_untagged( istream &infile, size_t& line_no ){
+  bool sentence::read_untagged( istream &infile,
+				const string& seps,
+				size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
     clear();
@@ -492,7 +497,7 @@ namespace Tagger {
 	}
 	continue;
       }
-      vector<string> parts = TiCC::split_at_first_of( line, " \t" );
+      vector<string> parts = TiCC::split_at_first_of( line, seps );
       line = "";
       bool terminated = false;
       for ( const auto& p : parts ){
@@ -515,7 +520,9 @@ namespace Tagger {
     return true;
   }
 
-  bool sentence::read_enriched( istream &infile, size_t& line_no ){
+  bool sentence::read_enriched( istream &infile,
+				const string& seps,
+				size_t& line_no ){
     // read a sequence of enriched and tagged words from infile
     // every word must be a one_liner
     // cleanup the sentence for re-use...
@@ -535,7 +542,7 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> extras = TiCC::split_at_first_of( line, Separators );
+      vector<string> extras = TiCC::split_at_first_of( line, seps );
       if ( extras.size() >= 2 ){
 	Word = extras.front();
 	extras.erase(extras.begin()); // expensive, but allas. extras is small

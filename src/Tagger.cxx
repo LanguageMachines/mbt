@@ -90,7 +90,7 @@ namespace Tagger {
     UtmplStr = "dFapsss";
     L_option_name = "";
     EosMark = "<utt>";
-
+    Separators = "\t \n";
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
@@ -151,6 +151,7 @@ namespace Tagger {
     UtmplStr( in.UtmplStr ),
     L_option_name( in.L_option_name ),
     EosMark( in.EosMark ),
+    Separators( in.Separators ),
     Ktemplate( in.Ktemplate ),
     Utemplate( in.Utemplate ),
     MT_lexicon( in.MT_lexicon ),

@@ -689,7 +689,7 @@ namespace Tagger {
     sentence mySentence( Ktemplate, Utemplate );
     stringstream ss(line);
     size_t dummy = 0;
-    mySentence.read( ss, input_kind, EosMark, dummy );
+    mySentence.read( ss, input_kind, EosMark, Separators, dummy );
     return tagSentence( mySentence );
   }
 
@@ -845,7 +845,7 @@ namespace Tagger {
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
     while ( go_on &&
-	    mySentence.read(infile, input_kind, EosMark, line_cnt ) ){
+	    mySentence.read(infile, input_kind, EosMark, Separators, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
       if ( ++HartBeat % 100 == 0 ) {
@@ -1069,6 +1069,9 @@ namespace Tagger {
     if ( Opts.extract( 'e', value ) ){
       EosMark = value;
     }
+    if ( Opts.extract( "tabbed" ) ){
+      Separators = "\t";
+    }
     if ( Opts.extract( 'k', value ) ){
       KnownTreeName = value;
       knowntreeflag = true; // there is a knowntreefile specified
@@ -1165,7 +1168,7 @@ namespace Tagger {
   }
 
   const std::string mbt_short_opts = "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:";
-  const std::string mbt_long_opts  = "help,version,settings:";
+  const std::string mbt_long_opts  = "help,version,settings:,tabbed";
 
   void run_usage( const string& progname ){
     cerr << "Usage is : " << progname << " option option ... \n"
@@ -1179,6 +1182,7 @@ namespace Tagger {
 	 << "\t-E <enriched tagged testfile>\n "
 	 << "\t-t <testfile> | -T <tagged testfile> "
 	 << "(default is untagged stdin)\n"
+	 << "\t--tabbed use tabs as separator in TAGGED input. (default is all whitespace)\n"
 	 << "\t-o <outputfile> (default stdout)\n"
 	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
 	 << "\t  <options>   options to use for Both Known and Unknown Words Case Base\n"

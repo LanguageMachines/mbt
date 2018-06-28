@@ -237,7 +237,7 @@ struct more_second {
     int HartBeat = 0;
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
-    while ( mySentence.read( infile, input_kind, EosMark, line_cnt ) ){
+    while ( mySentence.read( infile, input_kind, EosMark, Separators, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
       // cerr << mySentence << endl;
@@ -408,7 +408,7 @@ struct more_second {
   //**** stuff to process commandline options *****************************
 
   const string mbt_create_short = "hV%:d:e:E:k:K:l:L:m:M:n:o:O:p:P:r:s:t:T:u:U:XD:";
-  const string mbt_create_long = "version";
+  const string mbt_create_long = "version,tabbed";
 
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
     string value;
@@ -427,6 +427,9 @@ struct more_second {
     if ( opts.extract( 'e', value ) ){
       EosMark = value;
       cout << "  Sentence delimiter set to '" << EosMark << "'" << endl;
+    }
+    if ( opts.extract( "tabbed" ) ){
+      Separators = "\t";
     }
     if ( opts.extract( 'K', value ) ){
       K_option_name = value;
@@ -554,6 +557,7 @@ struct more_second {
 	 << "\t-% <percentage> Filter Threshold for ambitag construction (default 5%)\n"
 	 << "\t-E <enriched tagged training corpus file> \n"
 	 << "\t-T <tagged training corpus file> \n"
+	 << "\t--tabbed use tabs as separator in TAGGED input. (default is all whitespace)\n"
 	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
 	 << "\t   <options>   options to use for both Known and Unknown Words Case Base\n"
 	 << "\t   K: <options>   options to use for Known Words Case Base\n"
@@ -580,7 +584,7 @@ struct more_second {
     if ( opts.is_present( 'h' ) ||
 	 opts.is_present( "help" ) ){
       gen_usage( "mbtg" );
-      return true;
+      return -1;
     }
     //
     // present yourself to the user
@@ -624,14 +628,26 @@ struct more_second {
   int TaggerClass::CreateTagger( const string& opt_string ){
     TiCC::CL_Options opts;
     opts.allow_args( mbt_create_short, mbt_create_long );
-    opts.parse_args( opt_string );
+    try {
+      opts.parse_args( opt_string );
+    }
+    catch ( exception& e ){
+      cerr << e.what() << endl;
+      return -1;
+    }
     return CreateTagger( opts );
   }
 
   int TaggerClass::CreateTagger( int argc, char* argv[] ){
     TiCC::CL_Options opts;
     opts.allow_args( mbt_create_short, mbt_create_long );
-    opts.parse_args( argc, argv );
+    try {
+      opts.parse_args( argc, argv );
+    }
+    catch ( exception& e ){
+      cerr << e.what() << endl;
+      return -1;
+    }
     return CreateTagger( opts );
   }
 

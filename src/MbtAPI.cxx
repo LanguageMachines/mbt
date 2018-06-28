@@ -49,14 +49,26 @@ using namespace TiCC;
 MbtAPI::MbtAPI( const std::string& optstring ){
   TiCC::CL_Options opts;
   opts.allow_args( mbt_short_opts, mbt_long_opts );
-  opts.parse_args( optstring );
+  try {
+    opts.parse_args( optstring );
+  }
+  catch( std::exception& e ){
+    cerr << e.what() << endl;
+    return;
+  }
   tagger = TaggerClass::StartTagger( opts );
 }
 
 MbtAPI::MbtAPI( const std::string& optstring, LogStream& ls ){
   TiCC::CL_Options opts;
   opts.allow_args( mbt_short_opts, mbt_long_opts );
-  opts.parse_args( optstring );
+  try {
+    opts.parse_args( optstring );
+  }
+  catch( std::exception& e ){
+    cerr << e.what() << endl;
+    return;
+  }
   tagger = TaggerClass::StartTagger( opts, &ls );
 }
 
@@ -148,7 +160,13 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
   time(&timebefore);
   TiCC::CL_Options opts;
   opts.allow_args( mbt_short_opts, mbt_long_opts );
-  opts.parse_args( argc, argv );
+  try {
+    opts.parse_args( argc, argv );
+  }
+  catch( std::exception& e ){
+    cerr << e.what() << endl;
+    return false;
+  }
   TaggerClass *tagger = TaggerClass::StartTagger( opts );
   if ( !tagger ){
     return false;
