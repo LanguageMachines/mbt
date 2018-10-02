@@ -163,11 +163,11 @@ namespace Tagger {
     for ( int j=0; j <= i_word; ++j ){
       for ( int i=0; i < size; ++i ){
 	if (  paths[i][j] != EMPTY_PATH ){
-	  LOG << "    paths[" << i << "," << j << "] = "
+	  DBG << "    paths[" << i << "," << j << "] = "
 	      << indexlex( paths[i][j], TheLex ) << endl;
 	}
 	else {
-	  LOG << "    paths[" << i << "," << j << "] = EMPTY" << endl;
+	  DBG << "    paths[" << i << "," << j << "] = EMPTY" << endl;
 	}
       }
     }
