@@ -40,6 +40,7 @@
 
 #include "config.h"
 #include "timbl/TimblAPI.h"
+#include "ticcutils/Timer.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"
@@ -59,7 +60,6 @@ namespace Tagger {
   const string UNKSTR   = "UNKNOWN";
 
   class BeamData;
-
 
   BeamData::BeamData(){
     size = 0;
@@ -590,10 +590,14 @@ namespace Tagger {
       pthread_mutex_lock( &timbl_lock );
 #endif
     if ( Action == Known ){
+      timer2.start();
       answer = KnownTree->Classify( teststring, *distribution, distance );
+      timer2.stop();
     }
     else {
+      timer3.start();
       answer = unKnownTree->Classify( teststring, *distribution, distance );
+      timer3.stop();
     }
 #if defined(HAVE_PTHREAD)
     if ( cloned )
@@ -653,8 +657,10 @@ namespace Tagger {
       //      cerr << "teststring '" << teststring << "'" << endl;
       const ValueDistribution *distribution = 0;
       double distance;
+      timer1.start();
       const TargetValue *answer = Classify( Action, teststring,
 					    &distribution, distance );
+      timer1.stop();
       if ( beam_cnt == 0 ){
 	if ( distance_flag )
 	  distance_array[i_word] = distance;
@@ -701,17 +707,13 @@ namespace Tagger {
 	throw runtime_error( "Tagger not initialized" );
       }
       DBG << mySentence << endl;
-
       if ( mySentence.init_windowing( *MT_lexicon, TheLex ) ) {
 	// here the word window is looked up in the dictionary and the values
 	// of the features are stored in the testpattern
 	MatchAction Action = Unknown;
 	vector<int> TestPat;
 	TestPat.reserve(Utemplate.totalslots());
-	if ( mySentence.nextpat( Action, TestPat,
-				 *kwordlist, TheLex,
-				 0 )){
-
+	if ( mySentence.nextpat( Action, TestPat, *kwordlist, TheLex, 0 )){
 	  DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	  InitTest( mySentence, TestPat, Action );
 	  for ( unsigned int iword=1; iword < mySentence.size(); ++iword ){

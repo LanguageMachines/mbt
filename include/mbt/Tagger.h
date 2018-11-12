@@ -30,10 +30,12 @@
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
+#include "ticcutils/Timer.h"
 #include "timbl/TimblAPI.h"
 
 namespace TiCC {
   class LogStream;
+  class Timer;
 }
 
 namespace Tagger {
@@ -156,6 +158,9 @@ namespace Tagger {
     std::vector<double> distance_array;
     std::vector<std::string> distribution_array;
     std::vector<double> confidence_array;
+    TiCC::Timer timer1;
+    TiCC::Timer timer2;
+    TiCC::Timer timer3;
 
     static void manifest();
     int makedataset( std::istream& infile, bool do_known );
