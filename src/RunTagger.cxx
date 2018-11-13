@@ -589,6 +589,7 @@ namespace Tagger {
     if ( cloned )
       pthread_mutex_lock( &timbl_lock );
 #endif
+    timer1.start();
     if ( Action == Known ){
       timer2.start();
       answer = KnownTree->Classify( teststring, *distribution, distance );
@@ -599,6 +600,7 @@ namespace Tagger {
       answer = unKnownTree->Classify( teststring, *distribution, distance );
       timer3.stop();
     }
+    timer1.stop();
 #if defined(HAVE_PTHREAD)
     if ( cloned )
       pthread_mutex_unlock( &timbl_lock );
@@ -657,10 +659,8 @@ namespace Tagger {
       //      cerr << "teststring '" << teststring << "'" << endl;
       const ValueDistribution *distribution = 0;
       double distance;
-      timer1.start();
       const TargetValue *answer = Classify( Action, teststring,
 					    &distribution, distance );
-      timer1.stop();
       if ( beam_cnt == 0 ){
 	if ( distance_flag )
 	  distance_array[i_word] = distance;
