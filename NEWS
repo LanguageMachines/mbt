@@ -1,3 +1,9 @@
+mbt version 3.3.3 2018-11-28
+[Ko van der Sloot]
+- added an option '--tabbed' to set the word/tag seperator to TABS
+- better option parsing
+- added some timers for debugging
+
 mbt version 3.3.2 2018-05-16
 [Ko van der Sloot]
 Maintenance release:
