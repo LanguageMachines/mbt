@@ -62,14 +62,14 @@ before_install:
 
     - export PATH="/usr/lib/ccache/bin/:$PATH"
 
-    - git clone https://github.com/proycon/ticcutils
+    - git clone https://github.com/LanguageMachines/ticcutils
     - cd ticcutils
     - bash bootstrap.sh
     - ./configure $OPENMPFLAG
     - make
     - sudo make install
     - cd ..
-    - git clone https://github.com/proycon/timbl
+    - git clone https://github.com/LanguageMachines/timbl
     - cd timbl
     - bash bootstrap.sh
     - ./configure $OPENMPFLAG
