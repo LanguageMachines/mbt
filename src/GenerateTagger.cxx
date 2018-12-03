@@ -79,15 +79,15 @@ namespace Tagger {
     return false;
   }
 
-template <typename T1, typename T2>
-struct more_second {
+  template <typename T1, typename T2>
+  struct more_second {
     typedef pair<T1, T2> type;
     bool operator ()(type const& a, type const& b) const {
-        return a.second > b.second;
+      return a.second > b.second;
     }
-};
+  };
 
-  void TaggerClass::create_lexicons(){
+  bool TaggerClass::create_lexicons(){
     TagLex TaggedLexicon;
     ifstream lex_file;
     ofstream out_file;
@@ -98,13 +98,13 @@ struct more_second {
 	     !lex_file.good() ) ){
 	cerr << "couldn't open tagged lexicon file `"
 	     << filename << "'" << endl;
-	exit(EXIT_FAILURE);
+	return false;
       }
       COUT << "Constructing a tagger from: " << filename << endl;
     }
     else {
       cerr << "couldn't open inputfile " << filename << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
 
     map<string,unsigned int> TagList;
@@ -128,7 +128,7 @@ struct more_second {
     }
     else {
       cerr << "couldn't create lexiconfile " << LexFileName << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
     for ( auto const& tv : TagVect ){
       ProcessTags( tv );
@@ -144,7 +144,7 @@ struct more_second {
     }
     else {
       cerr << "couldn't create file: " << MTLexFileName << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
     if ( (out_file.open( TopNFileName, ios::out ),
 	  out_file.good() ) ){
@@ -160,7 +160,7 @@ struct more_second {
     }
     else {
       cerr << "couldn't open file: " << TopNFileName << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
     if ( DoNpax ){
       if ( (out_file.open( NpaxFileName, ios::out ),
@@ -179,7 +179,7 @@ struct more_second {
       }
       else {
 	cerr << "couldn't open file: " << NpaxFileName << endl;
-	exit(EXIT_FAILURE);
+	return false;
       }
     }
     if ( DoTagList ){
@@ -193,8 +193,10 @@ struct more_second {
       }
       else {
 	cerr << "couldn't open outputfile: " << TagListName << endl;
+	return false;
       }
     }
+    return true;
   }
 
   bool TaggerClass::InitLearning( ){
@@ -202,7 +204,9 @@ struct more_second {
     // name for both output files (concatenation of datafile
     // and pattern string)
     //
-    create_lexicons();
+    if ( !create_lexicons() ){
+      return false;
+    }
     if ( TimblOptStr.empty() )
       Timbl_Options = "-a IB1 -G0";
     else
@@ -305,8 +309,11 @@ struct more_second {
       COUT << "  Create known words case base,"
 	   << "   Timbl options: '" << knownstr + commonstr << "'" << endl;
       TimblAPI *Ktree = new TimblAPI( knownstr + commonstr );
-      if ( !Ktree->Valid() )
-	exit(EXIT_FAILURE);
+      if ( !Ktree->Valid() ){
+	cerr << "unable to create Timbl(" << knownstr + commonstr
+	     << ") for Known words." << endl;
+	return -1; // signal a failure
+      }
       COUT << "    Algorithm = " << to_string(Ktree->Algo()) << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
@@ -344,8 +351,11 @@ struct more_second {
       COUT << "  Create unknown words case base,"
 	   << " Timbl options: '" << unknownstr + commonstr << "'" << endl;
       TimblAPI *UKtree = new TimblAPI( unknownstr + commonstr );
-      if ( !UKtree->Valid() )
-	exit(EXIT_FAILURE);
+      if ( !UKtree->Valid() ){
+	cerr << "unable to create Timbl(" << unknownstr + commonstr
+	     << ") for Unknown words." << endl;
+	return -1; // signal a failure
+      }
       COUT << "    Algorithm = " << to_string(UKtree->Algo()) << endl;
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
@@ -377,7 +387,7 @@ struct more_second {
     return nwords;
   }
 
-  void TaggerClass::CreateSettingsFile(){
+  bool TaggerClass::CreateSettingsFile(){
     if ( SettingsFileName.empty() ) {
       SettingsFileName = TestFileName + ".settings";
     }
@@ -386,7 +396,7 @@ struct more_second {
 	   !out_file.good() ) ){
       cerr << "couldn't create Settings-File `"
 	   << SettingsFileName << "'" << endl;
-      exit(EXIT_FAILURE);
+      return false;
     }
     else {
       if ( input_kind == ENRICHED )
@@ -403,6 +413,7 @@ struct more_second {
       COUT << endl << "  Created settings file '"
 			 << SettingsFileName << "'" << endl;
     }
+    return true;
   }
 
   //**** stuff to process commandline options *****************************
@@ -619,9 +630,15 @@ struct more_second {
 	uwords = tagger.CreateUnknown();
       }
     }
+    if ( kwords < 0 || uwords < 0 ){
+      cerr << "Generationg a tagger failed" << endl;
+      return -1;
+    }
     COUT << "      ready: " << kwords << " words processed."
 	 << endl;
-    tagger.CreateSettingsFile();
+    if ( !tagger.CreateSettingsFile() ){
+      return -1;
+    }
     return kwords + uwords;
   }
 

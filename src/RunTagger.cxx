@@ -971,12 +971,6 @@ namespace Tagger {
 						SettingsFilePath );
 	reverseflag = true;
 	break;
-      case 'S':
-	cerr << "Server mode NOT longer supported in this version!\n"
-	     << "use mbtserver instead\n"
-	     << "sorry..." << endl;
-	exit(EXIT_FAILURE);
-	break;
       case 't':
 	sscanf(SetBuffer,"t %300s", value );
 	TestFileName = value;

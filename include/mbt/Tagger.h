@@ -107,7 +107,7 @@ namespace Tagger {
     // only for backward compatability
     int CreateKnown();
     int CreateUnknown();
-    void CreateSettingsFile();
+    bool CreateSettingsFile();
     std::string set_eos_mark( const std::string& );
     bool set_default_filenames();
     bool parse_create_args( TiCC::CL_Options& );
@@ -165,7 +165,7 @@ namespace Tagger {
     static void manifest();
     int makedataset( std::istream& infile, bool do_known );
     bool readsettings( std::string& fname );
-    void create_lexicons();
+    bool create_lexicons();
     int ProcessFile( std::istream&, std::ostream& );
     void ProcessTags( TagInfo * );
     void InitTest( const sentence&, std::vector<int>&, MatchAction );
