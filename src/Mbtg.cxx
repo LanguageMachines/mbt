@@ -30,6 +30,10 @@
 #include "mbt/MbtAPI.h"
 
 int main(int argc, char *argv[]) {
-  MbtAPI::GenerateTagger( argc, argv );
-  exit(EXIT_SUCCESS);
+  if ( MbtAPI::GenerateTagger( argc, argv ) ){
+    return EXIT_SUCCESS;
+  }
+  else {
+    return EXIT_FAILURE;
+  }
 }
