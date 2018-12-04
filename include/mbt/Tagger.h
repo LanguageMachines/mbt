@@ -123,6 +123,9 @@ namespace Tagger {
     static int CreateTagger( const std::string& );
     static int CreateTagger( int, char** );
     bool isInit() const { return initialized; };
+    static void manifest( const std::string& );
+    static void run_usage( const std::string& );
+    static void gen_usage( const std::string& );
   private:
     TaggerClass& operator=( const TaggerClass& ); // inhibit copy-assignment
     TiCC::LogStream *cur_log;
@@ -162,7 +165,6 @@ namespace Tagger {
     TiCC::Timer timer2;
     TiCC::Timer timer3;
 
-    static void manifest();
     int makedataset( std::istream& infile, bool do_known );
     bool readsettings( std::string& fname );
     bool create_lexicons();

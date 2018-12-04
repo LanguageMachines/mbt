@@ -423,11 +423,6 @@ namespace Tagger {
 
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
     string value;
-    if ( opts.is_present( 'V' ) ||
-	 opts.is_present( "version" ) ){
-      // we already identified ourself. just bail out.
-      return false;
-    }
     if ( opts.extract( '%', value ) ){
       FilterThreshold = stringTo<int>( value );
     }
@@ -562,7 +557,7 @@ namespace Tagger {
     return true;
   }
 
-  void gen_usage( const string& progname ){
+  void TaggerClass::gen_usage( const string& progname ){
     cerr << "Usage is : " << progname << " option option ...\n"
 	 << "\t-s settingsfile\n"
 	 << "\t-% <percentage> Filter Threshold for ambitag construction (default 5%)\n"
@@ -595,21 +590,16 @@ namespace Tagger {
     if ( opts.is_present( 'h' ) ||
 	 opts.is_present( "help" ) ){
       gen_usage( "mbtg" );
-      return -1;
+      return 0;
     }
     //
     // present yourself to the user
     //
-    cerr << "mbtg " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2018." << endl
-	 << "Memory Based Tagger Generator" << endl
-	 << "CLST  - Centre for Language and Speech Technology,"
-	 << "Radboud University" << endl
-	 << "ILK   - Induction of Linguistic Knowledge Research Group,"
-	 << "Tilburg University" << endl
-	 << "CLiPS - Computational Linguistics Group, University of Antwerp"
-	 << endl
-	 << "Based on " << Timbl::VersionName()
-	 << endl << endl;
+    if ( opts.is_present( 'V' ) ||
+	 opts.is_present( "version" ) ){
+      TaggerClass::manifest( "mbtg" );
+      return 0;
+    }
     TaggerClass tagger;
     if ( !tagger.parse_create_args( opts ) )
       return -1;

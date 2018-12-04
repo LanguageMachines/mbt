@@ -1148,10 +1148,10 @@ namespace Tagger {
     return true;
   }
 
-  void TaggerClass::manifest(){
+  void TaggerClass::manifest( const string& prog ){
     // present yourself to the user
     //
-    cerr << "mbt " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2018." << endl
+    cerr << prog << " " << VERSION << " (c) CLST, ILK and CLiPS 1998 - 2018." << endl
 	 << "Memory Based Tagger " << endl
 	 << "CLST  - Centre for Language and Speech Technology,"
 	 << "Radboud University" << endl
@@ -1166,7 +1166,7 @@ namespace Tagger {
   const std::string mbt_short_opts = "hv:VB:dD:e:k:l:L:o:O:r:s:t:E:T:u:";
   const std::string mbt_long_opts  = "help,version,settings:,tabbed";
 
-  void run_usage( const string& progname ){
+  void TaggerClass::run_usage( const string& progname ){
     cerr << "Usage is : " << progname << " option option ... \n"
 	 << "\t-s settingsfile  ...or:\n\n"
 	 << "\t-l <lexiconfile>\n"
@@ -1196,15 +1196,6 @@ namespace Tagger {
 
   TaggerClass *TaggerClass::StartTagger( TiCC::CL_Options& opts,
 					 LogStream* os ){
-    string progname = opts.prog_name();
-    if ( opts.extract('h') || opts.extract("help") ){
-      run_usage( progname );
-      return 0;
-    }
-    if ( opts.extract('V') || opts.extract("version") ){
-      manifest();
-      return 0;
-    }
     TaggerClass *tagger = new TaggerClass;
     if ( !tagger->parse_run_args( opts ) ){
       delete tagger;
@@ -1213,7 +1204,7 @@ namespace Tagger {
     if ( os )
       tagger->setLog( *os );
     else // only manifest() when running 'standalone'
-      manifest();
+      manifest( "mbt" );
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;

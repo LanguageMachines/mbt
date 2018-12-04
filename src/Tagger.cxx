@@ -196,9 +196,9 @@ namespace Tagger {
   }
 
   TaggerClass::~TaggerClass(){
-    LOG << "classify total took: " << timer1 << endl;
-    LOG << "classify known took: " << timer2 << endl;
-    LOG << "classify unknown took: " << timer3 << endl;
+    DBG << "classify total took: " << timer1 << endl;
+    DBG << "classify known took: " << timer2 << endl;
+    DBG << "classify unknown took: " << timer3 << endl;
     if ( !cloned ){
       delete KnownTree;
       delete unKnownTree;

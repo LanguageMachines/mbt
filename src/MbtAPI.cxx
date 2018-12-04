@@ -56,6 +56,15 @@ MbtAPI::MbtAPI( const std::string& optstring ){
     cerr << e.what() << endl;
     return;
   }
+  string progname = opts.prog_name();
+  if ( opts.extract('h') || opts.extract("help") ){
+    TaggerClass::run_usage( progname );
+    return;
+  }
+  if ( opts.extract('V') || opts.extract("version") ){
+    TaggerClass::manifest( progname );
+    return;
+  }
   tagger = TaggerClass::StartTagger( opts );
 }
 
@@ -67,6 +76,15 @@ MbtAPI::MbtAPI( const std::string& optstring, LogStream& ls ){
   }
   catch( std::exception& e ){
     cerr << e.what() << endl;
+    return;
+  }
+  string progname = opts.prog_name();
+  if ( opts.extract('h') || opts.extract("help") ){
+    TaggerClass::run_usage( progname );
+    return;
+  }
+  if ( opts.extract('V') || opts.extract("version") ){
+    TaggerClass::manifest( progname );
     return;
   }
   tagger = TaggerClass::StartTagger( opts, &ls );
@@ -123,6 +141,9 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   if ( nw < 0 ){
     return false;
   }
+  else if ( nw == 0 ){
+    return true;
+  }
   time(&timeafter);
   timediff = timeafter - timebefore;
   if ( timediff == 0 )
@@ -143,6 +164,9 @@ bool MbtAPI::GenerateTagger( const std::string& arg ) {
   int nw = TaggerClass::CreateTagger( arg );
   if ( nw < 0 ){
     return false;
+  }
+  else if ( nw == 0 ){
+    return true;
   }
   time(&timeafter);
   timediff = timeafter - timebefore;
@@ -166,6 +190,15 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
   catch( std::exception& e ){
     cerr << e.what() << endl;
     return false;
+  }
+  string progname = opts.prog_name();
+  if ( opts.extract('h') || opts.extract("help") ){
+    TaggerClass::run_usage( progname );
+    return true;
+  }
+  if ( opts.extract('V') || opts.extract("version") ){
+    TaggerClass::manifest( progname );
+    return true;
   }
   TaggerClass *tagger = TaggerClass::StartTagger( opts );
   if ( !tagger ){
