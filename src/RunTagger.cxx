@@ -41,6 +41,7 @@
 #include "config.h"
 #include "timbl/TimblAPI.h"
 #include "ticcutils/Timer.h"
+#include "ticcutils/PrettyPrint.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"
@@ -56,6 +57,7 @@ namespace Tagger {
   using namespace std;
   using namespace Hash;
   using namespace Timbl;
+  using TiCC::operator<<;
 
   const string UNKSTR   = "UNKNOWN";
 
@@ -805,6 +807,36 @@ namespace Tagger {
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
       result = result + decode( EosMark );
+    return result;
+  }
+
+  vector<TagResult> StringToTR( const string& line ) {
+    vector<string> parts = TiCC::split( line );
+    vector<TagResult> result;
+    for ( const auto& p : parts ){
+      vector<string> word_tags;
+      TiCC::split_at( p, word_tags, "/", true );
+      LOG << "word-tags=" << word_tags << endl;
+      if ( word_tags.size() == 1 ){
+	break;
+      }
+      if ( word_tags.size() == 3 ){
+	TagResult tr;
+	tr._word= word_tags[0];
+	tr._tag = word_tags[1];
+	tr._confidence = TiCC::stringTo<double>(word_tags[2]);
+	tr._known = true;
+	result.push_back( tr );
+      }
+      else if ( word_tags.size() == 4 ){
+	TagResult tr;
+	tr._word= word_tags[0];
+	tr._tag = word_tags[2];
+	tr._confidence = TiCC::stringTo<double>(word_tags[3]);
+	tr._known = false;
+	result.push_back( tr );
+      }
+    }
     return result;
   }
 

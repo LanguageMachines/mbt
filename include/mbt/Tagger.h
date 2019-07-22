@@ -232,6 +232,7 @@ namespace Tagger {
 
   class TagResult {
     friend std::vector<TagResult> TaggerClass::tagSentence( sentence& );
+    friend std::vector<TagResult> StringToTR( const std::string& );
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
     bool isKnown() const { return _known; };
@@ -256,6 +257,8 @@ namespace Tagger {
   inline void RemoveTagger( TaggerClass* tagger ){
     delete tagger;
   }
+
+  std::vector<TagResult> StringToTR( const std::string& );
 
   const std::string& indexlex( const unsigned int, StringHash& );
   void get_weightsfile_name( std::string& opts, std::string& );
