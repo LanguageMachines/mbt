@@ -834,7 +834,6 @@ namespace Tagger {
   }
 
   int TaggerClass::ProcessFile( istream& infile, ostream& outfile ){
-    bool go_on = true;
     int no_words=0;
     int no_correct_known=0;
     int no_correct_unknown=0;
@@ -846,8 +845,7 @@ namespace Tagger {
     int HartBeat = 0;
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
-    while ( go_on &&
-	    mySentence.read(infile, input_kind, EosMark, Separators, line_cnt ) ){
+    while ( mySentence.read(infile, input_kind, EosMark, Separators, line_cnt ) ){
       if ( mySentence.size() == 0 )
 	continue;
       if ( ++HartBeat % 100 == 0 ) {
