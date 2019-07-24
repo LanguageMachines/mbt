@@ -810,31 +810,65 @@ namespace Tagger {
     return result;
   }
 
-  vector<TagResult> StringToTR( const string& line ) {
-    vector<string> parts = TiCC::split( line );
+  vector<TagResult> StringToTR( const string& line, bool enriched ) {
     vector<TagResult> result;
-    for ( const auto& p : parts ){
-      vector<string> word_tags;
-      TiCC::split_at( p, word_tags, "/", true );
-      LOG << "word-tags=" << word_tags << endl;
-      if ( word_tags.size() == 1 ){
-	break;
-      }
-      if ( word_tags.size() == 3 ){
+    if ( enriched ){
+      //      LOG << "handle ENRICHED: " << line << endl;
+      vector<string> lines = TiCC::split_at_first_of( line, "\n\r" );
+      //      LOG << "got " << lines.size() << " lines" << endl;
+      for ( const auto& l : lines ){
+	//	LOG << "handle line: " << l << endl;
+	vector<string> parts;
+	TiCC::split_at( l, parts, "/", true );
+	LOG << "split into " << parts.size() << " parts " << endl;
+	if ( parts.size() == 1 ){
+	  break;
+	}
 	TagResult tr;
-	tr._word= word_tags[0];
-	tr._tag = word_tags[1];
-	tr._confidence = TiCC::stringTo<double>(word_tags[2]);
-	tr._known = true;
+	tr._word = parts[0];
+	vector<string> word_tags;
+	if ( parts.size() == 2 ){
+	  word_tags = TiCC::split_at( parts[1], "??" );
+	  tr._known = true;
+	}
+	else {
+	  word_tags = TiCC::split_at( parts[2], "??" );
+	  tr._known = false;
+	}
+	//	LOG << "word-tags=" << word_tags << endl;
+	vector<string> res = TiCC::split( word_tags[1] );
+	tr._tag = res[0];
+	vector<string> conf = TiCC::split_at_first_of( res[1], "[]" );
+	tr._confidence = TiCC::stringTo<double>(conf[0]);
 	result.push_back( tr );
       }
-      else if ( word_tags.size() == 4 ){
-	TagResult tr;
-	tr._word= word_tags[0];
-	tr._tag = word_tags[2];
-	tr._confidence = TiCC::stringTo<double>(word_tags[3]);
-	tr._known = false;
-	result.push_back( tr );
+    }
+    else {
+      //      LOG << "handle Normal: " << line << endl;
+      vector<string> parts = TiCC::split( line );
+      for ( const auto& p : parts ){
+	vector<string> word_tags;
+	TiCC::split_at( p, word_tags, "/", true );
+	//	LOG << "word-tags=" << word_tags << endl;
+	if ( word_tags.size() == 1 ){
+	  break;
+	}
+	if ( word_tags.size() == 3 ){
+	  TagResult tr;
+	  tr._word= word_tags[0];
+	  tr._tag = word_tags[1];
+	  tr._confidence = TiCC::stringTo<double>(word_tags[2]);
+	  tr._known = true;
+	  result.push_back( tr );
+	}
+	else if ( word_tags.size() == 4 ){
+	  TagResult tr;
+	  tr._word= word_tags[0];
+	  tr._tag = word_tags[2];
+	  tr._confidence = TiCC::stringTo<double>(word_tags[3]);
+	  tr._known = false;
+	  result.push_back( tr );
+	}
       }
     }
     return result;

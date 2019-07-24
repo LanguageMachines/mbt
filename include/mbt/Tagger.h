@@ -118,6 +118,7 @@ namespace Tagger {
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
+    bool enriched() const { return input_kind == ENRICHED; };
     static TaggerClass *StartTagger( TiCC::CL_Options&, TiCC::LogStream* = 0 );
     static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
@@ -232,7 +233,7 @@ namespace Tagger {
 
   class TagResult {
     friend std::vector<TagResult> TaggerClass::tagSentence( sentence& );
-    friend std::vector<TagResult> StringToTR( const std::string& );
+    friend std::vector<TagResult> Tagger::StringToTR( const std::string&, bool );
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
     bool isKnown() const { return _known; };
@@ -258,7 +259,7 @@ namespace Tagger {
     delete tagger;
   }
 
-  std::vector<TagResult> StringToTR( const std::string& );
+  std::vector<TagResult> StringToTR( const std::string&, bool=false );
 
   const std::string& indexlex( const unsigned int, StringHash& );
   void get_weightsfile_name( std::string& opts, std::string& );
