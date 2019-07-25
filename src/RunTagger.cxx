@@ -874,6 +874,57 @@ namespace Tagger {
     return result;
   }
 
+  nlohmann::json TaggerClass::TR_to_json( const vector<TagResult>& trs ) const {
+    nlohmann::json result = nlohmann::json::array();
+    for ( const auto& tr : trs ){
+      // lookup the assigned category
+      nlohmann::json one_entry;
+      one_entry["word"] = tr.word();
+      one_entry["known"] = tr.isKnown();
+      if ( input_kind == ENRICHED ){
+	one_entry["enrichment"] = tr.enrichment();
+      }
+      one_entry["original_tag"] = tr.inputTag();
+      one_entry["assigned_tag"] = tr.assignedTag();
+      if ( confidence_flag ){
+	one_entry["confidence"] = tr.confidence();
+      }
+      if ( distrib_flag ){
+	one_entry["distribution"] = tr.distribution();
+      }
+      if ( distance_flag ){
+	one_entry["distance"] = tr.distance();
+      }
+      result.push_back( one_entry );
+    } // end of output loop through one sentence
+    return result;
+  }
+
+  vector<TagResult> json_to_TR( const nlohmann::json& in ){
+    vector<TagResult> result;
+    for ( const auto& i : in ){
+      TagResult tr;
+      tr._word = i["word"];
+      tr._known = i["known"];
+      tr._tag = i["assigned_tag"];
+      tr._inputTag = i["original_tag"];
+      if ( i.find("confidence") != i.end() ){
+	tr._confidence = i["confidence"];
+      }
+      if ( i.find("distance") != i.end() ){
+	tr._confidence = i["distance"];
+      }
+      if ( i.find("distribution") != i.end() ){
+	tr._confidence = i["distribution"];
+      }
+      if ( i.find("enrichment") != i.end() ){
+	tr._enrichment = i["enrichment"];
+      }
+      result.push_back( tr );
+    }
+    return result;
+  }
+
   void TaggerClass::statistics( const sentence& mySentence,
 				int& no_known, int& no_unknown,
 				int& no_correct_known,

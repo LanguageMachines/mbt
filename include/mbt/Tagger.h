@@ -31,6 +31,7 @@
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "ticcutils/Timer.h"
+#include "json/json.hpp"
 #include "timbl/TimblAPI.h"
 
 namespace TiCC {
@@ -103,6 +104,7 @@ namespace Tagger {
       return TRtoString( tagLine(inp) );
     };
     std::string TRtoString( const std::vector<TagResult>& ) const;
+    nlohmann::json TR_to_json( const std::vector<TagResult>& ) const;
     int TagLine( const std::string&, std::string& );
     // only for backward compatability
     int CreateKnown();
@@ -234,6 +236,7 @@ namespace Tagger {
   class TagResult {
     friend std::vector<TagResult> TaggerClass::tagSentence( sentence& );
     friend std::vector<TagResult> StringToTR( const std::string&, bool );
+    friend std::vector<TagResult> json_to_TR( const nlohmann::json& );
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
     bool isKnown() const { return _known; };
@@ -260,6 +263,8 @@ namespace Tagger {
   }
 
   std::vector<TagResult> StringToTR( const std::string&, bool=false );
+
+  std::vector<TagResult> json_to_TR( const nlohmann::json& );
 
   const std::string& indexlex( const unsigned int, StringHash& );
   void get_weightsfile_name( std::string& opts, std::string& );

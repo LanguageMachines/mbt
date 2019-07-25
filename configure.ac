@@ -64,6 +64,9 @@ PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.16] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
 
+PKG_CHECK_MODULES([json], [json >= 0.1] )
+CXXFLAGS="$CXXFLAGS $json_CFLAGS"
+
 AC_CONFIG_FILES([
   Makefile
   mbt.pc
