@@ -899,6 +899,34 @@ namespace Tagger {
     return result;
   }
 
+  vector<TagResult> json_to_TR( const nlohmann::json& in ){
+    cerr << "json_to_TR( " << in  << ")" << endl;
+    vector<TagResult> result;
+    for ( auto& i : in ){
+      cerr << "looping json_to_TR( " << i << ")" << endl;
+      TagResult tr;
+      tr._word = i["word"];
+      if ( i.find("known") != i.end() ){
+	tr._known = i["known"] == "true";
+      }
+      tr._tag = i["tag"];
+      if ( i.find("confidence") != i.end() ){
+       tr._confidence = i["confidence"];
+      }
+      if ( i.find("distance") != i.end() ){
+       tr._confidence = i["distance"];
+      }
+      if ( i.find("distribution") != i.end() ){
+       tr._confidence = i["distribution"];
+      }
+      if ( i.find("enrichment") != i.end() ){
+       tr._enrichment = i["enrichment"];
+      }
+      result.push_back( tr );
+    }
+    return result;
+  }
+
   void TaggerClass::statistics( const sentence& mySentence,
 				int& no_known, int& no_unknown,
 				int& no_correct_known,
