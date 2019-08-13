@@ -237,7 +237,6 @@ namespace Tagger {
   class TagResult {
     friend std::vector<TagResult> TaggerClass::tagSentence( sentence& );
     friend std::vector<TagResult> StringToTR( const std::string&, bool );
-    friend class MbtJSONServerBase;
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
     bool is_known() const { return _known; };
