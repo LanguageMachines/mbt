@@ -45,6 +45,6 @@ int main(){
   MbtAPI demo( "-s ./simple.setting" );
   cerr << demo.Tag( "dit is een test" ) << endl;
   vector<TagResult> v = demo.TagLine( "Test regel 2 ." );
-  assert( v[0].assignedTag() == "N" );
+  assert( v[0].assigned_tag() == "N" );
   assert( v[2].confidence() == -1 );
 }
