@@ -900,10 +900,10 @@ namespace Tagger {
   }
 
   vector<TagResult> json_to_TR( const nlohmann::json& in ){
-    cerr << "json_to_TR( " << in  << ")" << endl;
+    //    cerr << "json_to_TR( " << in  << ")" << endl;
     vector<TagResult> result;
     for ( auto& i : in ){
-      cerr << "looping json_to_TR( " << i << ")" << endl;
+      //      cerr << "looping json_to_TR( " << i << ")" << endl;
       TagResult tr;
       tr._word = i["word"];
       if ( i.find("known") != i.end() ){
