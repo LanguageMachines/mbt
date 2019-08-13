@@ -740,7 +740,7 @@ namespace Tagger {
 	// get the original word
 	res._word= mySentence.getword(Wcnt);
 	// get the original tag
-	res._inputTag = mySentence.gettag(Wcnt);
+	res._input_tag = mySentence.gettag(Wcnt);
 	// lookup the assigned tag
 	res._tag = indexlex( Beam->paths[0][Wcnt], TheLex );
 	// is it known/unknown
@@ -771,7 +771,7 @@ namespace Tagger {
     for ( const auto& tr : trs ){
       // lookup the assigned category
       result += tr.word();
-      if ( tr.isKnown() ){
+      if ( tr.is_known() ){
 	if ( input_kind == UNTAGGED )
 	  result += "/";
 	else
@@ -789,7 +789,7 @@ namespace Tagger {
 	result = result + tr.enrichment() + "\t";
       if ( input_kind == TAGGED ||
 	   input_kind == ENRICHED ){
-	result += tr.inputTag() + "\t" + tr.assignedTag();
+	result += tr.input_tag() + "\t" + tr.assigned_tag();
 	if ( confidence_flag )
 	  result += " [" + toString( tr.confidence() ) + "]";
 	if ( distrib_flag )
@@ -799,7 +799,7 @@ namespace Tagger {
 	result += "\n";
       }
       else {
-	result += tr.assignedTag();
+	result += tr.assigned_tag();
 	if ( confidence_flag )
 	  result += "/" + toString( tr.confidence() );
 	result += " ";
@@ -807,123 +807,6 @@ namespace Tagger {
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED )
       result = result + decode( EosMark );
-    return result;
-  }
-
-  vector<TagResult> StringToTR( const string& line, bool enriched ) {
-    vector<TagResult> result;
-    if ( enriched ){
-      //      LOG << "handle ENRICHED: " << line << endl;
-      vector<string> lines = TiCC::split_at_first_of( line, "\n\r" );
-      //      LOG << "got " << lines.size() << " lines" << endl;
-      for ( const auto& l : lines ){
-	//	LOG << "handle line: " << l << endl;
-	vector<string> parts;
-	TiCC::split_at( l, parts, "/", true );
-	LOG << "split into " << parts.size() << " parts " << endl;
-	if ( parts.size() == 1 ){
-	  break;
-	}
-	TagResult tr;
-	tr._word = parts[0];
-	vector<string> word_tags;
-	if ( parts.size() == 2 ){
-	  word_tags = TiCC::split_at( parts[1], "??" );
-	  tr._known = true;
-	}
-	else {
-	  word_tags = TiCC::split_at( parts[2], "??" );
-	  tr._known = false;
-	}
-	//	LOG << "word-tags=" << word_tags << endl;
-	vector<string> res = TiCC::split( word_tags[1] );
-	tr._tag = res[0];
-	vector<string> conf = TiCC::split_at_first_of( res[1], "[]" );
-	tr._confidence = TiCC::stringTo<double>(conf[0]);
-	result.push_back( tr );
-      }
-    }
-    else {
-      //      LOG << "handle Normal: " << line << endl;
-      vector<string> parts = TiCC::split( line );
-      for ( const auto& p : parts ){
-	vector<string> word_tags;
-	TiCC::split_at( p, word_tags, "/", true );
-	//	LOG << "word-tags=" << word_tags << endl;
-	if ( word_tags.size() == 1 ){
-	  break;
-	}
-	if ( word_tags.size() == 3 ){
-	  TagResult tr;
-	  tr._word= word_tags[0];
-	  tr._tag = word_tags[1];
-	  tr._confidence = TiCC::stringTo<double>(word_tags[2]);
-	  tr._known = true;
-	  result.push_back( tr );
-	}
-	else if ( word_tags.size() == 4 ){
-	  TagResult tr;
-	  tr._word= word_tags[0];
-	  tr._tag = word_tags[2];
-	  tr._confidence = TiCC::stringTo<double>(word_tags[3]);
-	  tr._known = false;
-	  result.push_back( tr );
-	}
-      }
-    }
-    return result;
-  }
-
-  nlohmann::json TaggerClass::TR_to_json( const vector<TagResult>& trs ) const {
-    nlohmann::json result = nlohmann::json::array();
-    for ( const auto& tr : trs ){
-      // lookup the assigned category
-      nlohmann::json one_entry;
-      one_entry["word"] = tr.word();
-      one_entry["known"] = tr.isKnown();
-      if ( input_kind == ENRICHED ){
-	one_entry["enrichment"] = tr.enrichment();
-      }
-      one_entry["tag"] = tr.assignedTag();
-      if ( confidence_flag ){
-	one_entry["confidence"] = tr.confidence();
-      }
-      if ( distrib_flag ){
-	one_entry["distribution"] = tr.distribution();
-      }
-      if ( distance_flag ){
-	one_entry["distance"] = tr.distance();
-      }
-      result.push_back( one_entry );
-    } // end of output loop through one sentence
-    return result;
-  }
-
-  vector<TagResult> json_to_TR( const nlohmann::json& in ){
-    //    cerr << "json_to_TR( " << in  << ")" << endl;
-    vector<TagResult> result;
-    for ( auto& i : in ){
-      //      cerr << "looping json_to_TR( " << i << ")" << endl;
-      TagResult tr;
-      tr._word = i["word"];
-      if ( i.find("known") != i.end() ){
-	tr._known = i["known"] == "true";
-      }
-      tr._tag = i["tag"];
-      if ( i.find("confidence") != i.end() ){
-       tr._confidence = i["confidence"];
-      }
-      if ( i.find("distance") != i.end() ){
-       tr._confidence = i["distance"];
-      }
-      if ( i.find("distribution") != i.end() ){
-       tr._confidence = i["distribution"];
-      }
-      if ( i.find("enrichment") != i.end() ){
-       tr._enrichment = i["enrichment"];
-      }
-      result.push_back( tr );
-    }
     return result;
   }
 

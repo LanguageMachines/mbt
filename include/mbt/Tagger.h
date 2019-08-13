@@ -104,7 +104,6 @@ namespace Tagger {
       return TRtoString( tagLine(inp) );
     };
     std::string TRtoString( const std::vector<TagResult>& ) const;
-    nlohmann::json TR_to_json( const std::vector<TagResult>& ) const;
     int TagLine( const std::string&, std::string& );
     // only for backward compatability
     int CreateKnown();
@@ -121,6 +120,9 @@ namespace Tagger {
     void read_lexicon( const std::string& );
     void read_listfile( const std::string&, StringHash * );
     bool enriched() const { return input_kind == ENRICHED; };
+    bool distance_is_set() const { return distance_flag; };
+    bool distrib_is_set()const { return distrib_flag; };
+    bool confidence_is_set() const { return confidence_flag; };
     static TaggerClass *StartTagger( TiCC::CL_Options&, TiCC::LogStream* = 0 );
     static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
@@ -236,20 +238,35 @@ namespace Tagger {
   class TagResult {
     friend std::vector<TagResult> TaggerClass::tagSentence( sentence& );
     friend std::vector<TagResult> StringToTR( const std::string&, bool );
-    friend std::vector<TagResult> json_to_TR( const nlohmann::json& );
+    friend class MbtJSONServerBase;
   public:
   TagResult(): _distance(-1), _confidence(-1), _known(false){};
-    bool isKnown() const { return _known; };
+    bool is_known() const { return _known; };
+    void set_known( bool b ) { _known = b; };
+
     std::string word() const { return _word; };
-    std::string assignedTag() const { return _tag; };
-    std::string inputTag() const { return _inputTag; };
+    void set_word( const std::string& w ) { _word = w; };
+
+    std::string assigned_tag() const { return _tag; };
+    void set_tag( const std::string& t ) { _tag = t; };
+
+    std::string input_tag() const { return _input_tag; };
+    void set_input_tag( const std::string& t ) { _input_tag = t; };
+
     std::string enrichment() const { return _enrichment; };
+    void set_enrichment( const std::string& e ){ _enrichment = e; };
+
     std::string distribution() const { return _distribution; };
+    void set_distribution( const std::string& d ){ _distribution = d; };
+
     double confidence() const { return _confidence; };
+    void set_confidence( double c ){ _confidence = c; };
+
     double distance() const { return _distance; };
+    void set_distance( double c ){ _distance = c; };
   private:
     std::string _word;
-    std::string _inputTag;
+    std::string _input_tag;
     std::string _tag;
     std::string _enrichment;
     std::string _distribution;
@@ -263,8 +280,6 @@ namespace Tagger {
   }
 
   std::vector<TagResult> StringToTR( const std::string&, bool=false );
-
-  std::vector<TagResult> json_to_TR( const nlohmann::json& );
 
   const std::string& indexlex( const unsigned int, StringHash& );
   void get_weightsfile_name( std::string& opts, std::string& );
