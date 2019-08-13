@@ -31,7 +31,6 @@
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "ticcutils/Timer.h"
-#include "json/json.hpp"
 #include "timbl/TimblAPI.h"
 
 namespace TiCC {
