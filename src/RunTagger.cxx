@@ -206,8 +206,9 @@ namespace Tagger {
 
   name_prob_pair *add_descending( name_prob_pair *n, name_prob_pair *lst ){
     name_prob_pair *result;
-    if ( lst == 0 )
+    if ( lst == 0 ){
       result = n;
+    }
     else if ( n->prob - lst->prob >= 0 ){
       result = n;
       n->next = lst;
@@ -233,21 +234,23 @@ namespace Tagger {
     double sum_freq = 0.0;
     for ( const auto& it : *Dist ){
       string name = it.second->Value()->Name();
-      //      string name = (*it).second->Value()->Name();
       double freq = it.second->Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
-      if ( name == PrefClass->Name() )
+      if ( name == PrefClass->Name() ){
+	assert( Pref == 0 );
 	Pref = tmp;
-      else
+      }
+      else {
 	result = add_descending( tmp, result );
+      }
     }
     if ( Pref ){
       Pref->next = result;
       result = Pref;
     }
     //
-    // Now we must Normalize te get real Probalilities
+    // Now we must Normalize te get real Probabilities
     tmp = result;
     while ( tmp ){
       tmp->prob = tmp->prob / sum_freq;
@@ -311,12 +314,14 @@ namespace Tagger {
 	      break;
 	    if ( ane == 0 ||
 		 thisPProb <= n_best_array[ane-1]->prob ){
- 	      if ( ane == 0 )
+ 	      if ( ane == 0 ){
  		DBG << "Insert, n=0" << endl;
- 	      else
+	      }
+ 	      else {
  		DBG << "Insert, n=" << ane << " Prob = " << thisPProb
 		    << " after prob = " << n_best_array[ane-1]->prob
 		    << endl;
+	      }
 	      // shift
 	      n_best_tuple *keep = n_best_array[size-1];
 	      for ( int ash = size-1; ash > ane; --ash ){
@@ -375,10 +380,12 @@ namespace Tagger {
 				     MatchAction action,
 				     int word ){
     int slots;
-    if ( action == Unknown )
+    if ( action == Unknown ){
       slots = Utemplate.totalslots() - Utemplate.skipfocus;
-    else
+    }
+    else {
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
+    }
     string line;
     for( int f=0; f < slots; ++f ){
       line += indexlex( pat[f], TheLex );
@@ -388,10 +395,12 @@ namespace Tagger {
     for ( const auto& er: enr ){
       line += er + " ";
     }
-    if ( input_kind != UNTAGGED )
+    if ( input_kind != UNTAGGED ){
       line += mySentence.gettag(word);
-    else
+    }
+    else {
       line += "??";
+    }
     if ( IsActive(DBG) ){
       ShowCats( LOG, pat, slots );
     }
@@ -448,10 +457,12 @@ namespace Tagger {
     //
     read_listfile( TopNFileName, kwordlist );
 
-    if ( TimblOptStr.empty() )
+    if ( TimblOptStr.empty() ){
       Timbl_Options = "-FColumns ";
-    else
+    }
+    else {
       Timbl_Options = TimblOptStr;
+    }
 
     // we want Timbl to run silently ALWAYS
     // so overrule all -vS settings from old versions
@@ -477,11 +488,13 @@ namespace Tagger {
       return false;
     }
     KnownTree = new TimblAPI( knownstr + commonstr );
-    if ( !KnownTree->Valid() )
+    if ( !KnownTree->Valid() ){
       return false;
+    }
     unKnownTree = new TimblAPI( unknownstr + commonstr );
-    if ( !unKnownTree->Valid() )
+    if ( !unKnownTree->Valid() ){
       return false;
+    }
     // read a previously stored InstanceBase for known words
     //
     LOG << "  Reading case-base for known words from: " << KnownTreeName
@@ -588,8 +601,9 @@ namespace Tagger {
 					    double& distance ){
     const TargetValue *answer = 0;
 #if defined(HAVE_PTHREAD)
-    if ( cloned )
+    if ( cloned ){
       pthread_mutex_lock( &timbl_lock );
+    }
 #endif
     timer1.start();
     if ( Action == Known ){
@@ -604,8 +618,9 @@ namespace Tagger {
     }
     timer1.stop();
 #if defined(HAVE_PTHREAD)
-    if ( cloned )
+    if ( cloned ){
       pthread_mutex_unlock( &timbl_lock );
+    }
 #endif
     if ( !answer ){
       throw runtime_error( "Tagger: A classifying problem prevented continuing. Sorry!" );
@@ -624,13 +639,16 @@ namespace Tagger {
     distance_array.resize( mySentence.size() );
     distribution_array.resize( mySentence.size() );
     confidence_array.resize( mySentence.size() );
-    if ( distance_flag )
+    if ( distance_flag ){
       distance_array[0] = distance;
+    }
     if ( distribution ){
-      if ( distrib_flag )
+      if ( distrib_flag ){
 	distribution_array[0] = distribution->DistToString();
-      if ( confidence_flag )
+      }
+      if ( confidence_flag ){
 	confidence_array[0] = distribution->Confidence( answer );
+      }
       if ( IsActive( DBG ) ){
 	LOG << "BeamData::InitPaths( " << mySentence << endl;
 	LOG << " , " << answer << " , " << distribution << " )" << endl;
@@ -664,13 +682,16 @@ namespace Tagger {
       const TargetValue *answer = Classify( Action, teststring,
 					    &distribution, distance );
       if ( beam_cnt == 0 ){
-	if ( distance_flag )
+	if ( distance_flag ){
 	  distance_array[i_word] = distance;
+	}
 	if ( distribution ){
-	  if ( distrib_flag )
+	  if ( distrib_flag ){
 	    distribution_array[i_word] = distribution->DistToString();
-	  if ( confidence_flag )
+	  }
+	  if ( confidence_flag ){
 	    confidence_array[i_word] = distribution->Confidence( answer );
+	  }
 	}
       }
       if ( IsActive( DBG ) ){
@@ -678,8 +699,9 @@ namespace Tagger {
 	LOG << " , " << answer << " , " << distribution << " )" << endl;
       }
       Beam->NextPath( TheLex, answer, distribution, beam_cnt );
-      if ( IsActive( DBG ) )
+      if ( IsActive( DBG ) ){
 	Beam->PrintBest( LOG, TheLex );
+      }
       return true;
     }
     else {
@@ -745,14 +767,18 @@ namespace Tagger {
 	res._tag = indexlex( Beam->paths[0][Wcnt], TheLex );
 	// is it known/unknown
 	res._known = mySentence.known(Wcnt);
-	if ( input_kind == ENRICHED )
+	if ( input_kind == ENRICHED ){
 	  res._enrichment = mySentence.getenr(Wcnt);
-	if ( confidence_flag )
+	}
+	if ( confidence_flag ){
 	  res._confidence = confidence_array[Wcnt];
-	if ( distrib_flag )
+	}
+	if ( distrib_flag ){
 	  res._distribution = distribution_array[Wcnt];
-	if ( distance_flag )
+	}
+	if ( distance_flag ){
 	  res._distance = distance_array[Wcnt];
+	}
 	result.push_back( res );
       }
     } // end of output loop through one sentence
@@ -760,10 +786,12 @@ namespace Tagger {
   }
 
   string decode( const string& eom ){
-    if ( eom  == "EL" )
+    if ( eom  == "EL" ){
       return "";
-    else
+    }
+    else {
       return eom;
+    }
   }
 
   string TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
@@ -772,41 +800,51 @@ namespace Tagger {
       // lookup the assigned category
       result += tr.word();
       if ( tr.is_known() ){
-	if ( input_kind == UNTAGGED )
+	if ( input_kind == UNTAGGED ){
 	  result += "/";
-	else
+	}
+	else {
 	  result += "\t/\t";
+	}
       }
       else {
-	if ( input_kind == UNTAGGED )
+	if ( input_kind == UNTAGGED ){
 	  result += "//";
-	else
+	}
+	else {
 	  result += "\t//\t";
+	}
       }
       // output the correct tag if possible
       //
-      if ( input_kind == ENRICHED )
+      if ( input_kind == ENRICHED ){
 	result = result + tr.enrichment() + "\t";
+      }
       if ( input_kind == TAGGED ||
 	   input_kind == ENRICHED ){
 	result += tr.input_tag() + "\t" + tr.assigned_tag();
-	if ( confidence_flag )
+	if ( confidence_flag ){
 	  result += " [" + toString( tr.confidence() ) + "]";
-	if ( distrib_flag )
+	}
+	if ( distrib_flag ){
 	  result += " " + tr.distribution();
-	if ( distance_flag )
+	}
+	if ( distance_flag ){
 	  result += " " + toString( tr.distance() );
+	}
 	result += "\n";
       }
       else {
 	result += tr.assigned_tag();
-	if ( confidence_flag )
+	if ( confidence_flag ){
 	  result += "/" + toString( tr.confidence() );
+	}
 	result += " ";
       }
     } // end of output loop through one sentence
-    if ( input_kind != ENRICHED )
+    if ( input_kind != ENRICHED ){
       result = result + decode( EosMark );
+    }
     return result;
   }
 
@@ -821,15 +859,17 @@ namespace Tagger {
       if ( mySentence.known(Wcnt) ){
 	no_known++;
 	if ( input_kind != UNTAGGED ){
-	  if ( mySentence.gettag(Wcnt) == tagstring )
-	    no_correct_known++;
+	  if ( mySentence.gettag(Wcnt) == tagstring ){
+	    ++no_correct_known;
+	  }
 	}
       }
       else {
 	no_unknown++;
 	if ( input_kind != UNTAGGED ){
-	  if ( mySentence.gettag(Wcnt) == tagstring )
-	    no_correct_unknown++;
+	  if ( mySentence.gettag(Wcnt) == tagstring ){
+	    ++no_correct_unknown;
+	  }
 	}
       }
     } // end of output loop through one sentence
@@ -894,10 +934,11 @@ namespace Tagger {
       else {
 	cerr << "  Known   words: " << no_known << endl;
 	cerr << "  Unknown words: " << no_unknown;
-	if ( no_unknown > 0 )
+	if ( no_unknown > 0 ){
 	  cerr << " ("
 	       << ((float)(no_unknown)/(float)(no_unknown+no_known))*100
 	       << " %)";
+	}
 	cerr << endl;
 	cerr << "  Total        : " << no_known+no_unknown << endl;
       }
@@ -916,8 +957,9 @@ namespace Tagger {
     while(setfile.getline(SetBuffer,511,'\n')){
       switch (SetBuffer[0]) {
       case 'B':
-	if ( sscanf(SetBuffer,"B %40d", &Beam_Size ) != 1 )
+	if ( sscanf(SetBuffer,"B %40d", &Beam_Size ) != 1 ){
 	  Beam_Size = 1;
+	}
 	break;
       case 'd':
 	dumpflag=true;
@@ -986,8 +1028,9 @@ namespace Tagger {
 	  piped_input = false;
 	  input_kind = ENRICHED; // an enriched tagged test file specified
 	}
-	else if ( !strncmp( SetBuffer, "ENRICHED", 8 ) )
+	else if ( !strncmp( SetBuffer, "ENRICHED", 8 ) ){
 	  input_kind = ENRICHED; // an enriched tagged test file specified
+	}
 	else {
 	  cerr << "Unknown option in settingsfile, ("
 	       << SetBuffer << "), ignored." <<endl;
@@ -1027,10 +1070,12 @@ namespace Tagger {
       SettingsFileName = value;
       // extract the absolute path to the settingsfile
       string::size_type lastSlash = SettingsFileName.rfind('/');
-      if ( lastSlash != string::npos )
+      if ( lastSlash != string::npos ){
 	SettingsFilePath = SettingsFileName.substr( 0, lastSlash+1 );
-      else
+      }
+      else {
 	SettingsFilePath = "";
+      }
       if( !readsettings( SettingsFileName ) ){
 	cerr << "Cannot read settingsfile " << SettingsFileName << endl;
 	return false;
@@ -1038,10 +1083,12 @@ namespace Tagger {
     };
     if ( Opts.extract( 'B', value ) ){
       int dum_beam = stringTo<int>(value);
-      if (dum_beam>1)
+      if ( dum_beam > 1 ){
 	Beam_Size = dum_beam;
-      else
+      }
+      else {
 	Beam_Size = 1;
+      }
     };
     if ( Opts.extract( 'd', value ) ){
       dumpflag=true;
@@ -1201,10 +1248,13 @@ namespace Tagger {
       delete tagger;
       return 0;
     }
-    if ( os )
+    if ( os ){
       tagger->setLog( *os );
-    else // only manifest() when running 'standalone'
+    }
+    else {
+      // only manifest() when running 'standalone'
       manifest( "mbt" );
+    }
     tagger->set_default_filenames();
     tagger->InitTagging();
     return tagger;
