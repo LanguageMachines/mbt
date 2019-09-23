@@ -98,6 +98,8 @@ namespace Tagger {
     TaggerClass *clone() const;
     int Run( );
     std::vector<TagResult> tagLine( const std::string& );
+    nlohmann::json tag_line_to_JSON( const std::string& );
+    nlohmann::json tag_JSON_to_JSON( const nlohmann::json& );
     std::vector<TagResult> tagSentence( sentence& );
     std::string Tag( const std::string& inp ){
       return TRtoString( tagLine(inp) );

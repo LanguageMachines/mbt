@@ -42,6 +42,7 @@
 #include "timbl/TimblAPI.h"
 #include "ticcutils/Timer.h"
 #include "ticcutils/PrettyPrint.h"
+#include "ticcutils/json.hpp"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
 #include "mbt/Logging.h"
@@ -52,6 +53,7 @@
 #endif
 
 using namespace TiCC;
+using namespace nlohmann;
 
 namespace Tagger {
   using namespace std;
@@ -721,6 +723,42 @@ namespace Tagger {
     size_t dummy = 0;
     mySentence.read( ss, input_kind, EosMark, Separators, dummy );
     return tagSentence( mySentence );
+  }
+
+  json TaggerClass::tag_line_to_JSON( const string& line ){
+    sentence mySentence( Ktemplate, Utemplate );
+    stringstream ss(line);
+    size_t dummy = 0;
+    mySentence.read( ss, input_kind, EosMark, Separators, dummy );
+    vector<TagResult> tag_results = tagSentence( mySentence );
+    json result = json::array();
+    for ( const auto& tr : tag_results ){
+      // lookup the assigned category
+      json one_entry;
+      one_entry["word"] = tr.word();
+      one_entry["known"] = tr.is_known();
+      if ( enriched() ){
+	one_entry["enrichment"] = tr.enrichment();
+      }
+      one_entry["tag"] = tr.assigned_tag();
+      if ( confidence_is_set() ){
+	one_entry["confidence"] = tr.confidence();
+      }
+      if ( distrib_is_set() ){
+	one_entry["distribution"] = tr.distribution();
+      }
+      if ( distance_is_set() ){
+	one_entry["distance"] = tr.distance();
+      }
+      result.push_back( one_entry );
+    }
+    return result;
+  }
+
+  json tag_JSON_to_JSON( const json& in ){
+    json result;
+    cerr << "tag_JSON_to_JSON(): Not implemented yet" << in << endl;
+    return result;
   }
 
   vector<TagResult> TaggerClass::tagSentence( sentence& mySentence ){
