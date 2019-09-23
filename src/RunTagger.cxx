@@ -755,10 +755,49 @@ namespace Tagger {
     return result;
   }
 
-  json tag_JSON_to_JSON( const json& in ){
-    json result;
-    cerr << "tag_JSON_to_JSON(): Not implemented yet" << in << endl;
+  string extract_text( const json& my_json ){
+    string result;
+    if ( my_json.is_array() ){
+      for ( const auto& it : my_json ){
+	string tmp = it["word"];
+	result += tmp + " ";
+	if ( it.find("enrichment") != it.end() ){
+	  tmp = it["enrichment"];
+	  result += tmp + " ";
+	  if ( it.find("tag") != it.end() ){
+	    tmp = it["tag"];
+	    result += tmp;
+	  }
+	  else {
+	    result += "??";
+	  }
+	  result += "\n";
+	}
+      }
+    }
+    else {
+      string tmp = my_json["word"];
+      result += tmp +  " ";
+      if ( my_json.find("enrichment") != my_json.end() ){
+	tmp = my_json["enrichment"];
+	result += tmp + " ";
+	if ( my_json.find("tag") != my_json.end() ){
+	  tmp = my_json["tag"];
+	  result += tmp;
+	}
+	else {
+	  result += "??";
+	}
+	result += "\n";
+      }
+    }
     return result;
+  }
+
+  json TaggerClass::tag_JSON_to_JSON( const json& in ){
+    json result;
+    string line = extract_text( in );
+    return tag_line_to_JSON( line );
   }
 
   vector<TagResult> TaggerClass::tagSentence( sentence& mySentence ){
