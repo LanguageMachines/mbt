@@ -181,7 +181,7 @@ size_t PatTemplate::sprint( string& targetstring) const {
   int j=0;
   for( int i=0; i<numprefix; ++i ){
     targetstring[j]='p';
-    j++;
+    ++j;
   }
 
   for( size_t i=0; i<numslots; ++i ){
@@ -193,7 +193,7 @@ size_t PatTemplate::sprint( string& targetstring) const {
     }
 
     targetstring[j]=templatestring[i];
-    j++;
+    ++j;
 
     if ((templatestring[i] == 'f') || (templatestring[i] == 'F')) {
       for ( size_t k = word_focuspos+1; k < wordslots; ++k ) {
@@ -205,23 +205,22 @@ size_t PatTemplate::sprint( string& targetstring) const {
 
   for( int i=0; i<numsuffix; ++i ){
     targetstring[j] = 's';
-    j++;
+    ++j;
   }
   if(hyphen){
     targetstring[j] = 'h';
-    j++;
+    ++j;
   }
   if(capital){
     targetstring[j] = 'c';
-    j++;
+    ++j;
   }
   if( numeric ){
     targetstring[j] = 'n';
-    j++;
+    ++j;
   }
   if (wordfocus) {
     targetstring[j] = 'W';
-    ++j;
   }
   return targetstring.length();
 }

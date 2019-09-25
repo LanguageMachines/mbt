@@ -165,17 +165,13 @@ namespace Tagger {
     if ( DoNpax ){
       if ( (out_file.open( NpaxFileName, ios::out ),
 	    out_file.good() ) ){
-	int np_cnt = 0;
-	//	COUT << "  Creating Npax file: "  << NpaxFileName;
 	for ( const auto& tv : TagVect ){
 	  if ( tv->Freq() > Npax )
 	    continue;
 	  out_file << tv->Word << endl;
 	  uwordlist->Hash( tv->Word );
-	  np_cnt++;
 	}
 	out_file.close();
-	//	COUT << "( " << np_cnt << " entries)" << endl;
       }
       else {
 	cerr << "couldn't open file: " << NpaxFileName << endl;
@@ -219,7 +215,6 @@ namespace Tagger {
 
   int TaggerClass::makedataset( istream& infile, bool do_known ){
     int no_words=0;
-    int no_sentences=0;
     int nslots=0;
     ofstream outfile;
     MatchAction Action;
@@ -292,7 +287,6 @@ namespace Tagger {
 	  ++swcn;
 	  ++no_words;
 	}
-	no_sentences++;
       }
     }
 //      default_cout << "Output written to ";
