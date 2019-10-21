@@ -2,7 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([mbt],[3.5],[lamasoftware@science.ru.nl])
+AC_INIT([mbt],[3.5],[lamasoftware@science.ru.nl]) #also adapt in codemeta.json!
+
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
@@ -56,11 +57,11 @@ else
     export PKG_CONFIG_PATH="$prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
 fi
 
-PKG_CHECK_MODULES([timbl], [timbl >= 6.4.4] )
+PKG_CHECK_MODULES([timbl], [timbl >= 6.4.14] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
-PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.22] )
+PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.23] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
 
