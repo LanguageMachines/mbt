@@ -1,3 +1,9 @@
+mbt version 3.5 2019-10-21
+[Ko van der Sloot]
+* added JSON support
+  Still experimental!
+* several code improvements; including 1 to avoid inappropriate exit codes
+
 mbt version 3.3.3 2018-11-28
 [Ko van der Sloot]
 - added an option '--tabbed' to set the word/tag separator to TABS
