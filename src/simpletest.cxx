@@ -43,6 +43,8 @@ int main(){
   string command = "-T " + path + "/example/eindh.data -s ./simple.setting";
   MbtAPI::GenerateTagger( command );
   MbtAPI demo( "-s ./simple.setting" );
+  cerr << "version: " << Tagger::Version() << endl;
+  cerr << "name: " << Tagger::VersionName() << endl;
   cerr << demo.Tag( "dit is een test" ) << endl;
   vector<TagResult> v = demo.TagLine( "Test regel 2 ." );
   assert( v[0].assigned_tag() == "N" );
