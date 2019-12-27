@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1998 - 2019
+  Copyright (c) 1998 - 2020
   CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
