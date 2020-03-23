@@ -57,10 +57,12 @@ namespace Tagger {
     auto it = TagFreqs.begin();
     while ( it != TagFreqs.end() ){
       double perc = ( (double)it->second * 100 ) / ( double)WordFreq;
-      if ( perc < Threshold )
+      if ( perc < Threshold ){
 	TagFreqs.erase( it++ );
-      else
+      }
+      else {
 	++it;
+      }
     }
   }
 
@@ -126,8 +128,9 @@ namespace Tagger {
       info = new TagInfo( name, tag );
       return TagTree->Store( name, info );
     }
-    else
+    else {
       info->Update( tag );
+    }
     return info;
   }
 
