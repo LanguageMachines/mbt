@@ -178,8 +178,9 @@ namespace Tagger {
   }
 
   bool TaggerClass::setLog( LogStream& os ){
-    if ( !cloned )
+    if ( !cloned ){
       delete cur_log;
+    }
     cur_log = new LogStream( os, "mbt-" );
     return true;
   }
@@ -243,8 +244,9 @@ namespace Tagger {
 	common += opts.substr( 0, k_pos );
 	known = opts.substr( k_pos+2, u_pos - k_pos - 2 );
       }
-      else
+      else {
 	known = opts.substr( k_pos+2 );
+      }
       done_k = true;
     }
     if ( u_pos != string::npos ){
@@ -252,8 +254,9 @@ namespace Tagger {
 	common += opts.substr( 0, u_pos );
 	unknown = opts.substr( u_pos+2, k_pos - u_pos - 2 );
       }
-      else
+      else {
 	unknown = opts.substr( u_pos+2 );
+      }
       done_u = true;
     }
     if ( !done_u ){
@@ -264,15 +267,17 @@ namespace Tagger {
       else if ( k_pos != string::npos ){
 	unknown = opts.substr( 0, k_pos );
       }
-      else
+      else {
 	unknown = known;
+      }
     }
     else if ( !done_k ) {
       if ( u_pos != string::npos ){
 	known = opts.substr( 0, u_pos );
       }
-      else
+      else {
 	known = unknown;
+      }
     }
     xDBG << "resultaat splits, common = " << common << endl;
     xDBG << "resultaat splits, K = " << known << endl;
@@ -311,9 +316,10 @@ namespace Tagger {
   bool TaggerClass::set_default_filenames( ){
     //
     // and use them to setup the defaults...
-    if( !KtmplStr.empty() ) {
-      if ( Ktemplate.set( KtmplStr ) )
+    if ( !KtmplStr.empty() ) {
+      if ( Ktemplate.set( KtmplStr ) ){
 	knowntemplateflag = true;
+      }
       else {
 	cerr << "couldn't set Known Template from '" << KtmplStr
 	     << "'" << endl;
@@ -321,8 +327,9 @@ namespace Tagger {
       }
     }
     if ( !UtmplStr.empty() ) {
-      if ( Utemplate.set( UtmplStr ) )
+      if ( Utemplate.set( UtmplStr ) ){
 	unknowntemplateflag = true;
+      }
       else {
 	cerr << "couldn't set Unknown Template from '" << UtmplStr
 	     << "'" << endl;
@@ -333,11 +340,13 @@ namespace Tagger {
     LexFileBaseName = TestFileName;
     LexFileBaseName += ".lex";
     LexFileName = prefixWithAbsolutePath( LexFileBaseName, SettingsFilePath );
-    if ( FilterThreshold < 10 )
+    if ( FilterThreshold < 10 ){
       sprintf( affix, ".0%1i",  FilterThreshold );
-    else
+    }
+    else {
       sprintf( affix, ".%2i",  FilterThreshold );
-    if( !knownoutfileflag ){
+    }
+    if ( !knownoutfileflag ){
       K_option_name = TestFileName + ".known.inst." + KtmplStr;
       K_option_name = prefixWithAbsolutePath( K_option_name,
 					      SettingsFilePath );
@@ -347,7 +356,7 @@ namespace Tagger {
       KnownTreeName = prefixWithAbsolutePath( KnownTreeBaseName,
 					      SettingsFilePath );
     }
-    if( !unknownoutfileflag ){
+    if ( !unknownoutfileflag ){
       U_option_name = TestFileName + ".unknown.inst." + UtmplStr;
       U_option_name = prefixWithAbsolutePath( U_option_name,
 					      SettingsFilePath );
@@ -357,7 +366,7 @@ namespace Tagger {
       UnknownTreeName = prefixWithAbsolutePath( UnknownTreeBaseName,
 						SettingsFilePath );
     }
-    if( lexflag ){
+    if ( lexflag ){
       MTLexFileBaseName = l_option_name;
       MTLexFileName = MTLexFileBaseName;
     }

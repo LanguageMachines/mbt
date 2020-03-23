@@ -99,32 +99,36 @@ bool MbtAPI::isInit() const{
 }
 
 string MbtAPI::Tag( const std::string& inp ){
-  if ( tagger )
+  if ( tagger ){
     return tagger->Tag( inp );
+  }
   else {
     throw std::runtime_error( "No tagger initialized yet...." );
   }
 }
 
 vector<TagResult> MbtAPI::TagLine( const string& inp ){
-  if ( tagger )
+  if ( tagger ){
     return tagger->tagLine( inp );
+  }
   else {
     throw std::runtime_error( "No tagger initialized yet...." );
   }
 }
 
 string MbtAPI::getResult( const vector<TagResult>& v ) const {
-  if ( tagger )
+  if ( tagger ){
     return tagger->TRtoString( v );
+  }
   else {
     throw std::runtime_error( "No tagger initialized yet...." );
   }
 }
 
 string MbtAPI::set_eos_mark( const std::string& eos ){
-  if ( tagger )
+  if ( tagger ){
     return tagger->set_eos_mark( eos );
+  }
   else {
     throw std::runtime_error( "No tagger initialized yet...." );
   }
@@ -146,8 +150,9 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   }
   time(&timeafter);
   timediff = timeafter - timebefore;
-  if ( timediff == 0 )
+  if ( timediff == 0 ){
     timediff = 1;
+  }
   cout << endl << "Ready:" << endl
        << "  Time used: " << timediff << endl
        << "  Words/sec: " << nw/(timediff) << endl;
@@ -170,8 +175,9 @@ bool MbtAPI::GenerateTagger( const std::string& arg ) {
   }
   time(&timeafter);
   timediff = timeafter - timebefore;
-  if ( timediff == 0 )
+  if ( timediff == 0 ){
     timediff = 1;
+  }
   cout << endl << "Ready:" << endl
        << "  Time used: " << timediff << endl
        << "  Words/sec: " << nw/(timediff) << endl;
@@ -207,8 +213,9 @@ bool MbtAPI::RunTagger( int argc, char **argv ){
   int nw = tagger->Run();
   time(&timeafter);
   timediff = timeafter - timebefore;
-  if ( timediff == 0 )
+  if ( timediff == 0 ){
     timediff = 1;
+  }
   cerr << "  Time used: " << timediff << endl;
   cerr << "  Words/sec: " << nw/(timediff) << endl;
   delete tagger;

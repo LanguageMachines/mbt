@@ -94,8 +94,9 @@ namespace Tagger {
       while( it != Words[index]->extraFeatures.cend() ){
 	result += *it;
 	++it;
-	if (  it != Words[index]->extraFeatures.end() )
+	if (  it != Words[index]->extraFeatures.end() ){
 	  result += " ";
+	}
       }
     }
     return result;
@@ -107,15 +108,17 @@ namespace Tagger {
     os << "Sentence :'";
     for ( const auto& w : Words ){
       os << w->the_word;
-      if ( &w != &Words.back() )
+      if ( &w != &Words.back() ){
 	os << ", ";
+      }
     }
     os << "'";
   }
 
   bool sentence::Utt_Terminator( const string& z_something ){
-    if ( InternalEosMark == "EL" )
+    if ( InternalEosMark == "EL" ){
       return z_something.empty();
+    }
     return ( z_something == InternalEosMark );
   }
 
@@ -204,8 +207,9 @@ namespace Tagger {
 			  unsigned int position, int *old_pat ) const {
     // safety check:
     //
-    if( no_words == 0 || position >= no_words)
+    if ( no_words == 0 || position >= no_words ){
       return false;
+    }
     word *current_word = Words[position];
     size_t CurWLen = current_word->the_word.length();
     int i_feature=0;
@@ -214,11 +218,13 @@ namespace Tagger {
     unsigned int tok;
     // is the present pattern for a known or unknown word?
     //
-    if( Action == MakeKnown )
+    if ( Action == MakeKnown ){
       aTemplate = &Ktemplate;
-    else if ( Action == MakeUnknown )
+    }
+    else if ( Action == MakeUnknown ){
       aTemplate = &Utemplate;
-    else if( current_word->word_amb_tag == UTAG ){
+    }
+    else if ( current_word->word_amb_tag == UTAG ){
       Action = Unknown;
       //      cerr << "Next pat, Unknown word = "
       //  	 << current_word->the_word << endl;
@@ -236,10 +242,12 @@ namespace Tagger {
     if (aTemplate->numprefix > 0) {
       for ( size_t j = 0; j < (size_t)aTemplate->numprefix; ++j ) {
 	string addChars = "_";
-	if ( j < CurWLen )
+	if ( j < CurWLen ) {
 	  addChars += current_word->the_word[j];
-	else
+	}
+	else {
 	  addChars += '=';  // "_=" denotes "no value"
+	}
 #pragma omp critical (hasher)
 	{
 	  Pat[i_feature] = TheLex.Hash( addChars );
@@ -273,8 +281,9 @@ namespace Tagger {
 	    if ( tok ){
 	      Pat[i_feature] = wPtr->the_word_index;
 	    }
-	    else
+	    else {
 	      Pat[i_feature] = classify_hapax(  wPtr->the_word, TheLex );
+	    }
 	  }
 	  i_feature++;
 	  break;
@@ -305,8 +314,9 @@ namespace Tagger {
 	//
 	switch(aTemplate->templatestring[ii]){
 	case 'd':
-	  if ( old_pat == 0 )
+	  if ( old_pat == 0 ){
 	    Pat[i_feature] = wPtr->word_ass_tag;
+	  }
 	  else {
 	    // cerr << "bekijk old pat = " << position+ii-aTemplate->focuspos
 	    //  << " - " << old_pat[position+ii-aTemplate->focuspos] << endl;
@@ -324,9 +334,9 @@ namespace Tagger {
 	  Pat[i_feature] = wPtr->word_amb_tag;
 	  i_feature++;
 	  break;
+	}
       }
-      }
-      else{   // Out of context.
+      else {   // Out of context.
 #pragma omp critical (hasher)
 	{
 	  Pat[i_feature] = TheLex.Hash( DOT );
@@ -340,10 +350,12 @@ namespace Tagger {
     if (aTemplate->numsuffix > 0) {
       for ( size_t j = aTemplate->numsuffix; j > 0; --j ) {
 	string addChars = "_";
-	if ( j <= CurWLen )
+	if ( j <= CurWLen ){
 	  addChars  += current_word->the_word[CurWLen - j];
-	else
+	}
+	else {
 	  addChars += '=';
+	}
 #pragma omp critical (hasher)
 	{
 	  Pat[i_feature] = TheLex.Hash( addChars );
@@ -356,10 +368,12 @@ namespace Tagger {
     //
     if (aTemplate->hyphen) {
       string addChars;
-      if ( current_word->the_word.find('-') != string::npos )
+      if ( current_word->the_word.find('-') != string::npos ){
 	addChars = "_H";
-      else
+      }
+      else {
 	addChars = "_0";
+      }
 #pragma omp critical (hasher)
       {
 	Pat[i_feature] = TheLex.Hash( addChars );
@@ -369,12 +383,14 @@ namespace Tagger {
 
     // Capital (First Letter)?
     //
-    if (aTemplate->capital) {
+    if ( aTemplate->capital ) {
       string addChars = "_";
-      if ( isupper(current_word->the_word[0]) )
+      if ( isupper(current_word->the_word[0]) ){
 	addChars += 'C';
-      else
+      }
+      else {
 	addChars += '0';
+      }
 #pragma omp critical (hasher)
       {
 	Pat[i_feature] = TheLex.Hash( addChars );
@@ -384,10 +400,10 @@ namespace Tagger {
 
     // Numeric (somewhere in word)?
     //
-    if (aTemplate->numeric) {
+    if ( aTemplate->numeric ) {
       string addChars = "_0";
       for ( unsigned int j = 0; j < CurWLen; ++j ) {
-	if( isdigit(current_word->the_word[j]) ){
+	if ( isdigit(current_word->the_word[j]) ){
 	  addChars[1] = 'N';
 	  break;
 	}
@@ -407,23 +423,27 @@ namespace Tagger {
   void sentence::assign_tag( int cat, unsigned int pos ){
     // safety check:
     //
-    if( no_words > 0 && pos < no_words )
+    if ( no_words > 0 && pos < no_words ){
       Words[pos]->word_ass_tag = cat;
+    }
   }
 
   bool sentence::known( unsigned int i ) const {
-    if( no_words > 0 && i < no_words )
+    if ( no_words > 0 && i < no_words ){
       return Words[i]->word_amb_tag != UTAG;
-    else
+    }
+    else {
       return false;
+    }
   }
 
   bool sentence::read( istream &infile, input_kind_type kind,
 		       const string& eom,
 		       const string& seps,
 		       size_t& line ){
-    if ( !infile )
+    if ( !infile ) {
       return false;
+    }
     InternalEosMark = eom;
     //    cerr << "READ zet InternalEosMark = " << eom << endl;
     if ( kind == TAGGED ){
@@ -432,8 +452,9 @@ namespace Tagger {
     else if ( kind == UNTAGGED ){
       return read_untagged( infile, seps, line );
     }
-    else
+    else {
       return read_enriched( infile, seps, line );
+    }
   }
 
   bool sentence::read_tagged( istream &infile,
@@ -505,17 +526,16 @@ namespace Tagger {
 	if ( Utt_Terminator( p ) ){
 	  terminated = true;
 	}
+	else if ( terminated ){
+	  remainder += p + " ";
+	}
 	else {
-	  if ( terminated ){
-	    remainder += p + " ";
-	  }
-	  else {
-	    add( p, "" );
-	  }
+	  add( p, "" );
 	}
       }
-      if ( terminated || InternalEosMark == "NL" )
+      if ( terminated || InternalEosMark == "NL" ){
 	return true;
+      }
     }
     return true;
   }

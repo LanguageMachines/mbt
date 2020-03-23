@@ -151,8 +151,9 @@ namespace Tagger {
       COUT << "  Creating list of most frequent words: "  << TopNFileName << endl;
       int k = 0;
       for ( auto const& tv : TagVect ){
-	if ( ++k > TopNumber )
+	if ( ++k > TopNumber ){
 	  break;
+	}
 	out_file << tv->Word << endl;
 	kwordlist->Hash( tv->Word );
       }
@@ -166,8 +167,9 @@ namespace Tagger {
       if ( (out_file.open( NpaxFileName, ios::out ),
 	    out_file.good() ) ){
 	for ( const auto& tv : TagVect ){
-	  if ( tv->Freq() > Npax )
+	  if ( tv->Freq() > Npax ){
 	    continue;
+	  }
 	  out_file << tv->Word << endl;
 	  uwordlist->Hash( tv->Word );
 	}
@@ -203,10 +205,12 @@ namespace Tagger {
     if ( !create_lexicons() ){
       return false;
     }
-    if ( TimblOptStr.empty() )
+    if ( TimblOptStr.empty() ){
       Timbl_Options = "-a IB1 -G0";
-    else
+    }
+    else {
       Timbl_Options = TimblOptStr;
+    }
     splits( Timbl_Options, commonstr, knownstr, unknownstr );
     get_weightsfile_name( knownstr, kwf );
     get_weightsfile_name( unknownstr, uwf );
@@ -219,7 +223,7 @@ namespace Tagger {
     ofstream outfile;
     MatchAction Action;
     vector<int> TestPat;
-    if( do_known ){
+    if ( do_known ){
       nslots = Ktemplate.totalslots() - Ktemplate.skipfocus;
       outfile.open( K_option_name, ios::trunc | ios::out );
       Action = MakeKnown;
@@ -237,8 +241,9 @@ namespace Tagger {
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
     while ( mySentence.read( infile, input_kind, EosMark, Separators, line_cnt ) ){
-      if ( mySentence.size() == 0 )
+      if ( mySentence.size() == 0 ){
 	continue;
+      }
       // cerr << mySentence << endl;
       if ( mySentence.getword(0) == EosMark ){
 	// only possible for ENRICHED!
@@ -264,14 +269,15 @@ namespace Tagger {
 				   swcn ) ){
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if((uwordlist->Lookup(mySentence.getword(swcn)))==0){
+	    if ( (uwordlist->Lookup(mySentence.getword(swcn))) == 0 ){
 	      skip = true;
 	    }
 	  }
-	  if ( !skip )
-	    for( int f=0; f < nslots; ++f ){
+	  if ( !skip ){
+	    for ( int f=0; f < nslots; ++f ){
 	      outfile << indexlex( TestPat[f], TheLex ) << " ";
 	    }
+	  }
 	  int thisTagCode = -1;
 #pragma omp critical (hasher)
 	  {
@@ -312,7 +318,7 @@ namespace Tagger {
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	ifstream infile( inname, ios::in );
-	if(infile.bad()){
+	if ( infile.bad() ){
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
@@ -328,8 +334,9 @@ namespace Tagger {
       Ktree->Learn( K_option_name );
       //      UKtree->ShowSettings( default_cout );
       Ktree->WriteInstanceBase( KnownTreeName );
-      if ( !kwf.empty() )
+      if ( !kwf.empty() ){
 	Ktree->SaveWeights( kwf );
+      }
       delete Ktree;
       if ( !KeepIntermediateFiles ){
 	remove(K_option_name.c_str());
@@ -354,7 +361,7 @@ namespace Tagger {
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	ifstream infile( inname, ios::in );
-	if(infile.bad()){
+	if( infile.bad() ){
 	  cerr << "Cannot read from " << inname << endl;
 	  return 0;
 	}
@@ -370,8 +377,9 @@ namespace Tagger {
       UKtree->Learn( U_option_name );
       //      UKtree->ShowSettings( COUT );
       UKtree->WriteInstanceBase( UnknownTreeName );
-      if ( !uwf.empty() )
+      if ( !uwf.empty() ){
 	UKtree->SaveWeights( uwf );
+      }
       delete UKtree;
       if ( !KeepIntermediateFiles ){
 	remove(U_option_name.c_str());
@@ -393,8 +401,9 @@ namespace Tagger {
       return false;
     }
     else {
-      if ( input_kind == ENRICHED )
+      if ( input_kind == ENRICHED ){
 	out_file << "ENRICHED" << endl;
+      }
       out_file << "e " << EosMark << endl;
       out_file << "l " << MTLexFileBaseName << endl;
       out_file << "k " << KnownTreeBaseName << endl;
@@ -473,10 +482,12 @@ namespace Tagger {
       SettingsFileName = value;
       // extract the absolute path to the settingsfile
       string::size_type lastSlash = SettingsFileName.rfind('/');
-      if ( lastSlash != string::npos )
+      if ( lastSlash != string::npos ){
 	SettingsFilePath = SettingsFileName.substr( 0, lastSlash+1 );
-      else
+      }
+      else {
 	SettingsFilePath = "";
+      }
     }
     if ( opts.extract( 't', value ) ){
       TagListName = value;
@@ -490,8 +501,9 @@ namespace Tagger {
 	TestFilePath = TestFileName.substr( 0, lastSlash+1 );
 	TestFileName = TestFileName.substr( lastSlash+1 );
       }
-      else
+      else {
 	TestFilePath = "";
+      }
       piped_input = false;
       input_kind = ENRICHED; // an enriched tagged test file specified
     }
@@ -503,8 +515,9 @@ namespace Tagger {
 	TestFilePath = TestFileName.substr( 0, lastSlash+1 );
 	TestFileName = TestFileName.substr( lastSlash+1 );
       }
-      else
+      else {
 	TestFilePath = "";
+      }
       piped_input = false;
       input_kind = TAGGED; // there is a tagged test file specified
     }
@@ -595,8 +608,9 @@ namespace Tagger {
       return 0;
     }
     TaggerClass tagger;
-    if ( !tagger.parse_create_args( opts ) )
+    if ( !tagger.parse_create_args( opts ) ){
       return -1;
+    }
     tagger.set_default_filenames();
     tagger.InitLearning();
     // process the test material

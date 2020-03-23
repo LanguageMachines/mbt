@@ -128,8 +128,9 @@ namespace Tagger {
 
   void BeamData::ClearBest(){
     DBG << "clearing n_best_array..." << endl;
-    for ( int i=0; i < size; ++i )
+    for ( int i=0; i < size; ++i ){
       n_best_array[i]->clean();
+    }
   }
 
   void BeamData::Shift(	int no_words, int i_word ){
@@ -147,16 +148,19 @@ namespace Tagger {
 		<< " into paths[" << jb << "," << q1 << "]" << endl;
 	    temppaths[jb][q1] = n_best_array[jb]->tag;
 	  }
-	  else
+	  else {
 	    temppaths[jb][q1] = EMPTY_PATH;
+	  }
 	}
-	else
+	else {
 	  temppaths[jb][q1] = EMPTY_PATH;
+	}
       }
     }
     for ( int jb = 0; jb < size; ++jb ){
-      for ( int q1=0; q1 < no_words; ++q1 )
+      for ( int q1=0; q1 < no_words; ++q1 ){
 	paths[jb][q1] = temppaths[jb][q1];
+      }
     }
   }
 
@@ -311,7 +315,7 @@ namespace Tagger {
 	  double thisWProb = d_pnt->prob;
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
 	  int dtag = TheLex.Hash( d_pnt->name );
-	  for( int ane = size-1; ane >=0; --ane ){
+	  for ( int ane = size-1; ane >=0; --ane ){
 	    if ( thisPProb <= n_best_array[ane]->prob )
 	      break;
 	    if ( ane == 0 ||
@@ -371,7 +375,7 @@ namespace Tagger {
 
   void TaggerClass::ShowCats( ostream& os, const vector<int>& Pat, int slots ){
     os << "Pattern : ";
-    for( int slot=0; slot < slots; ++slot ){
+    for ( int slot=0; slot < slots; ++slot ){
       os << indexlex( Pat[slot], TheLex )<< " ";
     }
     os << endl;
@@ -389,7 +393,7 @@ namespace Tagger {
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     }
     string line;
-    for( int f=0; f < slots; ++f ){
+    for ( int f=0; f < slots; ++f ){
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
@@ -409,7 +413,7 @@ namespace Tagger {
     // dump if desired
     //
     if ( dumpflag ){
-      for( int slot=0; slot < slots; ++slot ){
+      for ( int slot=0; slot < slots; ++slot ){
 	cout << indexlex( pat[slot], TheLex );
       }
       cout << endl;
@@ -481,11 +485,11 @@ namespace Tagger {
 	return false;
       }
     }
-    if( !knowntreeflag ){
+    if ( !knowntreeflag ){
       cerr << "<knowntreefile> not specified" << endl;
       return false;
     }
-    else if( !unknowntreeflag){
+    else if ( !unknowntreeflag ){
       cerr << "<unknowntreefile> not specified" << endl;
       return false;
     }
@@ -514,15 +518,16 @@ namespace Tagger {
 	  cerr << "Couldn't read known weights from " << kwf << endl;
 	  return false;
 	}
-	else
+	else {
 	  cerr << "\n  Read known weights from " << kwf << endl;
+	}
       }
       LOG << "  case-base for known words read." << endl;
       // read  a previously stored InstanceBase for unknown words
       //
       LOG << "  Reading case-base for unknown words from: "
 	  << UnknownTreeName << "... " << endl;
-      if( !unKnownTree->GetInstanceBase( UnknownTreeName) ){
+      if ( !unKnownTree->GetInstanceBase( UnknownTreeName) ){
 	LOG << "Could not read the unknown tree from "
 	     << UnknownTreeName << endl;
 	return false;
@@ -533,8 +538,9 @@ namespace Tagger {
 	    cerr << "Couldn't read unknown weights from " << uwf << endl;
 	    return false;
 	  }
-	  else
+	  else {
 	    LOG << "\n  Read unknown weights from " << uwf << endl;
+	  }
 	}
 	LOG << "  case-base for unknown word read" << endl;
       }
@@ -567,7 +573,7 @@ namespace Tagger {
       if ( !piped_input ){
 	string inname = TestFilePath + TestFileName;
 	infile.open(inname, ios::in);
-	if( infile.bad( )){
+	if ( infile.bad( ) ){
 	  cerr << "Cannot read from " << inname << endl;
 	  result = 0;
 	}
@@ -583,8 +589,9 @@ namespace Tagger {
 	  cerr << "Enriched Inputformat not supported for stdin, sorry"
 	       << endl;
 	}
-	else
+	else {
 	  result = ProcessFile( cin, *os );
+	}
       }
       if ( out_to_file ){
 	delete os;
@@ -822,8 +829,9 @@ namespace Tagger {
 	    DBG << endl << "Next: " << mySentence.getword( iword ) << endl;
 	    Beam->ClearBest();
 	    for ( int beam_count=0; beam_count < Beam_Size; ++beam_count ){
-	      if ( !NextBest( mySentence, TestPat, iword, beam_count ) )
+	      if ( !NextBest( mySentence, TestPat, iword, beam_count ) ){
 		break;
+	      }
 	    }
 	    Beam->Shift( mySentence.size(), iword );
 	    if ( IsActive( DBG ) ){
@@ -1026,7 +1034,7 @@ namespace Tagger {
 
   bool TaggerClass::readsettings( string& fname ){
     ifstream setfile( fname, ios::in);
-    if( !setfile ){
+    if ( !setfile ){
       return false;
     }
     char SetBuffer[512];
@@ -1153,7 +1161,7 @@ namespace Tagger {
       else {
 	SettingsFilePath = "";
       }
-      if( !readsettings( SettingsFileName ) ){
+      if ( !readsettings( SettingsFileName ) ){
 	cerr << "Cannot read settingsfile " << SettingsFileName << endl;
 	return false;
       }
@@ -1172,16 +1180,21 @@ namespace Tagger {
       cerr << "  Dumpflag ON" << endl;
     }
     if ( Opts.extract( 'D', value ) ){
-      if ( value == "LogSilent" )
+      if ( value == "LogSilent" ) {
 	cur_log->setlevel( LogSilent );
-      else if ( value == "LogNormal" )
+      }
+      else if ( value == "LogNormal" ){
 	cur_log->setlevel( LogNormal );
-      else if ( value == "LogDebug" )
+      }
+      else if ( value == "LogDebug" ){
 	cur_log->setlevel( LogDebug );
-      else if ( value == "LogHeavy" )
+      }
+      else if ( value == "LogHeavy" ){
 	cur_log->setlevel( LogHeavy );
-      else if ( value == "LogExtreme" )
+      }
+      else if ( value == "LogExtreme" ){
 	cur_log->setlevel( LogExtreme );
+      }
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;
       }
