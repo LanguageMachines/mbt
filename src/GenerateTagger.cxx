@@ -138,7 +138,7 @@ namespace Tagger {
       COUT << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( const auto& tv : TagVect ){
 	out_file << tv->Word << " " << tv->stringRep() << endl;
-	MT_lexicon->Store( tv->Word, tv->stringRep() );
+	MT_lexicon->insert( make_pair(tv->Word, tv->stringRep() ) );
       }
       out_file.close();
     }

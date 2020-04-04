@@ -427,7 +427,7 @@ namespace Tagger {
     int no_words=0;
     ifstream lexfile( FileName, ios::in);
     while ( lexfile >> wordbuf >> valbuf ){
-      MT_lexicon->Store( wordbuf, valbuf );
+      MT_lexicon->insert(make_pair(wordbuf,valbuf));
       no_words++;
       lexfile >> ws;
     }

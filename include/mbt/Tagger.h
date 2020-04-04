@@ -212,8 +212,7 @@ namespace Tagger {
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
-    Lexicon *MT_lexicon;
-
+    std::map<std::string,std::string> *MT_lexicon;
     std::string UnknownTreeBaseName;
     std::string KnownTreeBaseName;
     std::string LexFileBaseName;

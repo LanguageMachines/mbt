@@ -95,7 +95,7 @@ namespace Tagger {
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
-    MT_lexicon = new Lexicon();
+    MT_lexicon = new map<string,string>;
     kwordlist = new StringHash();
     uwordlist = new StringHash();
     piped_input = true;
@@ -155,7 +155,7 @@ namespace Tagger {
     Separators( in.Separators ),
     Ktemplate( in.Ktemplate ),
     Utemplate( in.Utemplate ),
-    MT_lexicon( in.MT_lexicon ),
+    MT_lexicon( in.MT_lexicon ),     //!> is a pointer to avoid copies
     UnknownTreeBaseName( in.UnknownTreeBaseName ),
     KnownTreeBaseName( in.KnownTreeBaseName ),
     LexFileBaseName( in.LexFileBaseName ),

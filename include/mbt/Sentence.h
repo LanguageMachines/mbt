@@ -30,7 +30,6 @@
 #include "ticcutils/TreeHash.h"
 
 namespace Tagger {
-  using Hash::Lexicon;
   using Hash::StringHash;
 
   const std::string DOT = "==";
@@ -66,7 +65,7 @@ namespace Tagger {
     sentence( const PatTemplate&, const PatTemplate& );
     ~sentence();
     void clear();
-    bool init_windowing( Lexicon&, StringHash& );
+    bool init_windowing( std::map<std::string,std::string>&, StringHash& );
     bool nextpat( MatchAction&, std::vector<int>&, StringHash& , StringHash&,
 		  unsigned int, int * = 0 ) const;
     int classify_hapax( const std::string&, StringHash& ) const;

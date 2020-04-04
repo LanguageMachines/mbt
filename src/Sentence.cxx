@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <string>
 #include <cstdlib>
 #include <cctype>
@@ -139,7 +140,7 @@ namespace Tagger {
     add(a_word, tmp, a_tag);
   }
 
-  bool sentence::init_windowing( Lexicon &lex,
+  bool sentence::init_windowing( map<string,string>& lex,
 				 StringHash& TheLex ) {
     if ( UTAG == -1 ){
 #pragma omp critical (hasher)
@@ -159,12 +160,11 @@ namespace Tagger {
 	}
 	// look up ambiguous tag in the dictionary
 	//
-	LexInfo *foundInfo = lex.Lookup( cur_word->the_word );
-	if ( foundInfo != NULL ){
-	  //	  cerr << "MT Lookup(" << cur_word->the_word << ") gave " << *foundInfo << endl;
+	const auto it = lex.find( cur_word->the_word );
+	if ( it != lex.end() ){
 #pragma omp critical (hasher)
 	  {
-	    cur_word->word_amb_tag = TheLex.Hash( foundInfo->Trans() );
+	    cur_word->word_amb_tag = TheLex.Hash( it->second );
 	  }
 	}
 	else  {
