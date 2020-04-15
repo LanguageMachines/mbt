@@ -1,3 +1,8 @@
+mbt version 3.6 2020-04-15
+[Ko vd Sloot]
+* replaced uses of Lexicon class by a normal std::map
+* some code refactoring
+
 mbt version 3.5 2019-10-21
 [Ko van der Sloot]
 * added JSON support
