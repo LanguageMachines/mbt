@@ -177,54 +177,6 @@ bool PatTemplate::set( const string& tempstr ){
   return true;
 }
 
-size_t PatTemplate::sprint( string& targetstring ) const {
-  int j=0;
-  for ( int i=0; i<numprefix; ++i ){
-    targetstring[j]='p';
-    ++j;
-  }
-
-  for ( size_t i=0; i<numslots; ++i ){
-    if ((templatestring[i] == 'f') || (templatestring[i] == 'F')) {
-      for ( int k = 0; k < word_focuspos; ++k ) {
-	targetstring[j]=word_templatestring[k];
-	++j;
-      }
-    }
-
-    targetstring[j]=templatestring[i];
-    ++j;
-
-    if ((templatestring[i] == 'f') || (templatestring[i] == 'F')) {
-      for ( size_t k = word_focuspos+1; k < wordslots; ++k ) {
-	targetstring[j]=word_templatestring[k];
-	++j;
-      }
-    }
-  }
-
-  for ( int i=0; i<numsuffix; ++i ){
-    targetstring[j] = 's';
-    ++j;
-  }
-  if ( hyphen ){
-    targetstring[j] = 'h';
-    ++j;
-  }
-  if ( capital ){
-    targetstring[j] = 'c';
-    ++j;
-  }
-  if ( numeric ){
-    targetstring[j] = 'n';
-    ++j;
-  }
-  if ( wordfocus ) {
-    targetstring[j] = 'W';
-  }
-  return targetstring.length();
-}
-
 int PatTemplate::totalslots() const {
   return ( numslots + numprefix + numsuffix +
 	   hyphen + capital + numeric + word_totalslots());
