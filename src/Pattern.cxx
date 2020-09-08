@@ -57,10 +57,13 @@ PatTemplate::PatTemplate()
 }
 
 bool PatTemplate::set( const string& tempstr ){
-  // reads a format string and figures out a template for the patterns from
-  // this
-  // Find the position of the focus.
-  // Seperate string is built for the word-context.
+  /// reads a format string and figures out a template for the patterns
+  /*!
+    \param tempstr the template string to parse
+
+    this function uses a template string to fill the PatTemplate. It determines
+    the focus postion
+  */
   int j = 0;
   int k = 0;
   bool focus = false;
@@ -178,12 +181,14 @@ bool PatTemplate::set( const string& tempstr ){
 }
 
 int PatTemplate::totalslots() const {
+  /// return the total number of slots in the pattern
   return ( numslots + numprefix + numsuffix +
 	   hyphen + capital + numeric + word_totalslots());
 }
 
 
 int PatTemplate::word_totalslots() const {
+  /// return the number of word slots in the pattern
   // Compensate for the 'f'
   // (hm, what if 'F' or 'W'?).
   //
