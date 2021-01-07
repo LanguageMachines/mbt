@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1998 - 2020
+  Copyright (c) 1998 - 2021
   CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
@@ -49,6 +49,12 @@ namespace Tagger {
   word::word( const string& some_word,
 	      const vector<string>& extra_features,
 	      const string& some_tag ):
+    /*!
+      construct a word structure
+      \param some_word the string value of the word
+      \param extra_features list of optional enrichment values
+      \param some_tag the tag to assign to the word
+     */
     the_word( some_word ),
     word_tag( some_tag ),
     word_amb_tag( -1 ),
@@ -58,24 +64,28 @@ namespace Tagger {
     the_word_index = -1;
   }
 
-  // Delete a word
-  //
   word::~word(){
+    /// destruct a word structure
   }
 
-  // New sentence.
-  //
   sentence::sentence( const PatTemplate& k, const PatTemplate& u ):
-    UTAG(-1), Ktemplate(k), Utemplate(u), no_words(0)
-  {}
+    /*!
+      construct a sentence using the given Pattern Templates
 
-  // Delete it.
-  //
+      \param k the Pattern for \e known words
+      \param u the Pattern for \e inknown words
+    */
+    UTAG(-1), Ktemplate(k), Utemplate(u), no_words(0)
+  {
+  }
+
   sentence::~sentence(){
+    /// destruct a sentence
     clear();
   }
 
   void sentence::clear(){
+    /// reset the sentence by removing al the words in it.
     for ( const auto& w : Words ){
       delete w;
     }
@@ -84,6 +94,7 @@ namespace Tagger {
   }
 
   ostream& operator<<( ostream& os, const sentence& s ){
+    /// output a \e sentence to a stream \e os
     s.print( os );
     return os;
   }
@@ -91,11 +102,9 @@ namespace Tagger {
   string sentence::getenr( unsigned int index ){
     string result;
     if ( index < no_words ){
-      auto it = Words[index]->extraFeatures.cbegin();
-      while( it != Words[index]->extraFeatures.cend() ){
-	result += *it;
-	++it;
-	if (  it != Words[index]->extraFeatures.end() ){
+      for ( const auto it : Words[index]->extraFeatures ){
+	result += it;
+	if (  &it != &Words[index]->extraFeatures.back() ){
 	  result += " ";
 	}
       }
@@ -105,7 +114,9 @@ namespace Tagger {
 
   // Print it.
   //
-  void sentence::print( ostream &os ) const{
+  void sentence::print( ostream &os ) const {
+    /// Print a sentence (debugging only)
+    //
     os << "Sentence :'";
     for ( const auto& w : Words ){
       os << w->the_word;
@@ -116,11 +127,19 @@ namespace Tagger {
     os << "'";
   }
 
-  bool sentence::Utt_Terminator( const string& z_something ){
+  bool sentence::Utt_Terminator( const string& test ){
+    /// check if the parameter equals the current EOS marker
+    /*!
+      /param test the value to check
+      /return true if the strings are equal, false otherwise
+
+      When the current EOS marker is set to the value "EL" an empty 'test'
+      value is a match too.
+    */
     if ( InternalEosMark == "EL" ){
-      return z_something.empty();
+      return test.empty();
     }
-    return ( z_something == InternalEosMark );
+    return ( test == InternalEosMark );
   }
 
   // Add an enriched word to a sentence.
