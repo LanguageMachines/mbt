@@ -23,7 +23,6 @@
       https://github.com/LanguageMachines/mbt/issues
   or send mail to:
       lamasoftware (at ) science.ru.nl
-
 */
 
 #include <algorithm>
