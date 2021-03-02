@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/LanguageMachines/mbt.svg?branch=master)](https://travis-ci.org/LanguageMachines/mbt) [![Language Machines Badge](http://applejack.science.ru.nl/lamabadge.php/mbt)](http://applejack.science.ru.nl/languagemachines/) [![DOI](https://zenodo.org/badge/20526403.svg)](https://zenodo.org/badge/latestdoi/20526403)
+[![GitHub build](https://github.com/LanguageMachines/mbt/actions/workflows/mbt.yml/badge.svg?branch=master)](https://github.com/LanguageMachines/mbt/actions/)
+[![Language Machines Badge](http://applejack.science.ru.nl/lamabadge.php/mbt)](http://applejack.science.ru.nl/languagemachines/)
+[![DOI](https://zenodo.org/badge/20526403.svg)](https://zenodo.org/badge/latestdoi/20526403)
 
 Mbt: Tilburg Memory Based Tagger
 ===================================
