@@ -102,7 +102,7 @@ namespace Tagger {
   string sentence::getenr( unsigned int index ){
     string result;
     if ( index < no_words ){
-      for ( const auto it : Words[index]->extraFeatures ){
+      for ( const auto& it : Words[index]->extraFeatures ){
 	result += it;
 	if (  &it != &Words[index]->extraFeatures.back() ){
 	  result += " ";
