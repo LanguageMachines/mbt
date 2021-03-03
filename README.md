@@ -2,6 +2,7 @@
 [![Language Machines Badge](http://applejack.science.ru.nl/lamabadge.php/mbt)](http://applejack.science.ru.nl/languagemachines/)
 [![DOI](https://zenodo.org/badge/20526403.svg)](https://zenodo.org/badge/latestdoi/20526403)
 
+===================================
 Mbt: Tilburg Memory Based Tagger
 ===================================
 
