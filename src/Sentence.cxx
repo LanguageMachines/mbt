@@ -213,7 +213,7 @@ namespace Tagger {
       hap += 'C';
     }
     for ( int i=0; i < word.length(); ++i ){
-      if ( u_isdigit( word[i] ) != -1 ) {
+      if ( u_isdigit( word[i] ) ) {
 	// digit anywhere
 	hap += 'N';
 	break;
@@ -221,6 +221,7 @@ namespace Tagger {
     }
     if ( hap.length() == 6 ){
       hap += "0";
+      //      cerr << "classified HAPAX-0 for: '" << word << "'" << endl;
     }
     int result = -1;
 #pragma omp critical (hasher)
