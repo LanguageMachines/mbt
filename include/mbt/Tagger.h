@@ -30,6 +30,7 @@
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
+#include "ticcutils/Unicode.h"
 #include "ticcutils/Timer.h"
 #include "timbl/TimblAPI.h"
 

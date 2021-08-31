@@ -36,6 +36,7 @@
 #include <cctype>
 #include <cassert>
 
+#include "ticcutils/Unicode.h"
 #include "ticcutils/StringOps.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
@@ -43,10 +44,11 @@
 namespace Tagger {
   using namespace Hash;
   using namespace std;
+  using namespace icu;
 
   // New enriched word.
   //
-  word::word( const string& some_word,
+  word::word( const UnicodeString& some_word,
 	      const vector<string>& extra_features,
 	      const string& some_tag ):
     /*!
@@ -147,7 +149,9 @@ namespace Tagger {
   void sentence::add( const string& a_word,
 		      const vector<string>& extraFeatures,
 		      const string& a_tag ){
-    Words.push_back( new word( a_word, extraFeatures, a_tag ) );
+    Words.push_back( new word( TiCC::UnicodeFromUTF8(a_word),
+			       extraFeatures,
+			       a_tag ) );
     ++no_words;
   }
 
@@ -173,13 +177,14 @@ namespace Tagger {
     }
     else {
       for ( const auto& cur_word : Words ){
+	string utf8_word = TiCC::UnicodeToUTF8(cur_word->the_word );
 #pragma omp critical (hasher)
 	{
-	  cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+	  cur_word->the_word_index = TheLex.Hash( utf8_word );
 	}
 	// look up ambiguous tag in the dictionary
 	//
-	const auto it = lex.find( cur_word->the_word );
+	const auto it = lex.find( utf8_word );
 	if ( it != lex.end() ){
 #pragma omp critical (hasher)
 	  {
@@ -196,19 +201,23 @@ namespace Tagger {
     }
   }
 
-  int sentence::classify_hapax( const string& word, StringHash& TheLex ) const{
+  int sentence::classify_hapax( const UnicodeString& word,
+				StringHash& TheLex ) const{
     string hap = "HAPAX-";
-    if ( word.find( "-" ) != string::npos ){
+    if ( word.indexOf( "-" ) != -1 ){
       // hyphen anywere
       hap += 'H';
     }
-    if ( isupper( word[0] ) ){
+    if ( u_isupper( word[0] ) ){
       // Capitalized first letter?
       hap += 'C';
     }
-    if ( word.find_first_of( "0123456789" ) != string::npos ) {
-      // digit anywhere
-      hap += 'N';
+    for ( int i=0; i < word.length(); ++i ){
+      if ( u_isdigit( word[i] ) != -1 ) {
+	// digit anywhere
+	hap += 'N';
+	break;
+      }
     }
     if ( hap.length() == 6 ){
       hap += "0";
@@ -260,7 +269,7 @@ namespace Tagger {
     //
     if (aTemplate->numprefix > 0) {
       for ( size_t j = 0; j < (size_t)aTemplate->numprefix; ++j ) {
-	string addChars = "_";
+	UnicodeString addChars = "_";
 	if ( j < CurWLen ) {
 	  addChars += current_word->the_word[j];
 	}
@@ -269,7 +278,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( addChars );
+	  Pat[i_feature] = TheLex.Hash( TiCC::UnicodeToUTF8(addChars) );
 	}
 	i_feature++;
       }
@@ -295,13 +304,14 @@ namespace Tagger {
 	    Pat[i_feature] = wPtr->the_word_index;
 	  }
 	  else {
-	    tok = wordlist.Lookup( wPtr->the_word );
+	    string utf8_word = TiCC::UnicodeToUTF8( wPtr->the_word );
+	    tok = wordlist.Lookup( utf8_word );
 	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
 	      Pat[i_feature] = wPtr->the_word_index;
 	    }
 	    else {
-	      Pat[i_feature] = classify_hapax(  wPtr->the_word, TheLex );
+	      Pat[i_feature] = classify_hapax( wPtr->the_word, TheLex );
 	    }
 	  }
 	  i_feature++;
@@ -368,7 +378,7 @@ namespace Tagger {
     //
     if (aTemplate->numsuffix > 0) {
       for ( size_t j = aTemplate->numsuffix; j > 0; --j ) {
-	string addChars = "_";
+	UnicodeString addChars = "_";
 	if ( j <= CurWLen ){
 	  addChars  += current_word->the_word[CurWLen - j];
 	}
@@ -377,7 +387,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( addChars );
+	  Pat[i_feature] = TheLex.Hash( TiCC::UnicodeToUTF8(addChars) );
 	}
 	i_feature++;
       }
@@ -387,7 +397,7 @@ namespace Tagger {
     //
     if (aTemplate->hyphen) {
       string addChars;
-      if ( current_word->the_word.find('-') != string::npos ){
+      if ( current_word->the_word.indexOf('-') != -1 ){
 	addChars = "_H";
       }
       else {
@@ -404,7 +414,7 @@ namespace Tagger {
     //
     if ( aTemplate->capital ) {
       string addChars = "_";
-      if ( isupper(current_word->the_word[0]) ){
+      if ( u_isupper(current_word->the_word[0]) ){
 	addChars += 'C';
       }
       else {
@@ -422,7 +432,7 @@ namespace Tagger {
     if ( aTemplate->numeric ) {
       string addChars = "_0";
       for ( unsigned int j = 0; j < CurWLen; ++j ) {
-	if ( isdigit(current_word->the_word[j]) ){
+	if ( u_isdigit(current_word->the_word[j]) ){
 	  addChars[1] = 'N';
 	  break;
 	}

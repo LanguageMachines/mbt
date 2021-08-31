@@ -27,6 +27,7 @@
 #ifndef MBT_SENTENCE_H
 #define MBT_SENTENCE_H
 
+#include "ticcutils/Unicode.h"
 #include "ticcutils/TreeHash.h"
 
 namespace Tagger {
@@ -41,15 +42,15 @@ namespace Tagger {
   class word {
   public:
 
-    std::string the_word;
+    icu::UnicodeString the_word;
     int the_word_index;
 
     std::string word_tag;
     int word_amb_tag;
     int word_ass_tag;
     std::vector<std::string> extraFeatures;
-    word( const std::string&, const std::string& );
-    word( const std::string&, const std::vector<std::string>&, const std::string& );
+    word( const icu::UnicodeString&, const std::string& );
+    word( const icu::UnicodeString&, const std::vector<std::string>&, const std::string& );
     ~word();
 
   };
@@ -68,9 +69,11 @@ namespace Tagger {
     bool init_windowing( std::map<std::string,std::string>&, StringHash& );
     bool nextpat( MatchAction&, std::vector<int>&, StringHash& , StringHash&,
 		  unsigned int, int * = 0 ) const;
-    int classify_hapax( const std::string&, StringHash& ) const;
+    int classify_hapax( const icu::UnicodeString&, StringHash& ) const;
     void assign_tag( int, unsigned int );
-    std::string getword( unsigned int i ) { return Words[i]->the_word; };
+    std::string getword( unsigned int i ) {
+      return TiCC::UnicodeToUTF8(Words[i]->the_word);
+    };
     const std::string& gettag( int i ) const { return Words[i]->word_tag; };
     const std::vector<std::string>& getEnrichments( unsigned int i )
       const { return Words[i]->extraFeatures; };
