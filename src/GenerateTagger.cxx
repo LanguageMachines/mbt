@@ -105,12 +105,14 @@ namespace Tagger {
       cerr << "couldn't open inputfile " << filename << endl;
       return false;
     }
-
+    TiCC::UnicodeNormalizer normalizer;
     map<string,unsigned int> TagList;
     string Word, Tag;
     while ( getline( lex_file, Buffer ) ){
       if ( split_special( Buffer, Word, Tag ) ){
-	TaggedLexicon.Store( Word, Tag );
+	UnicodeString us = TiCC::UnicodeFromUTF8(Word);
+	normalizer.normalize( us );
+	TaggedLexicon.Store( us, Tag );
 	TagList[Tag]++;
       }
     }
@@ -137,7 +139,7 @@ namespace Tagger {
       COUT << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( const auto& tv : TagVect ){
 	out_file << tv->Word << " " << tv->stringRep() << endl;
-	MT_lexicon->insert( make_pair(tv->Word, tv->stringRep() ) );
+	MT_lexicon->insert( make_pair(TiCC::UnicodeToUTF8(tv->Word), tv->stringRep() ) );
       }
       out_file.close();
     }
@@ -154,7 +156,7 @@ namespace Tagger {
 	  break;
 	}
 	out_file << tv->Word << endl;
-	kwordlist->Hash( tv->Word );
+	kwordlist->Hash( TiCC::UnicodeToUTF8(tv->Word) );
       }
       out_file.close();
     }
@@ -170,7 +172,7 @@ namespace Tagger {
 	    continue;
 	  }
 	  out_file << tv->Word << endl;
-	  uwordlist->Hash( tv->Word );
+	  uwordlist->Hash( TiCC::UnicodeToUTF8(tv->Word) );
 	}
 	out_file.close();
       }
@@ -236,6 +238,7 @@ namespace Tagger {
     }
     // loop as long as you get sentences
     //
+    static UnicodeString UniEos = TiCC::UnicodeFromUTF8(EosMark);
     int HartBeat = 0;
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
@@ -244,7 +247,7 @@ namespace Tagger {
 	continue;
       }
       // cerr << mySentence << endl;
-      if ( mySentence.getword(0) == EosMark ){
+      if ( mySentence.getword(0) == UniEos ){
 	// only possible for ENRICHED!
 	continue;
       }
@@ -268,7 +271,7 @@ namespace Tagger {
 				   swcn ) ){
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if ( (uwordlist->Lookup(mySentence.getword(swcn))) == 0 ){
+	    if ( (uwordlist->Lookup( TiCC::UnicodeToUTF8(mySentence.getword(swcn)))) == 0 ){
 	      skip = true;
 	    }
 	  }

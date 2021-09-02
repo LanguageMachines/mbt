@@ -29,6 +29,7 @@
 #define MBT_TAGLEX_H
 
 #include "ticcutils/Trie.h"
+#include "ticcutils/Unicode.h"
 #include "timbl/Common.h"
 
 namespace Tagger {
@@ -38,7 +39,7 @@ namespace Tagger {
   class TagInfo {
     friend std::ostream& operator<<( std::ostream&, TagInfo * );
   public:
-    TagInfo( const std::string& , const std::string& );
+    TagInfo( const icu::UnicodeString& , const std::string& );
     ~TagInfo();
     void Update( const std::string& s );
     void Prune( int perc );
@@ -46,7 +47,7 @@ namespace Tagger {
     std::string stringRep() { return StringRepr; };
     void CreateStringRepr();
     std::string DisplayTagFreqs() const;
-    std::string Word;
+    icu::UnicodeString Word;
   private:
     int WordFreq;
     std::string StringRepr;
@@ -58,8 +59,8 @@ namespace Tagger {
   public:
     TagLex();
     ~TagLex();
-    TagInfo *Lookup( const std::string& s );
-    TagInfo *Store( const std::string&  , const std::string&  );
+    TagInfo *Lookup( const icu::UnicodeString& s );
+    TagInfo *Store( const icu::UnicodeString&  , const std::string&  );
     std::vector<TagInfo *> CreateSortedVector();
     int numOfLexiconEntries() const { return NumOfEntries; };
   private:

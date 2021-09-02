@@ -845,7 +845,7 @@ namespace Tagger {
       for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
 	TagResult res;
 	// get the original word
-	res._word= mySentence.getword(Wcnt);
+	res._word= TiCC::UnicodeToUTF8(mySentence.getword(Wcnt));
 	// get the original tag
 	res._input_tag = mySentence.gettag(Wcnt);
 	// lookup the assigned tag
@@ -966,7 +966,7 @@ namespace Tagger {
     int no_correct_unknown=0;
     int no_known=0;
     int no_unknown=0;
-
+    static UnicodeString UniEos = TiCC::UnicodeFromUTF8(EosMark);
     // loop as long as you get sentences
     //
     int HartBeat = 0;
@@ -978,7 +978,7 @@ namespace Tagger {
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
       }
-      if ( mySentence.getword(0) == EosMark ){
+      if ( mySentence.getword(0) == UniEos ){
 	// only possible for ENRICHED!
 	outfile << EosMark << endl;
 	continue;

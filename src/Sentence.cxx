@@ -149,6 +149,9 @@ namespace Tagger {
   void sentence::add( const string& a_word,
 		      const vector<string>& extraFeatures,
 		      const string& a_tag ){
+    static TiCC::UnicodeNormalizer mbt_normalizer;
+    UnicodeString u_word = TiCC::UnicodeFromUTF8(a_word);
+    mbt_normalizer.normalize( u_word );
     Words.push_back( new word( TiCC::UnicodeFromUTF8(a_word),
 			       extraFeatures,
 			       a_tag ) );

@@ -35,13 +35,15 @@
 #include <string>
 
 #include "ticcutils/StringOps.h"
+#include "ticcutils/Unicode.h"
 #include "mbt/TagLex.h"
 
 namespace Tagger {
   using namespace std;
+  using namespace icu;
 
-  TagInfo::TagInfo( const string& name, const string& tag ):
-    Word(name), WordFreq(0) {
+  TagInfo::TagInfo( const UnicodeString& word, const string& tag ):
+    Word(word), WordFreq(0) {
     Update( tag );
   }
 
@@ -117,16 +119,16 @@ namespace Tagger {
     delete TagTree;
   }
 
-  TagInfo *TagLex::Lookup( const string& name ){
-    return reinterpret_cast<TagInfo *>(TagTree->Retrieve( name ));
+  TagInfo *TagLex::Lookup( const UnicodeString& name ){
+    return reinterpret_cast<TagInfo *>(TagTree->Retrieve( TiCC::UnicodeToUTF8(name) ));
   }
 
-  TagInfo *TagLex::Store( const string& name, const string& tag ){
-    TagInfo *info = TagTree->Retrieve( name );
+  TagInfo *TagLex::Store( const UnicodeString& name, const string& tag ){
+    TagInfo *info = TagTree->Retrieve( TiCC::UnicodeToUTF8(name) );
     if ( !info ){
       NumOfEntries++;
       info = new TagInfo( name, tag );
-      return TagTree->Store( name, info );
+      return TagTree->Store( TiCC::UnicodeToUTF8(name), info );
     }
     else {
       info->Update( tag );
@@ -147,7 +149,11 @@ namespace Tagger {
     //
     int diff = t2->Freq() - t1->Freq();
     if ( diff == 0 ){
-      if ( TiCC::lowercase(t2->Word) == TiCC::lowercase(t1->Word) ){
+      UnicodeString u1 = t1->Word;
+      u1.toLower();
+      UnicodeString u2 = t2->Word;
+      u2.toLower();
+      if ( u2 == u1 ){
 	return t2->Word < t1->Word;
       }
       else {
