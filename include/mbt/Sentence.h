@@ -28,13 +28,13 @@
 #define MBT_SENTENCE_H
 
 #include "ticcutils/Unicode.h"
-#include "ticcutils/TreeHash.h"
+#include "ticcutils/UniHash.h"
 
 namespace Tagger {
-  using Hash::StringHash;
+  using Hash::UnicodeHash;
 
-  const std::string DOT = "==";
-  const std::string UNKNOWN = "__";
+  const icu::UnicodeString DOT = "==";
+  const icu::UnicodeString UNKNOWN = "__";
   enum MatchAction { Unknown, Known, MakeKnown, MakeUnknown };
 
   // A word in a sentence.
@@ -45,12 +45,14 @@ namespace Tagger {
     icu::UnicodeString the_word;
     int the_word_index;
 
-    std::string word_tag;
+    icu::UnicodeString word_tag;
     int word_amb_tag;
     int word_ass_tag;
     std::vector<std::string> extraFeatures;
-    word( const icu::UnicodeString&, const std::string& );
-    word( const icu::UnicodeString&, const std::vector<std::string>&, const std::string& );
+    word( const icu::UnicodeString&, const icu::UnicodeString& );
+    word( const icu::UnicodeString&,
+	  const std::vector<std::string>&,
+	  const icu::UnicodeString& );
     ~word();
 
   };
@@ -66,13 +68,13 @@ namespace Tagger {
     sentence( const PatTemplate&, const PatTemplate& );
     ~sentence();
     void clear();
-    bool init_windowing( std::map<std::string,std::string>&, StringHash& );
-    bool nextpat( MatchAction&, std::vector<int>&, StringHash& , StringHash&,
+    bool init_windowing( std::map<icu::UnicodeString,icu::UnicodeString>&, UnicodeHash& );
+    bool nextpat( MatchAction&, std::vector<int>&, UnicodeHash& , UnicodeHash&,
 		  unsigned int, int * = 0 ) const;
-    int classify_hapax( const icu::UnicodeString&, StringHash& ) const;
+    int classify_hapax( const icu::UnicodeString&, UnicodeHash& ) const;
     void assign_tag( int, unsigned int );
     icu::UnicodeString getword( unsigned int i ) const { return Words[i]->the_word; };
-    const std::string& gettag( int i ) const { return Words[i]->word_tag; };
+    icu::UnicodeString& gettag( int i ) const { return Words[i]->word_tag; };
     const std::vector<std::string>& getEnrichments( unsigned int i )
       const { return Words[i]->extraFeatures; };
     std::string getenr( unsigned int i );

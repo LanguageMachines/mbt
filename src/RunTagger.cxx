@@ -164,7 +164,7 @@ namespace Tagger {
     }
   }
 
-  void BeamData::Print( ostream& os, int i_word, StringHash& TheLex ){
+  void BeamData::Print( ostream& os, int i_word, UnicodeHash& TheLex ){
     for ( int i=0; i < size; ++i ){
       os << "path_prob[" << i << "] = " << path_prob[i] << endl;
     }
@@ -181,7 +181,7 @@ namespace Tagger {
     }
   }
 
-  void BeamData::PrintBest( ostream& os, StringHash& TheLex ){
+  void BeamData::PrintBest( ostream& os, UnicodeHash& TheLex ){
     for ( int i=0; i < size; ++i ){
       if (  n_best_array[i]->path != EMPTY_PATH ){
 	os << "n_best_array[" << i << "] = "
@@ -265,11 +265,11 @@ namespace Tagger {
     return result;
   }
 
-  void BeamData::InitPaths( StringHash& TheLex,
+  void BeamData::InitPaths( UnicodeHash& TheLex,
 			    const TargetValue *answer,
 			    const ValueDistribution *distrib ){
     if ( size == 1 ){
-      paths[0][0] = TheLex.Hash( answer->Name() );
+      paths[0][0] = TheLex.hash( TiCC::UnicodeFromUTF8(answer->Name()) );
       path_prob[0] = 1.0;
     }
     else {
@@ -279,7 +279,7 @@ namespace Tagger {
       int jb = 0;
       while ( d_pnt ){
 	if ( jb < size ){
-	  paths[jb][0] =  TheLex.Hash( d_pnt->name );
+	  paths[jb][0] =  TheLex.hash( TiCC::UnicodeFromUTF8(d_pnt->name) );
 	  path_prob[jb] = d_pnt->prob;
 	}
 	name_prob_pair *tmp_d_pnt = d_pnt;
@@ -294,14 +294,14 @@ namespace Tagger {
     }
   }
 
-  void BeamData::NextPath( StringHash& TheLex,
+  void BeamData::NextPath( UnicodeHash& TheLex,
 			   const TargetValue *answer,
 			   const ValueDistribution *distrib,
 			   int beam_cnt ){
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
       n_best_array[0]->path = beam_cnt;
-      n_best_array[0]->tag = TheLex.Hash( answer->Name() );
+      n_best_array[0]->tag = TheLex.hash( UnicodeFromUTF8(answer->Name()) );
     }
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
@@ -314,7 +314,7 @@ namespace Tagger {
 	if ( ab < size ){
 	  double thisWProb = d_pnt->prob;
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
-	  int dtag = TheLex.Hash( d_pnt->name );
+	  int dtag = TheLex.hash( UnicodeFromUTF8(d_pnt->name) );
 	  for ( int ane = size-1; ane >=0; --ane ){
 	    if ( thisPProb <= n_best_array[ane]->prob )
 	      break;
@@ -392,14 +392,14 @@ namespace Tagger {
     else {
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     }
-    string line;
+    UnicodeString line;
     for ( int f=0; f < slots; ++f ){
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
     const vector<string> enr = mySentence.getEnrichments(word);
     for ( const auto& er: enr ){
-      line += er + " ";
+      line += TiCC::UnicodeFromUTF8(er) + " ";
     }
     if ( input_kind != UNTAGGED ){
       line += mySentence.gettag(word);
@@ -418,7 +418,7 @@ namespace Tagger {
       }
       cout << endl;
     }
-    return line;
+    return TiCC::UnicodeToUTF8(line);
   }
 
   void TaggerClass::read_lexicon( const string& FileName ){
@@ -427,7 +427,8 @@ namespace Tagger {
     int no_words=0;
     ifstream lexfile( FileName, ios::in);
     while ( lexfile >> wordbuf >> valbuf ){
-      MT_lexicon->insert(make_pair(wordbuf,valbuf));
+      MT_lexicon->insert(make_pair(TiCC::UnicodeFromUTF8(wordbuf),
+				   TiCC::UnicodeFromUTF8(valbuf)));
       no_words++;
       lexfile >> ws;
     }
@@ -438,12 +439,12 @@ namespace Tagger {
   //
   // File should contain one word per line.
   //
-  void TaggerClass::read_listfile( const string& FileName, StringHash *words ){
+  void TaggerClass::read_listfile( const string& FileName, UnicodeHash *words ){
     string wordbuf;
     int no_words=0;
     ifstream wordfile( FileName, ios::in);
     while( wordfile >> wordbuf ) {
-      words->Hash( wordbuf );
+      words->hash( UnicodeFromUTF8(wordbuf) );
       ++no_words;
     }
     LOG << "  Read frequent words list from: " << FileName << " ("
@@ -847,9 +848,9 @@ namespace Tagger {
 	// get the original word
 	res._word= TiCC::UnicodeToUTF8(mySentence.getword(Wcnt));
 	// get the original tag
-	res._input_tag = mySentence.gettag(Wcnt);
+	res._input_tag = TiCC::UnicodeToUTF8(mySentence.gettag(Wcnt));
 	// lookup the assigned tag
-	res._tag = indexlex( Beam->paths[0][Wcnt], TheLex );
+	res._tag = TiCC::UnicodeToUTF8(indexlex( Beam->paths[0][Wcnt], TheLex ) );
 	// is it known/unknown
 	res._known = mySentence.known(Wcnt);
 	if ( input_kind == ENRICHED ){
@@ -937,7 +938,7 @@ namespace Tagger {
 				int& no_known, int& no_unknown,
 				int& no_correct_known,
 				int& no_correct_unknown ){
-    string tagstring;
+    UnicodeString tagstring;
     //now some output
     for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );

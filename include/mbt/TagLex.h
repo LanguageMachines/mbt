@@ -39,19 +39,20 @@ namespace Tagger {
   class TagInfo {
     friend std::ostream& operator<<( std::ostream&, TagInfo * );
   public:
-    TagInfo( const icu::UnicodeString& , const std::string& );
+    TagInfo( const icu::UnicodeString& ,
+	     const icu::UnicodeString& );
     ~TagInfo();
-    void Update( const std::string& s );
+    void Update( const icu::UnicodeString& s );
     void Prune( int perc );
     int Freq() const { return WordFreq; };
-    std::string stringRep() { return StringRepr; };
+    icu::UnicodeString stringRep() { return StringRepr; };
     void CreateStringRepr();
-    std::string DisplayTagFreqs() const;
+    icu::UnicodeString DisplayTagFreqs() const;
     icu::UnicodeString Word;
   private:
     int WordFreq;
-    std::string StringRepr;
-    std::map<std::string, int> TagFreqs;
+    icu::UnicodeString StringRepr;
+    std::map<icu::UnicodeString, int> TagFreqs;
   };
 
   class TagLex {
@@ -60,7 +61,8 @@ namespace Tagger {
     TagLex();
     ~TagLex();
     TagInfo *Lookup( const icu::UnicodeString& s );
-    TagInfo *Store( const icu::UnicodeString&  , const std::string&  );
+    TagInfo *Store( const icu::UnicodeString&,
+		    const icu::UnicodeString&  );
     std::vector<TagInfo *> CreateSortedVector();
     int numOfLexiconEntries() const { return NumOfEntries; };
   private:

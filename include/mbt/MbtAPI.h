@@ -30,6 +30,7 @@
 #define MBT_API_H
 
 #include "timbl/TimblAPI.h"
+#include "ticcutils/UniHash.h"
 #include "mbt/Tagger.h"
 
 namespace TiCC {

@@ -112,7 +112,9 @@ namespace Tagger {
       if ( split_special( Buffer, Word, Tag ) ){
 	UnicodeString us = TiCC::UnicodeFromUTF8(Word);
 	normalizer.normalize( us );
-	TaggedLexicon.Store( us, Tag );
+	UnicodeString ts = TiCC::UnicodeFromUTF8(Tag);
+	normalizer.normalize( ts );
+	TaggedLexicon.Store( us, ts );
 	TagList[Tag]++;
       }
     }
@@ -139,7 +141,8 @@ namespace Tagger {
       COUT << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( const auto& tv : TagVect ){
 	out_file << tv->Word << " " << tv->stringRep() << endl;
-	MT_lexicon->insert( make_pair(TiCC::UnicodeToUTF8(tv->Word), tv->stringRep() ) );
+	MT_lexicon->insert( make_pair(tv->Word,
+				      tv->stringRep() ) );
       }
       out_file.close();
     }
@@ -156,7 +159,7 @@ namespace Tagger {
 	  break;
 	}
 	out_file << tv->Word << endl;
-	kwordlist->Hash( TiCC::UnicodeToUTF8(tv->Word) );
+	kwordlist->hash( tv->Word );
       }
       out_file.close();
     }
@@ -172,7 +175,7 @@ namespace Tagger {
 	    continue;
 	  }
 	  out_file << tv->Word << endl;
-	  uwordlist->Hash( TiCC::UnicodeToUTF8(tv->Word) );
+	  uwordlist->hash( tv->Word );
 	}
 	out_file.close();
       }
@@ -271,7 +274,7 @@ namespace Tagger {
 				   swcn ) ){
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if ( (uwordlist->Lookup( TiCC::UnicodeToUTF8(mySentence.getword(swcn)))) == 0 ){
+	    if ( (uwordlist->lookup( mySentence.getword(swcn))) == 0 ){
 	      skip = true;
 	    }
 	  }
@@ -283,7 +286,7 @@ namespace Tagger {
 	  int thisTagCode = -1;
 #pragma omp critical (hasher)
 	  {
-	    thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	    thisTagCode = TheLex.hash( mySentence.gettag(swcn) );
 	  }
 	  if ( !skip ){
 	    for ( auto const& it : mySentence.getEnrichments(swcn) ){

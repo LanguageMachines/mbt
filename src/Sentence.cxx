@@ -50,7 +50,7 @@ namespace Tagger {
   //
   word::word( const UnicodeString& some_word,
 	      const vector<string>& extra_features,
-	      const string& some_tag ):
+	      const UnicodeString& some_tag ):
     /*!
       construct a word structure
       \param some_word the string value of the word
@@ -151,10 +151,11 @@ namespace Tagger {
 		      const string& a_tag ){
     static TiCC::UnicodeNormalizer mbt_normalizer;
     UnicodeString u_word = TiCC::UnicodeFromUTF8(a_word);
+    UnicodeString u_tag = TiCC::UnicodeFromUTF8(a_tag);
     mbt_normalizer.normalize( u_word );
-    Words.push_back( new word( TiCC::UnicodeFromUTF8(a_word),
+    Words.push_back( new word( u_word,
 			       extraFeatures,
-			       a_tag ) );
+			       u_tag ) );
     ++no_words;
   }
 
@@ -166,12 +167,12 @@ namespace Tagger {
     add(a_word, tmp, a_tag);
   }
 
-  bool sentence::init_windowing( map<string,string>& lex,
-				 StringHash& TheLex ) {
+  bool sentence::init_windowing( map<UnicodeString,UnicodeString>& lex,
+				 UnicodeHash& TheLex ) {
     if ( UTAG == -1 ){
 #pragma omp critical (hasher)
       {
-	UTAG = TheLex.Hash( UNKNOWN );
+	UTAG = TheLex.hash( UNKNOWN );
       }
     }
     if ( no_words == 0 ) {
@@ -180,18 +181,17 @@ namespace Tagger {
     }
     else {
       for ( const auto& cur_word : Words ){
-	string utf8_word = TiCC::UnicodeToUTF8(cur_word->the_word );
 #pragma omp critical (hasher)
 	{
-	  cur_word->the_word_index = TheLex.Hash( utf8_word );
+	  cur_word->the_word_index = TheLex.hash(cur_word->the_word );
 	}
 	// look up ambiguous tag in the dictionary
 	//
-	const auto it = lex.find( utf8_word );
+	const auto it = lex.find( cur_word->the_word );
 	if ( it != lex.end() ){
 #pragma omp critical (hasher)
 	  {
-	    cur_word->word_amb_tag = TheLex.Hash( it->second );
+	    cur_word->word_amb_tag = TheLex.hash( it->second );
 	  }
 	}
 	else  {
@@ -205,8 +205,8 @@ namespace Tagger {
   }
 
   int sentence::classify_hapax( const UnicodeString& word,
-				StringHash& TheLex ) const{
-    string hap = "HAPAX-";
+				UnicodeHash& TheLex ) const{
+    UnicodeString hap = "HAPAX-";
     if ( word.indexOf( "-" ) != -1 ){
       // hyphen anywere
       hap += 'H';
@@ -229,13 +229,13 @@ namespace Tagger {
     int result = -1;
 #pragma omp critical (hasher)
     {
-      result = TheLex.Hash( hap );
+      result = TheLex.hash( hap );
     }
     return result;
   }
 
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
-			  StringHash& wordlist, StringHash& TheLex,
+			  UnicodeHash& wordlist, UnicodeHash& TheLex,
 			  unsigned int position, int *old_pat ) const {
     // safety check:
     //
@@ -282,7 +282,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( TiCC::UnicodeToUTF8(addChars) );
+	  Pat[i_feature] = TheLex.hash( addChars );
 	}
 	i_feature++;
       }
@@ -304,12 +304,11 @@ namespace Tagger {
 	//
 	switch(aTemplate->word_templatestring[i]) {
 	case 'w':
-	  if ( wordlist.NumOfEntries() == 0 ){
+	  if ( wordlist.num_of_entries() == 0 ){
 	    Pat[i_feature] = wPtr->the_word_index;
 	  }
 	  else {
-	    string utf8_word = TiCC::UnicodeToUTF8( wPtr->the_word );
-	    tok = wordlist.Lookup( utf8_word );
+	    tok = wordlist.lookup(  wPtr->the_word );
 	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
 	      Pat[i_feature] = wPtr->the_word_index;
@@ -325,7 +324,7 @@ namespace Tagger {
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( DOT );
+	  Pat[i_feature] = TheLex.hash( DOT );
 	}
 	i_feature++;
       }
@@ -372,7 +371,7 @@ namespace Tagger {
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( DOT );
+	  Pat[i_feature] = TheLex.hash( DOT );
 	}
 	i_feature++;
       }
@@ -391,7 +390,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( TiCC::UnicodeToUTF8(addChars) );
+	  Pat[i_feature] = TheLex.hash( addChars );
 	}
 	i_feature++;
       }
@@ -400,7 +399,7 @@ namespace Tagger {
     // Hyphen?
     //
     if (aTemplate->hyphen) {
-      string addChars;
+      UnicodeString addChars;
       if ( current_word->the_word.indexOf('-') != -1 ){
 	addChars = "_H";
       }
@@ -409,7 +408,7 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.Hash( addChars );
+	Pat[i_feature] = TheLex.hash( addChars );
       }
       i_feature++;
     }
@@ -417,7 +416,7 @@ namespace Tagger {
     // Capital (First Letter)?
     //
     if ( aTemplate->capital ) {
-      string addChars = "_";
+      UnicodeString addChars = "_";
       if ( u_isupper(current_word->the_word[0]) ){
 	addChars += 'C';
       }
@@ -426,7 +425,7 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.Hash( addChars );
+	Pat[i_feature] = TheLex.hash( addChars );
       }
       i_feature++;
     }
@@ -434,16 +433,16 @@ namespace Tagger {
     // Numeric (somewhere in word)?
     //
     if ( aTemplate->numeric ) {
-      string addChars = "_0";
+      UnicodeString addChars = "_0";
       for ( unsigned int j = 0; j < CurWLen; ++j ) {
 	if ( u_isdigit(current_word->the_word[j]) ){
-	  addChars[1] = 'N';
+	  addChars = "_N";
 	  break;
 	}
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.Hash( addChars );
+	Pat[i_feature] = TheLex.hash( addChars );
       }
       i_feature++;
     }

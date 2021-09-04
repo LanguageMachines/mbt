@@ -42,7 +42,8 @@ namespace Tagger {
   using namespace std;
   using namespace icu;
 
-  TagInfo::TagInfo( const UnicodeString& word, const string& tag ):
+  TagInfo::TagInfo( const UnicodeString& word,
+		    const UnicodeString& tag ):
     Word(word), WordFreq(0) {
     Update( tag );
   }
@@ -50,7 +51,7 @@ namespace Tagger {
   TagInfo::~TagInfo(){
   }
 
-  void TagInfo::Update( const string& tag ){
+  void TagInfo::Update( const UnicodeString& tag ){
     ++WordFreq;
     ++TagFreqs[tag];
   }
@@ -68,18 +69,21 @@ namespace Tagger {
     }
   }
 
-  string TagInfo::DisplayTagFreqs( )const {
-    string result;
+  UnicodeString TagInfo::DisplayTagFreqs( )const {
+    UnicodeString result;
     for( const auto& it : TagFreqs ){
-      result += it.first + ":" + TiCC::toString(it.second) + " ";
+      result += it.first;
+      result += ":";
+      result += TiCC::UnicodeFromUTF8(TiCC::toString(it.second));
+      result += " ";
     }
     return result;
   }
 
   struct FS {
-    FS( int f, const string& s ):freq(f), str(s) {};
+    FS( int f, const UnicodeString& s ):freq(f), str(s) {};
     int freq;
-    string str;
+    UnicodeString str;
   };
 
   int cmpFreq( const FS& p1, const FS& p2 ){
@@ -92,7 +96,7 @@ namespace Tagger {
       FreqTags.push_back( FS( it.second, it.first) );
     }
     sort( FreqTags.begin(), FreqTags.end(), cmpFreq );
-    string tmpstr;
+    UnicodeString tmpstr;
     for ( auto const& it2 : FreqTags ){
       tmpstr += it2.str;
       if ( &it2 != &FreqTags.back() ){
@@ -123,7 +127,8 @@ namespace Tagger {
     return reinterpret_cast<TagInfo *>(TagTree->Retrieve( TiCC::UnicodeToUTF8(name) ));
   }
 
-  TagInfo *TagLex::Store( const UnicodeString& name, const string& tag ){
+  TagInfo *TagLex::Store( const UnicodeString& name,
+			  const UnicodeString& tag ){
     TagInfo *info = TagTree->Retrieve( TiCC::UnicodeToUTF8(name) );
     if ( !info ){
       NumOfEntries++;

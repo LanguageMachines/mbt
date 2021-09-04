@@ -95,9 +95,9 @@ namespace Tagger {
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
-    MT_lexicon = new map<string,string>;
-    kwordlist = new StringHash();
-    uwordlist = new StringHash();
+    MT_lexicon = new map<UnicodeString,UnicodeString>;
+    kwordlist = new UnicodeHash();
+    uwordlist = new UnicodeHash();
     piped_input = true;
     input_kind = UNTAGGED;
     lexflag = false;
@@ -191,9 +191,9 @@ namespace Tagger {
     return tmp;
   }
 
-  const string& indexlex( const unsigned int index,
-			  StringHash& aLex){
-    return aLex.ReverseLookup( index );
+  const UnicodeString& indexlex( const unsigned int index,
+				 UnicodeHash& aLex){
+    return aLex.reverse_lookup( index );
   }
 
   TaggerClass::~TaggerClass(){

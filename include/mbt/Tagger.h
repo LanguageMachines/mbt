@@ -30,7 +30,7 @@
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
-#include "ticcutils/Unicode.h"
+#include "ticcutils/UniHash.h"
 #include "ticcutils/Timer.h"
 #include "timbl/TimblAPI.h"
 
@@ -65,17 +65,17 @@ namespace Tagger {
     BeamData();
     ~BeamData();
     bool Init( int, unsigned int );
-    void InitPaths( StringHash&,
+    void InitPaths( Hash::UnicodeHash&,
 		    const Timbl::TargetValue *,
 		    const Timbl::ValueDistribution * );
-    void NextPath( StringHash&,
+    void NextPath( Hash::UnicodeHash&,
 		   const Timbl::TargetValue *,
 		   const Timbl::ValueDistribution *,
 		   int );
     void ClearBest();
     void Shift( int, int );
-    void Print( std::ostream& os, int i_word, StringHash& TheLex );
-    void PrintBest( std::ostream& os, StringHash& TheLex );
+    void Print( std::ostream& os, int i_word, Hash::UnicodeHash& TheLex );
+    void PrintBest( std::ostream& os, Hash::UnicodeHash& TheLex );
     int size;
     int **paths;
     int **temppaths;
@@ -120,7 +120,7 @@ namespace Tagger {
     bool setLog( TiCC::LogStream& );
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
-    void read_listfile( const std::string&, StringHash * );
+    void read_listfile( const std::string&, Hash::UnicodeHash * );
     bool enriched() const { return input_kind == ENRICHED; };
     bool distance_is_set() const { return distance_flag; };
     bool distrib_is_set()const { return distrib_flag; };
@@ -145,9 +145,9 @@ namespace Tagger {
     std::string uwf;
     std::string kwf;
     bool initialized;
-    StringHash TheLex;
-    StringHash *kwordlist;
-    StringHash *uwordlist;
+    Hash::UnicodeHash TheLex;
+    Hash::UnicodeHash *kwordlist;
+    Hash::UnicodeHash *uwordlist;
     BeamData *Beam;
     input_kind_type input_kind;
     bool piped_input;
@@ -213,7 +213,7 @@ namespace Tagger {
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
-    std::map<std::string,std::string> *MT_lexicon;
+    std::map<icu::UnicodeString,icu::UnicodeString> *MT_lexicon;
     std::string UnknownTreeBaseName;
     std::string KnownTreeBaseName;
     std::string LexFileBaseName;
@@ -281,7 +281,7 @@ namespace Tagger {
 
   std::vector<TagResult> StringToTR( const std::string&, bool=false );
 
-  const std::string& indexlex( const unsigned int, StringHash& );
+  const icu::UnicodeString& indexlex( const unsigned int, Hash::UnicodeHash& );
   void get_weightsfile_name( std::string& opts, std::string& );
   void splits( const std::string& , std::string& common,
 	       std::string& known, std::string& unknown );
