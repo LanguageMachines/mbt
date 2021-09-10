@@ -134,6 +134,17 @@ UnicodeString MbtAPI::set_eos_mark( const UnicodeString& eos ){
   }
 }
 
+string MbtAPI::set_eos_mark( const string& eos ){
+  if ( tagger ){
+    UnicodeString u_eos = TiCC::UnicodeFromUTF8( eos );
+    UnicodeString u_result = tagger->set_eos_mark( u_eos );
+    return TiCC::UnicodeToUTF8( u_result );
+  }
+  else {
+    throw std::runtime_error( "No tagger initialized yet...." );
+  }
+}
+
 bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   // generate a tagger using argv.
   // Independent, static function so, don't use the internal _tagger here

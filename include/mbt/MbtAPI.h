@@ -50,6 +50,7 @@ class MbtAPI {
   std::vector<Tagger::TagResult> TagLine( const std::string& );
   std::string getResult( const std::vector<Tagger::TagResult>& ) const;
   icu::UnicodeString set_eos_mark( const icu::UnicodeString& );
+  std::string set_eos_mark( const std::string& );
  private:
   MbtAPI( const MbtAPI& ); // inhibit copies
   MbtAPI& operator=( const MbtAPI& ); // inhibit copies
