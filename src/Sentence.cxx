@@ -49,7 +49,7 @@ namespace Tagger {
   // New enriched word.
   //
   word::word( const UnicodeString& some_word,
-	      const vector<string>& extra_features,
+	      const vector<UnicodeString>& extra_features,
 	      const UnicodeString& some_tag ):
     /*!
       construct a word structure
@@ -101,8 +101,8 @@ namespace Tagger {
     return os;
   }
 
-  string sentence::getenr( unsigned int index ){
-    string result;
+  UnicodeString sentence::getenr( unsigned int index ){
+    UnicodeString result;
     if ( index < no_words ){
       for ( const auto& it : Words[index]->extraFeatures ){
 	result += it;
@@ -129,7 +129,7 @@ namespace Tagger {
     os << "'";
   }
 
-  bool sentence::Utt_Terminator( const string& test ){
+  bool sentence::Utt_Terminator( const UnicodeString& test ){
     /// check if the parameter equals the current EOS marker
     /*!
       /param test the value to check
@@ -139,20 +139,17 @@ namespace Tagger {
       value is a match too.
     */
     if ( InternalEosMark == "EL" ){
-      return test.empty();
+      return test.isEmpty();
     }
     return ( test == InternalEosMark );
   }
 
   // Add an enriched word to a sentence.
   //
-  void sentence::add( const string& a_word,
-		      const vector<string>& extraFeatures,
-		      const string& a_tag ){
+  void sentence::add( const UnicodeString& u_word,
+		      const vector<UnicodeString>& extraFeatures,
+		      const UnicodeString& u_tag ){
     static TiCC::UnicodeNormalizer mbt_normalizer;
-    UnicodeString u_word = TiCC::UnicodeFromUTF8(a_word);
-    UnicodeString u_tag = TiCC::UnicodeFromUTF8(a_tag);
-    mbt_normalizer.normalize( u_word );
     Words.push_back( new word( u_word,
 			       extraFeatures,
 			       u_tag ) );
@@ -161,9 +158,10 @@ namespace Tagger {
 
   // Add a word to a sentence.
   //
-  void sentence::add(const string& a_word, const string& a_tag)
+  void sentence::add( const UnicodeString& a_word,
+		      const UnicodeString& a_tag)
   {
-    vector<string> tmp;
+    vector<UnicodeString> tmp;
     add(a_word, tmp, a_tag);
   }
 
@@ -469,38 +467,40 @@ namespace Tagger {
     }
   }
 
-  bool sentence::read( istream &infile, input_kind_type kind,
-		       const string& eom,
-		       const string& seps,
-		       size_t& line ){
+  bool sentence::read( istream &infile,
+		       input_kind_type kind,
+		       const UnicodeString& eom,
+		       const UnicodeString& seps,
+		       size_t& line_no ){
     if ( !infile ) {
       return false;
     }
     InternalEosMark = eom;
     //    cerr << "READ zet InternalEosMark = " << eom << endl;
     if ( kind == TAGGED ){
-      return read_tagged( infile, seps, line );
+      return read_tagged( infile, seps, line_no );
     }
     else if ( kind == UNTAGGED ){
-      return read_untagged( infile, seps, line );
+      return read_untagged( infile, seps, line_no );
     }
     else {
-      return read_enriched( infile, seps, line );
+      return read_enriched( infile, seps, line_no );
     }
   }
 
   bool sentence::read_tagged( istream &infile,
-			      const string& seps,
+			      const UnicodeString& seps,
 			      size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
     clear();
-    string line;
-    while ( getline( infile, line ) ){
+    string buf;
+    while ( getline( infile, buf ) ){
+      UnicodeString line = TiCC::UnicodeFromUTF8( buf );
       ++line_no;
-      //      cerr << "read line: " << line << endl;
-      line = TiCC::trim( line );
-      if ( line.empty() ){
+      //cerr << "read line: " << line << endl;
+      line.trim();
+      if ( line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
@@ -509,7 +509,7 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> parts = TiCC::split_at_first_of( line, seps );
+      vector<UnicodeString> parts = TiCC::split_at_first_of( line, seps );
       if ( parts.size() != 2 ){
 #pragma omp critical (errors)
 	{
@@ -524,7 +524,7 @@ namespace Tagger {
 	}
       }
       else {
-	add( TiCC::trim(parts[0]), TiCC::trim(parts[1]) );
+	add( parts[0].trim(), parts[1].trim() );
       }
     }
     //    cerr << "read a sentence: " << *this << endl;
@@ -532,25 +532,26 @@ namespace Tagger {
   }
 
   bool sentence::read_untagged( istream &infile,
-				const string& seps,
+				const UnicodeString& seps,
 				size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
     clear();
     //    cerr << "untagged-read remainder='" << remainder << "'" << endl;
-    string line = remainder;
-    remainder.clear();
+    string line = TiCC::UnicodeToUTF8(remainder);  // clumsy
+    remainder.remove();
     while ( !line.empty() || getline( infile, line ) ){
       ++line_no;
       //      cerr << "untagged-read line: " << line << endl;
-      line = TiCC::trim( line );
-      if ( line.empty() ){
+      UnicodeString u_line = TiCC::UnicodeFromUTF8( line );
+      u_line.trim();
+      if ( u_line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
 	continue;
       }
-      vector<string> parts = TiCC::split_at_first_of( line, seps );
+      vector<UnicodeString> parts = TiCC::split_at_first_of( u_line, seps );
       line = "";
       bool terminated = false;
       for ( const auto& p : parts ){
@@ -573,19 +574,18 @@ namespace Tagger {
   }
 
   bool sentence::read_enriched( istream &infile,
-				const string& seps,
+				const UnicodeString& seps,
 				size_t& line_no ){
     // read a sequence of enriched and tagged words from infile
     // every word must be a one_liner
     // cleanup the sentence for re-use...
     clear();
-    string line;
-    string Word;
-    string Tag;
-    while( getline( infile, line ) ){
+    string buf;
+    while( getline( infile, buf ) ){
       ++line_no;
-      line = TiCC::trim( line );
-      if ( line.empty() ){
+      UnicodeString line = TiCC::UnicodeFromUTF8( buf );
+      line.trim();
+      if ( line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
@@ -594,13 +594,13 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> extras = TiCC::split_at_first_of( line, seps );
+      vector<UnicodeString> extras = TiCC::split_at_first_of( line, seps );
       if ( extras.size() >= 2 ){
-	Word = extras.front();
+	UnicodeString Word = extras.front();
 	extras.erase(extras.begin()); // expensive, but allas. extras is small
-	Tag  = extras.back();
+	UnicodeString Tag = extras.back();
 	extras.pop_back();
-	if ( !Word.empty() && !Tag.empty() ){
+	if ( !Word.isEmpty() && !Tag.isEmpty() ){
 	  add( Word, extras, Tag );
 	}
       }

@@ -49,7 +49,7 @@ class MbtAPI {
   std::string Tag( const std::string& );
   std::vector<Tagger::TagResult> TagLine( const std::string& );
   std::string getResult( const std::vector<Tagger::TagResult>& ) const;
-  std::string set_eos_mark( const std::string& );
+  icu::UnicodeString set_eos_mark( const icu::UnicodeString& );
  private:
   MbtAPI( const MbtAPI& ); // inhibit copies
   MbtAPI& operator=( const MbtAPI& ); // inhibit copies

@@ -51,8 +51,6 @@
 #include <pthread.h>
 #endif
 
-using namespace TiCC;
-
 namespace Tagger {
   using namespace std;
   using namespace Hash;
@@ -67,10 +65,11 @@ namespace Tagger {
     TI->CreateStringRepr();
   }
 
-  bool split_special( const string& Buffer, string& Word, string& Tag ){
-    vector<string> subs;
-    size_t len = split( Buffer, subs );
-    if ( len > 1 ){
+  bool split_special( const string& Buffer,
+		      UnicodeString& Word, UnicodeString& Tag ){
+    UnicodeString buffer = TiCC::UnicodeFromUTF8( Buffer );
+    vector<UnicodeString> subs = TiCC::split( buffer );
+    if ( subs.size() > 1 ){
       Word = subs.front();
       Tag = subs.back();
       return true;
@@ -106,15 +105,13 @@ namespace Tagger {
       return false;
     }
     TiCC::UnicodeNormalizer normalizer;
-    map<string,unsigned int> TagList;
-    string Word, Tag;
+    map<UnicodeString,unsigned int> TagList;
+    UnicodeString Word, Tag;
     while ( getline( lex_file, Buffer ) ){
       if ( split_special( Buffer, Word, Tag ) ){
-	UnicodeString us = TiCC::UnicodeFromUTF8(Word);
-	normalizer.normalize( us );
-	UnicodeString ts = TiCC::UnicodeFromUTF8(Tag);
-	normalizer.normalize( ts );
-	TaggedLexicon.Store( us, ts );
+	normalizer.normalize( Word );
+	normalizer.normalize( Tag );
+	TaggedLexicon.Store( Word, Tag );
 	TagList[Tag]++;
       }
     }
@@ -185,8 +182,8 @@ namespace Tagger {
       }
     }
     if ( DoTagList ){
-      vector<pair<string,unsigned int>> si_vec( TagList.begin(), TagList.end() );
-      sort(si_vec.begin(), si_vec.end(), more_second<string, unsigned int>());
+      vector<pair<UnicodeString,unsigned int>> si_vec( TagList.begin(), TagList.end() );
+      sort(si_vec.begin(), si_vec.end(), more_second<UnicodeString, unsigned int>());
       ofstream os( TagListName );
       if ( os ){
 	for ( const auto& it: si_vec ){
@@ -241,7 +238,6 @@ namespace Tagger {
     }
     // loop as long as you get sentences
     //
-    static UnicodeString UniEos = TiCC::UnicodeFromUTF8(EosMark);
     int HartBeat = 0;
     size_t line_cnt = 0;
     sentence mySentence( Ktemplate, Utemplate );
@@ -250,7 +246,7 @@ namespace Tagger {
 	continue;
       }
       // cerr << mySentence << endl;
-      if ( mySentence.getword(0) == UniEos ){
+      if ( mySentence.getword(0) == EosMark ){
 	// only possible for ENRICHED!
 	continue;
       }
@@ -432,14 +428,14 @@ namespace Tagger {
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
     string value;
     if ( opts.extract( '%', value ) ){
-      FilterThreshold = stringTo<int>( value );
+      FilterThreshold = TiCC::stringTo<int>( value );
     }
     if ( opts.extract( 'd', value ) ){
       dumpflag=true;
       cout << "  Dumpflag ON" << endl;
     }
     if ( opts.extract( 'e', value ) ){
-      EosMark = value;
+      EosMark = TiCC::UnicodeFromUTF8(value);
       cout << "  Sentence delimiter set to '" << EosMark << "'" << endl;
     }
     if ( opts.extract( "tabbed" ) ){
@@ -462,10 +458,10 @@ namespace Tagger {
       klistflag = true;
     }
     if ( opts.extract( 'M', value ) ){
-      TopNumber = stringTo<int>(value);
+      TopNumber = TiCC::stringTo<int>(value);
     }
     if ( opts.extract( 'n', value ) ){
-      Npax = stringTo<int>(value);
+      Npax = TiCC::stringTo<int>(value);
       if ( Npax == 0 )
 	DoNpax = false;
     }

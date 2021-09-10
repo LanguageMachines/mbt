@@ -40,7 +40,7 @@ extern LogLevel Tagger_Log_Level;
 #define DBG (*TiCC::Dbg(cur_log))
 #define xDBG (*TiCC::xDbg(cur_log))
 #define xxDBG (*TiCC::xxDbg(cur_log))
-#define COUT *Log(default_cout)
+#define COUT *TiCC::Log(default_cout)
 
 extern LogLevel internal_default_level;
 extern LogLevel Tagger_Log_Level;

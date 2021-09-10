@@ -125,7 +125,7 @@ string MbtAPI::getResult( const vector<TagResult>& v ) const {
   }
 }
 
-string MbtAPI::set_eos_mark( const std::string& eos ){
+UnicodeString MbtAPI::set_eos_mark( const UnicodeString& eos ){
   if ( tagger ){
     return tagger->set_eos_mark( eos );
   }

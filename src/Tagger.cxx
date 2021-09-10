@@ -185,8 +185,8 @@ namespace Tagger {
     return true;
   }
 
-  string TaggerClass::set_eos_mark( const string& eos ){
-    string tmp = EosMark;
+  UnicodeString TaggerClass::set_eos_mark( const UnicodeString& eos ){
+    UnicodeString tmp = EosMark;
     EosMark = eos;
     return tmp;
   }

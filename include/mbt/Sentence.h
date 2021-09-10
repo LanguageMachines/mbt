@@ -48,10 +48,11 @@ namespace Tagger {
     icu::UnicodeString word_tag;
     int word_amb_tag;
     int word_ass_tag;
-    std::vector<std::string> extraFeatures;
-    word( const icu::UnicodeString&, const icu::UnicodeString& );
+    std::vector<icu::UnicodeString> extraFeatures;
     word( const icu::UnicodeString&,
-	  const std::vector<std::string>&,
+	  const icu::UnicodeString& );
+    word( const icu::UnicodeString&,
+	  const std::vector<icu::UnicodeString>&,
 	  const icu::UnicodeString& );
     ~word();
 
@@ -75,31 +76,33 @@ namespace Tagger {
     void assign_tag( int, unsigned int );
     icu::UnicodeString getword( unsigned int i ) const { return Words[i]->the_word; };
     icu::UnicodeString& gettag( int i ) const { return Words[i]->word_tag; };
-    const std::vector<std::string>& getEnrichments( unsigned int i )
+    const std::vector<icu::UnicodeString>& getEnrichments( unsigned int i )
       const { return Words[i]->extraFeatures; };
-    std::string getenr( unsigned int i );
+    icu::UnicodeString getenr( unsigned int i );
     unsigned int size() const { return no_words; };
     bool known( unsigned int ) const;
     bool read( std::istream &,
 	       input_kind_type,
-	       const std::string&,
-	       const std::string&,
+	       const icu::UnicodeString&,
+	       const icu::UnicodeString&,
 	       size_t& );
   private:
     int UTAG;
     std::vector<word *> Words;
-    std::string remainder;
+    icu::UnicodeString remainder;
     const PatTemplate& Ktemplate;
     const PatTemplate& Utemplate;
     unsigned int no_words;
-    std::string InternalEosMark;
-    bool Utt_Terminator( const std::string& );
-    void add( const std::string&, const std::vector<std::string>&,
-	      const std::string& );
-    void add( const std::string&, const std::string& );
-    bool read_tagged( std::istream&, const std::string&, size_t& );
-    bool read_untagged( std::istream&, const std::string&, size_t& );
-    bool read_enriched( std::istream&, const std::string&, size_t& );
+    icu::UnicodeString InternalEosMark;
+    bool Utt_Terminator( const icu::UnicodeString& );
+    void add( const icu::UnicodeString&,
+	      const std::vector<icu::UnicodeString>&,
+	      const icu::UnicodeString& );
+    void add( const icu::UnicodeString&,
+	      const icu::UnicodeString& );
+    bool read_tagged( std::istream&, const icu::UnicodeString&, size_t& );
+    bool read_untagged( std::istream&, const icu::UnicodeString&, size_t& );
+    bool read_enriched( std::istream&, const icu::UnicodeString&, size_t& );
     void print( std::ostream & ) const;
   };
 

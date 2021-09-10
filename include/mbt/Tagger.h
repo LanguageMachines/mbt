@@ -111,7 +111,7 @@ namespace Tagger {
     int CreateKnown();
     int CreateUnknown();
     bool CreateSettingsFile();
-    std::string set_eos_mark( const std::string& );
+    icu::UnicodeString set_eos_mark( const icu::UnicodeString& );
     bool set_default_filenames();
     bool parse_create_args( TiCC::CL_Options& );
     bool parse_run_args( TiCC::CL_Options&, bool = false );
@@ -208,8 +208,8 @@ namespace Tagger {
     std::string U_option_name;
     std::string r_option_name;
     std::string L_option_name;
-    std::string EosMark;
-    std::string Separators;
+    icu::UnicodeString EosMark;
+    icu::UnicodeString Separators;
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;

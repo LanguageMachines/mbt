@@ -397,9 +397,9 @@ namespace Tagger {
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
-    const vector<string> enr = mySentence.getEnrichments(word);
+    const vector<UnicodeString> enr = mySentence.getEnrichments(word);
     for ( const auto& er: enr ){
-      line += TiCC::UnicodeFromUTF8(er) + " ";
+      line += er + " ";
     }
     if ( input_kind != UNTAGGED ){
       line += mySentence.gettag(word);
@@ -854,7 +854,7 @@ namespace Tagger {
 	// is it known/unknown
 	res._known = mySentence.known(Wcnt);
 	if ( input_kind == ENRICHED ){
-	  res._enrichment = mySentence.getenr(Wcnt);
+	  res._enrichment = TiCC::UnicodeToUTF8(mySentence.getenr(Wcnt));
 	}
 	if ( confidence_flag ){
 	  res._confidence = confidence_array[Wcnt];
@@ -871,12 +871,12 @@ namespace Tagger {
     return result;
   }
 
-  string decode( const string& eom ){
+  string decode( const UnicodeString& eom ){
     if ( eom  == "EL" ){
       return "";
     }
     else {
-      return eom;
+      return TiCC::UnicodeToUTF8(eom);
     }
   }
 
@@ -967,7 +967,6 @@ namespace Tagger {
     int no_correct_unknown=0;
     int no_known=0;
     int no_unknown=0;
-    static UnicodeString UniEos = TiCC::UnicodeFromUTF8(EosMark);
     // loop as long as you get sentences
     //
     int HartBeat = 0;
@@ -979,7 +978,7 @@ namespace Tagger {
       if ( ++HartBeat % 100 == 0 ) {
 	cerr << "."; cerr.flush();
       }
-      if ( mySentence.getword(0) == UniEos ){
+      if ( mySentence.getword(0) == EosMark ){
 	// only possible for ENRICHED!
 	outfile << EosMark << endl;
 	continue;
@@ -1201,7 +1200,7 @@ namespace Tagger {
       }
     }
     if ( Opts.extract( 'e', value ) ){
-      EosMark = value;
+      EosMark = TiCC::UnicodeFromUTF8(value);
     }
     if ( Opts.extract( "tabbed" ) ){
       Separators = "\t";
