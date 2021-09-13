@@ -1137,6 +1137,13 @@ namespace Tagger {
 						  SettingsFilePath );
 	unknowntreeflag = true; // there is a unknowntreefile file specified
 	break;
+      case 'D':
+	if ( strncmp( SetBuffer, "DATA_VERSION", 12 ) == 0 ){
+	  cerr << "Found a DATA_VERSION setting in '" << fname << "'" << endl
+	       << "This version of Mbt doesn't support that!" << endl;
+	  return false;
+	}
+	// fall through
       default:
 	cerr << "Unknown option in settingsfile, ("
 	     << SetBuffer << "), ignored." <<endl;
