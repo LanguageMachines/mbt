@@ -405,6 +405,7 @@ namespace Tagger {
       if ( input_kind == ENRICHED ){
 	out_file << "ENRICHED" << endl;
       }
+      out_file << "DATA_VERSION " << DataVersion() << endl;
       out_file << "e " << EosMark << endl;
       out_file << "l " << MTLexFileBaseName << endl;
       out_file << "k " << KnownTreeBaseName << endl;

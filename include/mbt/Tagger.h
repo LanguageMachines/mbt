@@ -45,6 +45,7 @@ namespace Tagger {
 
   std::string Version();
   std::string VersionName();
+  double DataVersion();
 
   extern const std::string mbt_short_opts;
   extern const std::string mbt_long_opts;

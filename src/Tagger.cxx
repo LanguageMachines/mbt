@@ -60,12 +60,15 @@ LogStream *cur_log = &default_log;  // fill the externals
 LogLevel internal_default_level = LogNormal;
 LogLevel Tagger_Log_Level       = internal_default_level;
 
+const double DATA_VERSION=2.0;
+
 namespace Tagger {
   using namespace Hash;
   using namespace Timbl;
 
   string Version() { return VERSION; }
   string VersionName() { return PACKAGE_STRING; }
+  double DataVersion() { return DATA_VERSION; }
 
   const string UNKSTR   = "UNKNOWN";
 

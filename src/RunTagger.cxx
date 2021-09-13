@@ -1037,6 +1037,7 @@ namespace Tagger {
     if ( !setfile ){
       return false;
     }
+    double data_value = 0.0;
     char SetBuffer[512];
     char value[512];
     while(setfile.getline(SetBuffer,511,'\n')){
@@ -1137,11 +1138,29 @@ namespace Tagger {
 						  SettingsFilePath );
 	unknowntreeflag = true; // there is a unknowntreefile file specified
 	break;
+      case 'D':
+	double value;
+	sscanf( SetBuffer,"DATA_VERSION %lf", &value );
+	if ( value < DataVersion() ){
+	  cerr << fname << " has a PROBLEM!" << endl
+	       << "the DATA_VERSION is " << value << endl
+	       << "but this version of MbT expects at least " << DataVersion()
+	       << endl;
+	  return false;
+	}
+	data_value = value;
+	break;
       default:
 	cerr << "Unknown option in settingsfile, ("
 	     << SetBuffer << "), ignored." <<endl;
 	break;
       }
+    }
+    if ( data_value == 0.0 ){
+      cerr << fname << " has a PROBLEM!" << endl
+	   << "No DATA_VERSION setting is found but this version of MbT expects"
+	   << " at least " << DataVersion() << endl;
+      return false;
     }
     return true;
   }
