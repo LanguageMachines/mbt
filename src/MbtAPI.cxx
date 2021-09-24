@@ -98,7 +98,7 @@ bool MbtAPI::isInit() const{
   return tagger && tagger->isInit();
 }
 
-string MbtAPI::Tag( const std::string& inp ){
+UnicodeString MbtAPI::Tag( const UnicodeString& inp ){
   if ( tagger ){
     return tagger->Tag( inp );
   }
@@ -107,7 +107,7 @@ string MbtAPI::Tag( const std::string& inp ){
   }
 }
 
-vector<TagResult> MbtAPI::TagLine( const string& inp ){
+vector<TagResult> MbtAPI::TagLine( const UnicodeString& inp ){
   if ( tagger ){
     return tagger->tagLine( inp );
   }
@@ -116,7 +116,7 @@ vector<TagResult> MbtAPI::TagLine( const string& inp ){
   }
 }
 
-string MbtAPI::getResult( const vector<TagResult>& v ) const {
+UnicodeString MbtAPI::getResult( const vector<TagResult>& v ) const {
   if ( tagger ){
     return tagger->TRtoString( v );
   }

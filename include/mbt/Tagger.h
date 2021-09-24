@@ -99,15 +99,15 @@ namespace Tagger {
     bool InitBeaming( unsigned int );
     TaggerClass *clone() const;
     int Run( );
-    std::vector<TagResult> tagLine( const std::string& );
+    std::vector<TagResult> tagLine( const icu::UnicodeString& );
     nlohmann::json tag_line_to_JSON( const std::string& );
     nlohmann::json tag_JSON_to_JSON( const nlohmann::json& );
     std::vector<TagResult> tagSentence( sentence& );
-    std::string Tag( const std::string& inp ){
+    icu::UnicodeString Tag( const icu::UnicodeString& inp ){
       return TRtoString( tagLine(inp) );
     };
-    std::string TRtoString( const std::vector<TagResult>& ) const;
-    int TagLine( const std::string&, std::string& );
+    icu::UnicodeString TRtoString( const std::vector<TagResult>& ) const;
+    int TagLine( const icu::UnicodeString&, icu::UnicodeString& );
     // only for backward compatability
     int CreateKnown();
     int CreateUnknown();
@@ -245,20 +245,20 @@ namespace Tagger {
     bool is_known() const { return _known; };
     void set_known( bool b ) { _known = b; };
 
-    std::string word() const { return _word; };
-    void set_word( const std::string& w ) { _word = w; };
+    icu::UnicodeString word() const { return _word; };
+    void set_word( const icu::UnicodeString& w ) { _word = w; };
 
-    std::string assigned_tag() const { return _tag; };
-    void set_tag( const std::string& t ) { _tag = t; };
+    icu::UnicodeString assigned_tag() const { return _tag; };
+    void set_tag( const icu::UnicodeString& t ) { _tag = t; };
 
-    std::string input_tag() const { return _input_tag; };
-    void set_input_tag( const std::string& t ) { _input_tag = t; };
+    icu::UnicodeString input_tag() const { return _input_tag; };
+    void set_input_tag( const icu::UnicodeString& t ) { _input_tag = t; };
 
-    std::string enrichment() const { return _enrichment; };
-    void set_enrichment( const std::string& e ){ _enrichment = e; };
+    icu::UnicodeString enrichment() const { return _enrichment; };
+    void set_enrichment( const icu::UnicodeString& e ){ _enrichment = e; };
 
-    std::string distribution() const { return _distribution; };
-    void set_distribution( const std::string& d ){ _distribution = d; };
+    icu::UnicodeString distribution() const { return _distribution; };
+    void set_distribution( const icu::UnicodeString& d ){ _distribution = d; };
 
     double confidence() const { return _confidence; };
     void set_confidence( double c ){ _confidence = c; };
@@ -266,11 +266,11 @@ namespace Tagger {
     double distance() const { return _distance; };
     void set_distance( double c ){ _distance = c; };
   private:
-    std::string _word;
-    std::string _input_tag;
-    std::string _tag;
-    std::string _enrichment;
-    std::string _distribution;
+    icu::UnicodeString _word;
+    icu::UnicodeString _input_tag;
+    icu::UnicodeString _tag;
+    icu::UnicodeString _enrichment;
+    icu::UnicodeString _distribution;
     double _distance;
     double _confidence;
     bool _known;

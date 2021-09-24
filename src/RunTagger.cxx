@@ -360,8 +360,9 @@ namespace Tagger {
     // loop as long as you get non empty sentences
     //
     string line;
-    while ( getline(is, line ) ){
-      vector<TagResult> res = tagLine( line );
+    while ( getline( is, line ) ){
+      UnicodeString u_line = TiCC::UnicodeFromUTF8(line);
+      vector<TagResult> res = tagLine( u_line );
       int num = res.size();
       if ( num > 0 ){
 	no_words += num;
@@ -719,15 +720,16 @@ namespace Tagger {
     }
   }
 
-  int TaggerClass::TagLine( const std::string& inp, string& result ){
+  int TaggerClass::TagLine( const UnicodeString& inp, UnicodeString& result ){
     vector<TagResult> res = tagLine( inp );
     result = TRtoString( res );
     return res.size();
   }
 
-  vector<TagResult> TaggerClass::tagLine( const string& line ){
+  vector<TagResult> TaggerClass::tagLine( const UnicodeString& line ){
     sentence mySentence( Ktemplate, Utemplate );
-    stringstream ss(line);
+    stringstream ss;
+    ss << line;
     size_t dummy = 0;
     mySentence.read( ss, input_kind, EosMark, Separators, dummy );
     return tagSentence( mySentence );
@@ -743,17 +745,17 @@ namespace Tagger {
     for ( const auto& tr : tag_results ){
       // lookup the assigned category
       json one_entry;
-      one_entry["word"] = tr.word();
+      one_entry["word"] = TiCC::UnicodeToUTF8(tr.word());
       one_entry["known"] = tr.is_known();
       if ( enriched() ){
-	one_entry["enrichment"] = tr.enrichment();
+	one_entry["enrichment"] = TiCC::UnicodeToUTF8(tr.enrichment());
       }
-      one_entry["tag"] = tr.assigned_tag();
+      one_entry["tag"] = TiCC::UnicodeToUTF8(tr.assigned_tag());
       if ( confidence_is_set() ){
 	one_entry["confidence"] = tr.confidence();
       }
       if ( distrib_is_set() ){
-	one_entry["distribution"] = tr.distribution();
+	one_entry["distribution"] = TiCC::UnicodeToUTF8(tr.distribution());
       }
       if ( distance_is_set() ){
 	one_entry["distance"] = tr.distance();
@@ -846,21 +848,21 @@ namespace Tagger {
       for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
 	TagResult res;
 	// get the original word
-	res._word= TiCC::UnicodeToUTF8(mySentence.getword(Wcnt));
+	res._word = mySentence.getword(Wcnt);
 	// get the original tag
-	res._input_tag = TiCC::UnicodeToUTF8(mySentence.gettag(Wcnt));
+	res._input_tag = mySentence.gettag(Wcnt);
 	// lookup the assigned tag
-	res._tag = TiCC::UnicodeToUTF8(indexlex( Beam->paths[0][Wcnt], TheLex ) );
+	res._tag = indexlex( Beam->paths[0][Wcnt], TheLex );
 	// is it known/unknown
 	res._known = mySentence.known(Wcnt);
 	if ( input_kind == ENRICHED ){
-	  res._enrichment = TiCC::UnicodeToUTF8(mySentence.getenr(Wcnt));
+	  res._enrichment = mySentence.getenr(Wcnt);
 	}
 	if ( confidence_flag ){
 	  res._confidence = confidence_array[Wcnt];
 	}
 	if ( distrib_flag ){
-	  res._distribution = distribution_array[Wcnt];
+	  res._distribution = TiCC::UnicodeFromUTF8(distribution_array[Wcnt]);
 	}
 	if ( distance_flag ){
 	  res._distance = distance_array[Wcnt];
@@ -871,17 +873,22 @@ namespace Tagger {
     return result;
   }
 
-  string decode( const UnicodeString& eom ){
+  UnicodeString decode( const UnicodeString& eom ){
     if ( eom  == "EL" ){
       return "";
     }
     else {
-      return TiCC::UnicodeToUTF8(eom);
+      return eom;
     }
   }
 
-  string TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
-    string result;
+  UnicodeString toUString( double d ){
+    string tmp = TiCC::toString( d );
+    return TiCC::UnicodeFromUTF8( tmp );
+  }
+
+  UnicodeString TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
+    UnicodeString result;
     for ( const auto& tr : trs ){
       // lookup the assigned category
       result += tr.word();
@@ -910,20 +917,20 @@ namespace Tagger {
 	   input_kind == ENRICHED ){
 	result += tr.input_tag() + "\t" + tr.assigned_tag();
 	if ( confidence_flag ){
-	  result += " [" + toString( tr.confidence() ) + "]";
+	  result += " [" + toUString( tr.confidence() ) + "]";
 	}
 	if ( distrib_flag ){
 	  result += " " + tr.distribution();
 	}
 	if ( distance_flag ){
-	  result += " " + toString( tr.distance() );
+	  result += " " + toUString( tr.distance() );
 	}
 	result += "\n";
       }
       else {
 	result += tr.assigned_tag();
 	if ( confidence_flag ){
-	  result += "/" + toString( tr.confidence() );
+	  result += "/" + toUString( tr.confidence() );
 	}
 	result += " ";
       }
@@ -984,8 +991,8 @@ namespace Tagger {
 	continue;
       }
       vector<TagResult> res = tagSentence( mySentence );
-      string tagged_sentence = TRtoString( res );
-      if ( !tagged_sentence.empty() ){
+      UnicodeString tagged_sentence = TRtoString( res );
+      if ( !tagged_sentence.isEmpty() ){
 	// show the results of 1 sentence
 	statistics( mySentence,
 		    no_known, no_unknown,
