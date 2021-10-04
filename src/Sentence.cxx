@@ -493,10 +493,10 @@ namespace Tagger {
 			      size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
+    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
-    string buf;
-    while ( getline( infile, buf ) ){
-      UnicodeString line = TiCC::UnicodeFromUTF8( buf );
+    UnicodeString line;
+    while ( TiCC::getline( infile, line ) ){
       ++line_no;
       //cerr << "read line: " << line << endl;
       line.trim();
@@ -509,6 +509,7 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
+      line = nfc_normalizer.normalize( line );
       vector<UnicodeString> parts = TiCC::split_at_first_of( line, seps );
       if ( parts.size() != 2 ){
 #pragma omp critical (errors)
@@ -536,14 +537,15 @@ namespace Tagger {
 				size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
+    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
     //    cerr << "untagged-read remainder='" << remainder << "'" << endl;
-    string line = TiCC::UnicodeToUTF8(remainder);  // clumsy
+    UnicodeString line = remainder;
     remainder.remove();
-    while ( !line.empty() || getline( infile, line ) ){
+    while ( !line.isEmpty() || TiCC::getline( infile, line ) ){
       ++line_no;
       //      cerr << "untagged-read line: " << line << endl;
-      UnicodeString u_line = TiCC::UnicodeFromUTF8( line );
+      UnicodeString u_line = nfc_normalizer.normalize( line );
       u_line.trim();
       if ( u_line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
@@ -579,11 +581,11 @@ namespace Tagger {
     // read a sequence of enriched and tagged words from infile
     // every word must be a one_liner
     // cleanup the sentence for re-use...
+    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
-    string buf;
-    while( getline( infile, buf ) ){
+    UnicodeString line;
+    while( TiCC::getline( infile, line ) ){
       ++line_no;
-      UnicodeString line = TiCC::UnicodeFromUTF8( buf );
       line.trim();
       if ( line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
@@ -594,6 +596,7 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
+      line = nfc_normalizer.normalize( line );
       vector<UnicodeString> extras = TiCC::split_at_first_of( line, seps );
       if ( extras.size() >= 2 ){
 	UnicodeString Word = extras.front();

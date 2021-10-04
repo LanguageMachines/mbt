@@ -359,10 +359,9 @@ namespace Tagger {
     int no_words=0;
     // loop as long as you get non empty sentences
     //
-    string line;
-    while ( getline( is, line ) ){
-      UnicodeString u_line = TiCC::UnicodeFromUTF8(line);
-      vector<TagResult> res = tagLine( u_line );
+    UnicodeString line;
+    while ( TiCC::getline( is, line ) ){
+      vector<TagResult> res = tagLine( line );
       int num = res.size();
       if ( num > 0 ){
 	no_words += num;

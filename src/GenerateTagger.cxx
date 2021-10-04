@@ -65,13 +65,13 @@ namespace Tagger {
     TI->CreateStringRepr();
   }
 
-  bool split_special( const string& Buffer,
-		      UnicodeString& Word, UnicodeString& Tag ){
-    UnicodeString buffer = TiCC::UnicodeFromUTF8( Buffer );
+  bool split_special( const UnicodeString& buffer,
+		      UnicodeString& word,
+		      UnicodeString& tag ){
     vector<UnicodeString> subs = TiCC::split( buffer );
     if ( subs.size() > 1 ){
-      Word = subs.front();
-      Tag = subs.back();
+      word = subs.front();
+      tag = subs.back();
       return true;
     }
     return false;
@@ -104,15 +104,15 @@ namespace Tagger {
       cerr << "couldn't open inputfile " << filename << endl;
       return false;
     }
-    TiCC::UnicodeNormalizer normalizer;
+    TiCC::UnicodeNormalizer nfc_normalizer;
     map<UnicodeString,unsigned int> TagList;
-    UnicodeString Word, Tag;
-    while ( getline( lex_file, Buffer ) ){
-      if ( split_special( Buffer, Word, Tag ) ){
-	normalizer.normalize( Word );
-	normalizer.normalize( Tag );
-	TaggedLexicon.Store( Word, Tag );
-	TagList[Tag]++;
+    UnicodeString buffer;
+    while ( TiCC::getline( lex_file, buffer ) ){
+      buffer = nfc_normalizer.normalize( buffer );
+      UnicodeString word, tag;
+      if ( split_special( buffer, word, tag ) ){
+	TaggedLexicon.Store( word, tag );
+	TagList[tag]++;
       }
     }
     vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
