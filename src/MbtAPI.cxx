@@ -68,7 +68,7 @@ MbtAPI::MbtAPI( const std::string& optstring ){
   tagger = TaggerClass::StartTagger( opts );
 }
 
-MbtAPI::MbtAPI( const std::string& optstring, LogStream& ls ){
+MbtAPI::MbtAPI( const string& optstring, TiCC::LogStream& ls ){
   TiCC::CL_Options opts;
   opts.allow_args( mbt_short_opts, mbt_long_opts );
   try {
@@ -128,17 +128,6 @@ UnicodeString MbtAPI::getResult( const vector<TagResult>& v ) const {
 UnicodeString MbtAPI::set_eos_mark( const UnicodeString& eos ){
   if ( tagger ){
     return tagger->set_eos_mark( eos );
-  }
-  else {
-    throw std::runtime_error( "No tagger initialized yet...." );
-  }
-}
-
-string MbtAPI::set_eos_mark( const string& eos ){
-  if ( tagger ){
-    UnicodeString u_eos = TiCC::UnicodeFromUTF8( eos );
-    UnicodeString u_result = tagger->set_eos_mark( u_eos );
-    return TiCC::UnicodeToUTF8( u_result );
   }
   else {
     throw std::runtime_error( "No tagger initialized yet...." );

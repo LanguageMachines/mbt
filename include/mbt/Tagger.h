@@ -129,7 +129,7 @@ namespace Tagger {
     static TaggerClass *StartTagger( TiCC::CL_Options&, TiCC::LogStream* = 0 );
     static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
-    static int CreateTagger( int, char** );
+    static int CreateTagger( int, char*[] );
     bool isInit() const { return initialized; };
     static void manifest( const std::string& );
     static void run_usage( const std::string& );

@@ -74,10 +74,15 @@ namespace Tagger {
 		  unsigned int, int * = 0 ) const;
     int classify_hapax( const icu::UnicodeString&, UnicodeHash& ) const;
     void assign_tag( int, unsigned int );
-    icu::UnicodeString getword( unsigned int i ) const { return Words[i]->the_word; };
-    icu::UnicodeString& gettag( int i ) const { return Words[i]->word_tag; };
-    const std::vector<icu::UnicodeString>& getEnrichments( unsigned int i )
-      const { return Words[i]->extraFeatures; };
+    icu::UnicodeString getword( unsigned int i ) const {
+      return Words[i]->the_word;
+    };
+    icu::UnicodeString& gettag( int i ) const {
+      return Words[i]->word_tag;
+    };
+    const std::vector<icu::UnicodeString>& getEnrichments( unsigned int i ) const {
+      return Words[i]->extraFeatures;
+    };
     icu::UnicodeString getenr( unsigned int i );
     unsigned int size() const { return no_words; };
     bool known( unsigned int ) const;

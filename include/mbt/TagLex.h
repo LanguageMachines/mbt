@@ -60,7 +60,7 @@ namespace Tagger {
   public:
     TagLex();
     ~TagLex();
-    TagInfo *Lookup( const icu::UnicodeString& s );
+    TagInfo *Lookup( const icu::UnicodeString& );
     TagInfo *Store( const icu::UnicodeString&,
 		    const icu::UnicodeString&  );
     std::vector<TagInfo *> CreateSortedVector();
