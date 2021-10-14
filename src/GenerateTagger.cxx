@@ -572,7 +572,7 @@ namespace Tagger {
 	 << "\t-% <percentage> Filter Threshold for ambitag construction (default 5%)\n"
 	 << "\t-E <enriched tagged training corpus file> \n"
 	 << "\t-T <tagged training corpus file> \n"
-	 << "\t--tabbed use tabs as separator in TAGGED input. (default is all whitespace)\n"
+	 << "\t--tabbed ONLY use tabs as separator in TAGGED input. (default is all whitespace)\n"
 	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
 	 << "\t   <options>   options to use for both Known and Unknown Words Case Base\n"
 	 << "\t   K: <options>   options to use for Known Words Case Base\n"
