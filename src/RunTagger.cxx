@@ -422,13 +422,13 @@ namespace Tagger {
   }
 
   void TaggerClass::read_lexicon( const string& FileName ){
-    string wordbuf;
-    string valbuf;
+    UnicodeString wordbuf;
+    UnicodeString valbuf;
     int no_words=0;
     ifstream lexfile( FileName, ios::in);
     while ( lexfile >> wordbuf >> valbuf ){
-      MT_lexicon->insert(make_pair(TiCC::UnicodeFromUTF8(wordbuf),
-				   TiCC::UnicodeFromUTF8(valbuf)));
+      MT_lexicon->insert(make_pair(wordbuf,
+				   valbuf));
       no_words++;
       lexfile >> ws;
     }
@@ -440,11 +440,11 @@ namespace Tagger {
   // File should contain one word per line.
   //
   void TaggerClass::read_listfile( const string& FileName, UnicodeHash *words ){
-    string wordbuf;
+    UnicodeString wordbuf;
     int no_words=0;
     ifstream wordfile( FileName, ios::in);
     while( wordfile >> wordbuf ) {
-      words->hash( UnicodeFromUTF8(wordbuf) );
+      words->hash( wordbuf );
       ++no_words;
     }
     LOG << "  Read frequent words list from: " << FileName << " ("
@@ -881,63 +881,58 @@ namespace Tagger {
     }
   }
 
-  UnicodeString toUString( double d ){
-    string tmp = TiCC::toString( d );
-    return TiCC::UnicodeFromUTF8( tmp );
-  }
-
   UnicodeString TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
-    UnicodeString result;
+    stringstream ss;
     for ( const auto& tr : trs ){
       // lookup the assigned category
-      result += tr.word();
+      ss << tr.word();
       if ( tr.is_known() ){
 	if ( input_kind == UNTAGGED ){
-	  result += "/";
+	  ss << "/";
 	}
 	else {
-	  result += "\t/\t";
+	  ss << "\t/\t";
 	}
       }
       else {
 	if ( input_kind == UNTAGGED ){
-	  result += "//";
+	  ss << "//";
 	}
 	else {
-	  result += "\t//\t";
+	  ss << "\t//\t";
 	}
       }
       // output the correct tag if possible
       //
       if ( input_kind == ENRICHED ){
-	result = result + tr.enrichment() + "\t";
+	ss << tr.enrichment() << "\t";
       }
       if ( input_kind == TAGGED ||
 	   input_kind == ENRICHED ){
-	result += tr.input_tag() + "\t" + tr.assigned_tag();
+	ss << tr.input_tag() << "\t" << tr.assigned_tag();
 	if ( confidence_flag ){
-	  result += " [" + toUString( tr.confidence() ) + "]";
+	  ss << " [" << tr.confidence() << "]";
 	}
 	if ( distrib_flag ){
-	  result += " " + tr.distribution();
+	  ss << " " << tr.distribution();
 	}
 	if ( distance_flag ){
-	  result += " " + toUString( tr.distance() );
+	  ss << " " << tr.distance();
 	}
-	result += "\n";
+	ss << "\n";
       }
       else {
-	result += tr.assigned_tag();
+	ss << tr.assigned_tag();
 	if ( confidence_flag ){
-	  result += "/" + toUString( tr.confidence() );
+	  ss << "/" << tr.confidence();
 	}
-	result += " ";
+	ss << " ";
       }
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED ){
-      result = result + decode( EosMark );
+      ss << decode( EosMark );
     }
-    return result;
+    return TiCC::UnicodeFromUTF8(ss.str());
   }
 
   void TaggerClass::statistics( const sentence& mySentence,

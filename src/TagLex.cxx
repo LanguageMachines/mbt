@@ -41,6 +41,7 @@
 namespace Tagger {
   using namespace std;
   using namespace icu;
+  using namespace Tries;
 
   TagInfo::TagInfo( const UnicodeString& word,
 		    const UnicodeString& tag ):
@@ -115,7 +116,7 @@ namespace Tagger {
   }
 
   TagLex::TagLex(){
-    TagTree = new Trie<TagInfo>;
+    TagTree = new UniTrie<TagInfo>;
     NumOfEntries = 0;
   }
 
@@ -124,16 +125,16 @@ namespace Tagger {
   }
 
   TagInfo *TagLex::Lookup( const UnicodeString& name ){
-    return reinterpret_cast<TagInfo *>(TagTree->Retrieve( TiCC::UnicodeToUTF8(name) ));
+    return reinterpret_cast<TagInfo *>(TagTree->Retrieve( name ));
   }
 
   TagInfo *TagLex::Store( const UnicodeString& name,
 			  const UnicodeString& tag ){
-    TagInfo *info = TagTree->Retrieve( TiCC::UnicodeToUTF8(name) );
+    TagInfo *info = TagTree->Retrieve( name );
     if ( !info ){
       NumOfEntries++;
       info = new TagInfo( name, tag );
-      return TagTree->Store( TiCC::UnicodeToUTF8(name), info );
+      return TagTree->Store( name, info );
     }
     else {
       info->Update( tag );

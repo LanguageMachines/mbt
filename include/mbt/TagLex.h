@@ -28,12 +28,11 @@
 #ifndef MBT_TAGLEX_H
 #define MBT_TAGLEX_H
 
-#include "ticcutils/Trie.h"
+#include "ticcutils/UniTrie.h"
 #include "ticcutils/Unicode.h"
 #include "timbl/Common.h"
 
 namespace Tagger {
-  using Tries::Trie;
 
   // a Tagged Lexion. Stores strings , frequencies and assigned tags
   class TagInfo {
@@ -68,7 +67,7 @@ namespace Tagger {
   private:
     TagLex( const TagLex& ); // inhibit copies
     TagLex& operator=( const TagLex& ); // inhibit copies
-    Trie<TagInfo> *TagTree;
+    Tries::UniTrie<TagInfo> *TagTree;
     int NumOfEntries;
   };
 
