@@ -198,11 +198,11 @@ namespace Tagger {
 
   class name_prob_pair{
   public:
-    name_prob_pair( const string& n, double p ): name(n),prob(p){
+    name_prob_pair( const UnicodeString& n, double p ): name(n),prob(p){
       next = 0;
     }
     ~name_prob_pair(){};
-    string name;
+    UnicodeString name;
     double prob;
     name_prob_pair *next;
   private:
@@ -239,7 +239,7 @@ namespace Tagger {
     }
     double sum_freq = 0.0;
     for ( const auto& it : *Dist ){
-      string name = it.second->Value()->Name();
+      UnicodeString name = it.second->Value()->Name();
       double freq = it.second->Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
@@ -269,7 +269,7 @@ namespace Tagger {
 			    const TargetValue *answer,
 			    const ValueDistribution *distrib ){
     if ( size == 1 ){
-      paths[0][0] = TheLex.hash( TiCC::UnicodeFromUTF8(answer->Name()) );
+      paths[0][0] = TheLex.hash( answer->Name() );
       path_prob[0] = 1.0;
     }
     else {
@@ -279,7 +279,7 @@ namespace Tagger {
       int jb = 0;
       while ( d_pnt ){
 	if ( jb < size ){
-	  paths[jb][0] =  TheLex.hash( TiCC::UnicodeFromUTF8(d_pnt->name) );
+	  paths[jb][0] =  TheLex.hash( d_pnt->name );
 	  path_prob[jb] = d_pnt->prob;
 	}
 	name_prob_pair *tmp_d_pnt = d_pnt;
@@ -301,7 +301,7 @@ namespace Tagger {
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
       n_best_array[0]->path = beam_cnt;
-      n_best_array[0]->tag = TheLex.hash( UnicodeFromUTF8(answer->Name()) );
+      n_best_array[0]->tag = TheLex.hash( answer->Name() );
     }
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
@@ -314,7 +314,7 @@ namespace Tagger {
 	if ( ab < size ){
 	  double thisWProb = d_pnt->prob;
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
-	  int dtag = TheLex.hash( UnicodeFromUTF8(d_pnt->name) );
+	  int dtag = TheLex.hash( d_pnt->name );
 	  for ( int ane = size-1; ane >=0; --ane ){
 	    if ( thisPProb <= n_best_array[ane]->prob )
 	      break;
