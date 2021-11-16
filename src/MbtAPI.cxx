@@ -45,6 +45,7 @@ using std::vector;
 
 using namespace Tagger;
 using namespace TiCC;
+using namespace icu;
 
 MbtAPI::MbtAPI( const std::string& optstring ){
   TiCC::CL_Options opts;

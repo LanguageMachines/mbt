@@ -53,6 +53,7 @@
 
 namespace Tagger {
   using namespace std;
+  using namespace icu;
   using namespace Hash;
   using namespace Timbl;
 

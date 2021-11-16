@@ -52,6 +52,7 @@
 
 using namespace TiCC;
 using namespace std;
+using namespace icu;
 
 LogStream default_log( cerr );
 LogStream default_cout( cout, "", NoStamp);
