@@ -27,13 +27,14 @@
 #ifndef MBT_SENTENCE_H
 #define MBT_SENTENCE_H
 
-#include "ticcutils/TreeHash.h"
+#include "ticcutils/Unicode.h"
+#include "ticcutils/UniHash.h"
 
 namespace Tagger {
-  using Hash::StringHash;
+  using Hash::UnicodeHash;
 
-  const std::string DOT = "==";
-  const std::string UNKNOWN = "__";
+  const icu::UnicodeString DOT = "==";
+  const icu::UnicodeString UNKNOWN = "__";
   enum MatchAction { Unknown, Known, MakeKnown, MakeUnknown };
 
   // A word in a sentence.
@@ -41,15 +42,18 @@ namespace Tagger {
   class word {
   public:
 
-    std::string the_word;
+    icu::UnicodeString the_word;
     int the_word_index;
 
-    std::string word_tag;
+    icu::UnicodeString word_tag;
     int word_amb_tag;
     int word_ass_tag;
-    std::vector<std::string> extraFeatures;
-    word( const std::string&, const std::string& );
-    word( const std::string&, const std::vector<std::string>&, const std::string& );
+    std::vector<icu::UnicodeString> extraFeatures;
+    word( const icu::UnicodeString&,
+	  const icu::UnicodeString& );
+    word( const icu::UnicodeString&,
+	  const std::vector<icu::UnicodeString>&,
+	  const icu::UnicodeString& );
     ~word();
 
   };
@@ -65,38 +69,45 @@ namespace Tagger {
     sentence( const PatTemplate&, const PatTemplate& );
     ~sentence();
     void clear();
-    bool init_windowing( std::map<std::string,std::string>&, StringHash& );
-    bool nextpat( MatchAction&, std::vector<int>&, StringHash& , StringHash&,
+    bool init_windowing( std::map<icu::UnicodeString,icu::UnicodeString>&, UnicodeHash& );
+    bool nextpat( MatchAction&, std::vector<int>&, UnicodeHash& , UnicodeHash&,
 		  unsigned int, int * = 0 ) const;
-    int classify_hapax( const std::string&, StringHash& ) const;
+    int classify_hapax( const icu::UnicodeString&, UnicodeHash& ) const;
     void assign_tag( int, unsigned int );
-    std::string getword( unsigned int i ) { return Words[i]->the_word; };
-    const std::string& gettag( int i ) const { return Words[i]->word_tag; };
-    const std::vector<std::string>& getEnrichments( unsigned int i )
-      const { return Words[i]->extraFeatures; };
-    std::string getenr( unsigned int i );
+    icu::UnicodeString getword( unsigned int i ) const {
+      return Words[i]->the_word;
+    };
+    icu::UnicodeString& gettag( int i ) const {
+      return Words[i]->word_tag;
+    };
+    const std::vector<icu::UnicodeString>& getEnrichments( unsigned int i ) const {
+      return Words[i]->extraFeatures;
+    };
+    icu::UnicodeString getenr( unsigned int i );
     unsigned int size() const { return no_words; };
     bool known( unsigned int ) const;
     bool read( std::istream &,
 	       input_kind_type,
-	       const std::string&,
-	       const std::string&,
+	       const icu::UnicodeString&,
+	       const icu::UnicodeString&,
 	       size_t& );
   private:
     int UTAG;
     std::vector<word *> Words;
-    std::string remainder;
+    icu::UnicodeString remainder;
     const PatTemplate& Ktemplate;
     const PatTemplate& Utemplate;
     unsigned int no_words;
-    std::string InternalEosMark;
-    bool Utt_Terminator( const std::string& );
-    void add( const std::string&, const std::vector<std::string>&,
-	      const std::string& );
-    void add( const std::string&, const std::string& );
-    bool read_tagged( std::istream&, const std::string&, size_t& );
-    bool read_untagged( std::istream&, const std::string&, size_t& );
-    bool read_enriched( std::istream&, const std::string&, size_t& );
+    icu::UnicodeString InternalEosMark;
+    bool Utt_Terminator( const icu::UnicodeString& );
+    void add( const icu::UnicodeString&,
+	      const std::vector<icu::UnicodeString>&,
+	      const icu::UnicodeString& );
+    void add( const icu::UnicodeString&,
+	      const icu::UnicodeString& );
+    bool read_tagged( std::istream&, const icu::UnicodeString&, size_t& );
+    bool read_untagged( std::istream&, const icu::UnicodeString&, size_t& );
+    bool read_enriched( std::istream&, const icu::UnicodeString&, size_t& );
     void print( std::ostream & ) const;
   };
 

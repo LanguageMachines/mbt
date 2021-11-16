@@ -30,6 +30,7 @@
 #define MBT_API_H
 
 #include "timbl/TimblAPI.h"
+#include "ticcutils/UniHash.h"
 #include "mbt/Tagger.h"
 
 namespace TiCC {
@@ -45,10 +46,10 @@ class MbtAPI {
   MbtAPI( const std::string&, TiCC::LogStream& );
   ~MbtAPI();
   bool isInit() const;
-  std::string Tag( const std::string& );
-  std::vector<Tagger::TagResult> TagLine( const std::string& );
-  std::string getResult( const std::vector<Tagger::TagResult>& ) const;
-  std::string set_eos_mark( const std::string& );
+  icu::UnicodeString Tag( const icu::UnicodeString& );
+  std::vector<Tagger::TagResult> TagLine( const icu::UnicodeString& );
+  icu::UnicodeString getResult( const std::vector<Tagger::TagResult>& ) const;
+  icu::UnicodeString set_eos_mark( const icu::UnicodeString& );
  private:
   MbtAPI( const MbtAPI& ); // inhibit copies
   MbtAPI& operator=( const MbtAPI& ); // inhibit copies

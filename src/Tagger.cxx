@@ -60,12 +60,15 @@ LogStream *cur_log = &default_log;  // fill the externals
 LogLevel internal_default_level = LogNormal;
 LogLevel Tagger_Log_Level       = internal_default_level;
 
+const double DATA_VERSION=2.0;
+
 namespace Tagger {
   using namespace Hash;
   using namespace Timbl;
 
   string Version() { return VERSION; }
   string VersionName() { return PACKAGE_STRING; }
+  double DataVersion() { return DATA_VERSION; }
 
   const string UNKSTR   = "UNKNOWN";
 
@@ -95,9 +98,9 @@ namespace Tagger {
     initialized = false;
     Beam_Size = 1;
     Beam = NULL;
-    MT_lexicon = new map<string,string>;
-    kwordlist = new StringHash();
-    uwordlist = new StringHash();
+    MT_lexicon = new map<UnicodeString,UnicodeString>;
+    kwordlist = new UnicodeHash();
+    uwordlist = new UnicodeHash();
     piped_input = true;
     input_kind = UNTAGGED;
     lexflag = false;
@@ -185,15 +188,15 @@ namespace Tagger {
     return true;
   }
 
-  string TaggerClass::set_eos_mark( const string& eos ){
-    string tmp = EosMark;
+  UnicodeString TaggerClass::set_eos_mark( const UnicodeString& eos ){
+    UnicodeString tmp = EosMark;
     EosMark = eos;
     return tmp;
   }
 
-  const string& indexlex( const unsigned int index,
-			  StringHash& aLex){
-    return aLex.ReverseLookup( index );
+  const UnicodeString& indexlex( const unsigned int index,
+				 UnicodeHash& aLex){
+    return aLex.reverse_lookup( index );
   }
 
   TaggerClass::~TaggerClass(){

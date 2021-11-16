@@ -30,6 +30,7 @@
 
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
+#include "ticcutils/UniHash.h"
 #include "ticcutils/Timer.h"
 #include "timbl/TimblAPI.h"
 
@@ -44,6 +45,7 @@ namespace Tagger {
 
   std::string Version();
   std::string VersionName();
+  double DataVersion();
 
   extern const std::string mbt_short_opts;
   extern const std::string mbt_long_opts;
@@ -64,17 +66,17 @@ namespace Tagger {
     BeamData();
     ~BeamData();
     bool Init( int, unsigned int );
-    void InitPaths( StringHash&,
+    void InitPaths( Hash::UnicodeHash&,
 		    const Timbl::TargetValue *,
 		    const Timbl::ValueDistribution * );
-    void NextPath( StringHash&,
+    void NextPath( Hash::UnicodeHash&,
 		   const Timbl::TargetValue *,
 		   const Timbl::ValueDistribution *,
 		   int );
     void ClearBest();
     void Shift( int, int );
-    void Print( std::ostream& os, int i_word, StringHash& TheLex );
-    void PrintBest( std::ostream& os, StringHash& TheLex );
+    void Print( std::ostream& os, int i_word, Hash::UnicodeHash& TheLex );
+    void PrintBest( std::ostream& os, Hash::UnicodeHash& TheLex );
     int size;
     int **paths;
     int **temppaths;
@@ -97,20 +99,20 @@ namespace Tagger {
     bool InitBeaming( unsigned int );
     TaggerClass *clone() const;
     int Run( );
-    std::vector<TagResult> tagLine( const std::string& );
+    std::vector<TagResult> tagLine( const icu::UnicodeString& );
     nlohmann::json tag_line_to_JSON( const std::string& );
     nlohmann::json tag_JSON_to_JSON( const nlohmann::json& );
     std::vector<TagResult> tagSentence( sentence& );
-    std::string Tag( const std::string& inp ){
+    icu::UnicodeString Tag( const icu::UnicodeString& inp ){
       return TRtoString( tagLine(inp) );
     };
-    std::string TRtoString( const std::vector<TagResult>& ) const;
-    int TagLine( const std::string&, std::string& );
+    icu::UnicodeString TRtoString( const std::vector<TagResult>& ) const;
+    int TagLine( const icu::UnicodeString&, icu::UnicodeString& );
     // only for backward compatability
     int CreateKnown();
     int CreateUnknown();
     bool CreateSettingsFile();
-    std::string set_eos_mark( const std::string& );
+    icu::UnicodeString set_eos_mark( const icu::UnicodeString& );
     bool set_default_filenames();
     bool parse_create_args( TiCC::CL_Options& );
     bool parse_run_args( TiCC::CL_Options&, bool = false );
@@ -119,7 +121,7 @@ namespace Tagger {
     bool setLog( TiCC::LogStream& );
     int ProcessLines( std::istream&, std::ostream& );
     void read_lexicon( const std::string& );
-    void read_listfile( const std::string&, StringHash * );
+    void read_listfile( const std::string&, Hash::UnicodeHash * );
     bool enriched() const { return input_kind == ENRICHED; };
     bool distance_is_set() const { return distance_flag; };
     bool distrib_is_set()const { return distrib_flag; };
@@ -127,7 +129,7 @@ namespace Tagger {
     static TaggerClass *StartTagger( TiCC::CL_Options&, TiCC::LogStream* = 0 );
     static int CreateTagger( TiCC::CL_Options& );
     static int CreateTagger( const std::string& );
-    static int CreateTagger( int, char** );
+    static int CreateTagger( int, char*[] );
     bool isInit() const { return initialized; };
     static void manifest( const std::string& );
     static void run_usage( const std::string& );
@@ -144,9 +146,9 @@ namespace Tagger {
     std::string uwf;
     std::string kwf;
     bool initialized;
-    StringHash TheLex;
-    StringHash *kwordlist;
-    StringHash *uwordlist;
+    Hash::UnicodeHash TheLex;
+    Hash::UnicodeHash *kwordlist;
+    Hash::UnicodeHash *uwordlist;
     BeamData *Beam;
     input_kind_type input_kind;
     bool piped_input;
@@ -207,12 +209,12 @@ namespace Tagger {
     std::string U_option_name;
     std::string r_option_name;
     std::string L_option_name;
-    std::string EosMark;
-    std::string Separators;
+    icu::UnicodeString EosMark;
+    icu::UnicodeString Separators;
 
     PatTemplate Ktemplate;
     PatTemplate Utemplate;
-    std::map<std::string,std::string> *MT_lexicon;
+    std::map<icu::UnicodeString,icu::UnicodeString> *MT_lexicon;
     std::string UnknownTreeBaseName;
     std::string KnownTreeBaseName;
     std::string LexFileBaseName;
@@ -243,20 +245,20 @@ namespace Tagger {
     bool is_known() const { return _known; };
     void set_known( bool b ) { _known = b; };
 
-    std::string word() const { return _word; };
-    void set_word( const std::string& w ) { _word = w; };
+    icu::UnicodeString word() const { return _word; };
+    void set_word( const icu::UnicodeString& w ) { _word = w; };
 
-    std::string assigned_tag() const { return _tag; };
-    void set_tag( const std::string& t ) { _tag = t; };
+    icu::UnicodeString assigned_tag() const { return _tag; };
+    void set_tag( const icu::UnicodeString& t ) { _tag = t; };
 
-    std::string input_tag() const { return _input_tag; };
-    void set_input_tag( const std::string& t ) { _input_tag = t; };
+    icu::UnicodeString input_tag() const { return _input_tag; };
+    void set_input_tag( const icu::UnicodeString& t ) { _input_tag = t; };
 
-    std::string enrichment() const { return _enrichment; };
-    void set_enrichment( const std::string& e ){ _enrichment = e; };
+    icu::UnicodeString enrichment() const { return _enrichment; };
+    void set_enrichment( const icu::UnicodeString& e ){ _enrichment = e; };
 
-    std::string distribution() const { return _distribution; };
-    void set_distribution( const std::string& d ){ _distribution = d; };
+    icu::UnicodeString distribution() const { return _distribution; };
+    void set_distribution( const icu::UnicodeString& d ){ _distribution = d; };
 
     double confidence() const { return _confidence; };
     void set_confidence( double c ){ _confidence = c; };
@@ -264,11 +266,11 @@ namespace Tagger {
     double distance() const { return _distance; };
     void set_distance( double c ){ _distance = c; };
   private:
-    std::string _word;
-    std::string _input_tag;
-    std::string _tag;
-    std::string _enrichment;
-    std::string _distribution;
+    icu::UnicodeString _word;
+    icu::UnicodeString _input_tag;
+    icu::UnicodeString _tag;
+    icu::UnicodeString _enrichment;
+    icu::UnicodeString _distribution;
     double _distance;
     double _confidence;
     bool _known;
@@ -280,7 +282,7 @@ namespace Tagger {
 
   std::vector<TagResult> StringToTR( const std::string&, bool=false );
 
-  const std::string& indexlex( const unsigned int, StringHash& );
+  const icu::UnicodeString& indexlex( const unsigned int, Hash::UnicodeHash& );
   void get_weightsfile_name( std::string& opts, std::string& );
   void splits( const std::string& , std::string& common,
 	       std::string& known, std::string& unknown );

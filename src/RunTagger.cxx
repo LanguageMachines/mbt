@@ -164,7 +164,7 @@ namespace Tagger {
     }
   }
 
-  void BeamData::Print( ostream& os, int i_word, StringHash& TheLex ){
+  void BeamData::Print( ostream& os, int i_word, UnicodeHash& TheLex ){
     for ( int i=0; i < size; ++i ){
       os << "path_prob[" << i << "] = " << path_prob[i] << endl;
     }
@@ -181,7 +181,7 @@ namespace Tagger {
     }
   }
 
-  void BeamData::PrintBest( ostream& os, StringHash& TheLex ){
+  void BeamData::PrintBest( ostream& os, UnicodeHash& TheLex ){
     for ( int i=0; i < size; ++i ){
       if (  n_best_array[i]->path != EMPTY_PATH ){
 	os << "n_best_array[" << i << "] = "
@@ -198,11 +198,11 @@ namespace Tagger {
 
   class name_prob_pair{
   public:
-    name_prob_pair( const string& n, double p ): name(n),prob(p){
+    name_prob_pair( const UnicodeString& n, double p ): name(n),prob(p){
       next = 0;
     }
     ~name_prob_pair(){};
-    string name;
+    UnicodeString name;
     double prob;
     name_prob_pair *next;
   private:
@@ -239,11 +239,11 @@ namespace Tagger {
     }
     double sum_freq = 0.0;
     for ( const auto& it : *Dist ){
-      string name = it.second->Value()->Name();
+      UnicodeString name = it.second->Value()->name_u();
       double freq = it.second->Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
-      if ( name == PrefClass->Name() ){
+      if ( name == PrefClass->name_u() ){
 	assert( Pref == 0 );
 	Pref = tmp;
       }
@@ -265,11 +265,11 @@ namespace Tagger {
     return result;
   }
 
-  void BeamData::InitPaths( StringHash& TheLex,
+  void BeamData::InitPaths( UnicodeHash& TheLex,
 			    const TargetValue *answer,
 			    const ValueDistribution *distrib ){
     if ( size == 1 ){
-      paths[0][0] = TheLex.Hash( answer->Name() );
+      paths[0][0] = TheLex.hash( answer->name_u() );
       path_prob[0] = 1.0;
     }
     else {
@@ -279,7 +279,7 @@ namespace Tagger {
       int jb = 0;
       while ( d_pnt ){
 	if ( jb < size ){
-	  paths[jb][0] =  TheLex.Hash( d_pnt->name );
+	  paths[jb][0] =  TheLex.hash( d_pnt->name );
 	  path_prob[jb] = d_pnt->prob;
 	}
 	name_prob_pair *tmp_d_pnt = d_pnt;
@@ -294,14 +294,14 @@ namespace Tagger {
     }
   }
 
-  void BeamData::NextPath( StringHash& TheLex,
+  void BeamData::NextPath( UnicodeHash& TheLex,
 			   const TargetValue *answer,
 			   const ValueDistribution *distrib,
 			   int beam_cnt ){
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
       n_best_array[0]->path = beam_cnt;
-      n_best_array[0]->tag = TheLex.Hash( answer->Name() );
+      n_best_array[0]->tag = TheLex.hash( answer->name_u() );
     }
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
@@ -314,7 +314,7 @@ namespace Tagger {
 	if ( ab < size ){
 	  double thisWProb = d_pnt->prob;
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
-	  int dtag = TheLex.Hash( d_pnt->name );
+	  int dtag = TheLex.hash( d_pnt->name );
 	  for ( int ane = size-1; ane >=0; --ane ){
 	    if ( thisPProb <= n_best_array[ane]->prob )
 	      break;
@@ -359,8 +359,8 @@ namespace Tagger {
     int no_words=0;
     // loop as long as you get non empty sentences
     //
-    string line;
-    while ( getline(is, line ) ){
+    UnicodeString line;
+    while ( TiCC::getline( is, line ) ){
       vector<TagResult> res = tagLine( line );
       int num = res.size();
       if ( num > 0 ){
@@ -392,12 +392,12 @@ namespace Tagger {
     else {
       slots = Ktemplate.totalslots() - Ktemplate.skipfocus;
     }
-    string line;
+    UnicodeString line;
     for ( int f=0; f < slots; ++f ){
       line += indexlex( pat[f], TheLex );
       line += " ";
     }
-    const vector<string> enr = mySentence.getEnrichments(word);
+    const vector<UnicodeString> enr = mySentence.getEnrichments(word);
     for ( const auto& er: enr ){
       line += er + " ";
     }
@@ -418,16 +418,17 @@ namespace Tagger {
       }
       cout << endl;
     }
-    return line;
+    return TiCC::UnicodeToUTF8(line);
   }
 
   void TaggerClass::read_lexicon( const string& FileName ){
-    string wordbuf;
-    string valbuf;
+    UnicodeString wordbuf;
+    UnicodeString valbuf;
     int no_words=0;
     ifstream lexfile( FileName, ios::in);
     while ( lexfile >> wordbuf >> valbuf ){
-      MT_lexicon->insert(make_pair(wordbuf,valbuf));
+      MT_lexicon->insert(make_pair(wordbuf,
+				   valbuf));
       no_words++;
       lexfile >> ws;
     }
@@ -438,12 +439,12 @@ namespace Tagger {
   //
   // File should contain one word per line.
   //
-  void TaggerClass::read_listfile( const string& FileName, StringHash *words ){
-    string wordbuf;
+  void TaggerClass::read_listfile( const string& FileName, UnicodeHash *words ){
+    UnicodeString wordbuf;
     int no_words=0;
     ifstream wordfile( FileName, ios::in);
     while( wordfile >> wordbuf ) {
-      words->Hash( wordbuf );
+      words->hash( wordbuf );
       ++no_words;
     }
     LOG << "  Read frequent words list from: " << FileName << " ("
@@ -718,15 +719,16 @@ namespace Tagger {
     }
   }
 
-  int TaggerClass::TagLine( const std::string& inp, string& result ){
+  int TaggerClass::TagLine( const UnicodeString& inp, UnicodeString& result ){
     vector<TagResult> res = tagLine( inp );
     result = TRtoString( res );
     return res.size();
   }
 
-  vector<TagResult> TaggerClass::tagLine( const string& line ){
+  vector<TagResult> TaggerClass::tagLine( const UnicodeString& line ){
     sentence mySentence( Ktemplate, Utemplate );
-    stringstream ss(line);
+    stringstream ss;
+    ss << line;
     size_t dummy = 0;
     mySentence.read( ss, input_kind, EosMark, Separators, dummy );
     return tagSentence( mySentence );
@@ -742,17 +744,17 @@ namespace Tagger {
     for ( const auto& tr : tag_results ){
       // lookup the assigned category
       json one_entry;
-      one_entry["word"] = tr.word();
+      one_entry["word"] = TiCC::UnicodeToUTF8(tr.word());
       one_entry["known"] = tr.is_known();
       if ( enriched() ){
-	one_entry["enrichment"] = tr.enrichment();
+	one_entry["enrichment"] = TiCC::UnicodeToUTF8(tr.enrichment());
       }
-      one_entry["tag"] = tr.assigned_tag();
+      one_entry["tag"] = TiCC::UnicodeToUTF8(tr.assigned_tag());
       if ( confidence_is_set() ){
 	one_entry["confidence"] = tr.confidence();
       }
       if ( distrib_is_set() ){
-	one_entry["distribution"] = tr.distribution();
+	one_entry["distribution"] = TiCC::UnicodeToUTF8(tr.distribution());
       }
       if ( distance_is_set() ){
 	one_entry["distance"] = tr.distance();
@@ -845,7 +847,7 @@ namespace Tagger {
       for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
 	TagResult res;
 	// get the original word
-	res._word= mySentence.getword(Wcnt);
+	res._word = mySentence.getword(Wcnt);
 	// get the original tag
 	res._input_tag = mySentence.gettag(Wcnt);
 	// lookup the assigned tag
@@ -859,7 +861,7 @@ namespace Tagger {
 	  res._confidence = confidence_array[Wcnt];
 	}
 	if ( distrib_flag ){
-	  res._distribution = distribution_array[Wcnt];
+	  res._distribution = TiCC::UnicodeFromUTF8(distribution_array[Wcnt]);
 	}
 	if ( distance_flag ){
 	  res._distance = distance_array[Wcnt];
@@ -870,7 +872,7 @@ namespace Tagger {
     return result;
   }
 
-  string decode( const string& eom ){
+  UnicodeString decode( const UnicodeString& eom ){
     if ( eom  == "EL" ){
       return "";
     }
@@ -879,65 +881,65 @@ namespace Tagger {
     }
   }
 
-  string TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
-    string result;
+  UnicodeString TaggerClass::TRtoString( const vector<TagResult>& trs ) const {
+    stringstream ss;
     for ( const auto& tr : trs ){
       // lookup the assigned category
-      result += tr.word();
+      ss << tr.word();
       if ( tr.is_known() ){
 	if ( input_kind == UNTAGGED ){
-	  result += "/";
+	  ss << "/";
 	}
 	else {
-	  result += "\t/\t";
+	  ss << "\t/\t";
 	}
       }
       else {
 	if ( input_kind == UNTAGGED ){
-	  result += "//";
+	  ss << "//";
 	}
 	else {
-	  result += "\t//\t";
+	  ss << "\t//\t";
 	}
       }
       // output the correct tag if possible
       //
       if ( input_kind == ENRICHED ){
-	result = result + tr.enrichment() + "\t";
+	ss << tr.enrichment() << "\t";
       }
       if ( input_kind == TAGGED ||
 	   input_kind == ENRICHED ){
-	result += tr.input_tag() + "\t" + tr.assigned_tag();
+	ss << tr.input_tag() << "\t" << tr.assigned_tag();
 	if ( confidence_flag ){
-	  result += " [" + toString( tr.confidence() ) + "]";
+	  ss << " [" << tr.confidence() << "]";
 	}
 	if ( distrib_flag ){
-	  result += " " + tr.distribution();
+	  ss << " " << tr.distribution();
 	}
 	if ( distance_flag ){
-	  result += " " + toString( tr.distance() );
+	  ss << " " << tr.distance();
 	}
-	result += "\n";
+	ss << "\n";
       }
       else {
-	result += tr.assigned_tag();
+	ss << tr.assigned_tag();
 	if ( confidence_flag ){
-	  result += "/" + toString( tr.confidence() );
+	  ss << "/" << tr.confidence();
 	}
-	result += " ";
+	ss << " ";
       }
     } // end of output loop through one sentence
     if ( input_kind != ENRICHED ){
-      result = result + decode( EosMark );
+      ss << decode( EosMark );
     }
-    return result;
+    return TiCC::UnicodeFromUTF8(ss.str());
   }
 
   void TaggerClass::statistics( const sentence& mySentence,
 				int& no_known, int& no_unknown,
 				int& no_correct_known,
 				int& no_correct_unknown ){
-    string tagstring;
+    UnicodeString tagstring;
     //now some output
     for ( unsigned int Wcnt=0; Wcnt < mySentence.size(); ++Wcnt ){
       tagstring = indexlex( Beam->paths[0][Wcnt], TheLex );
@@ -966,7 +968,6 @@ namespace Tagger {
     int no_correct_unknown=0;
     int no_known=0;
     int no_unknown=0;
-
     // loop as long as you get sentences
     //
     int HartBeat = 0;
@@ -984,8 +985,8 @@ namespace Tagger {
 	continue;
       }
       vector<TagResult> res = tagSentence( mySentence );
-      string tagged_sentence = TRtoString( res );
-      if ( !tagged_sentence.empty() ){
+      UnicodeString tagged_sentence = TRtoString( res );
+      if ( !tagged_sentence.isEmpty() ){
 	// show the results of 1 sentence
 	statistics( mySentence,
 		    no_known, no_unknown,
@@ -1037,6 +1038,7 @@ namespace Tagger {
     if ( !setfile ){
       return false;
     }
+    double data_value = 0.0;
     char SetBuffer[512];
     char value[512];
     while(setfile.getline(SetBuffer,511,'\n')){
@@ -1138,17 +1140,28 @@ namespace Tagger {
 	unknowntreeflag = true; // there is a unknowntreefile file specified
 	break;
       case 'D':
-	if ( strncmp( SetBuffer, "DATA_VERSION", 12 ) == 0 ){
-	  cerr << "Found a DATA_VERSION setting in '" << fname << "'" << endl
-	       << "This version of Mbt doesn't support that!" << endl;
+	double dvalue;
+	sscanf( SetBuffer,"DATA_VERSION %lf", &dvalue );
+	if ( dvalue < DataVersion() ){
+	  cerr << fname << " has a PROBLEM!" << endl
+	       << "the DATA_VERSION is " << dvalue << endl
+	       << "but this version of MbT expects at least " << DataVersion()
+	       << endl;
 	  return false;
 	}
-	// fall through
+	data_value = dvalue;
+	break;
       default:
 	cerr << "Unknown option in settingsfile, ("
 	     << SetBuffer << "), ignored." <<endl;
 	break;
       }
+    }
+    if ( data_value == 0.0 ){
+      cerr << fname << " has a PROBLEM!" << endl
+	   << "No DATA_VERSION setting is found but this version of MbT expects"
+	   << " at least " << DataVersion() << endl;
+      return false;
     }
     return true;
   }
@@ -1207,7 +1220,7 @@ namespace Tagger {
       }
     }
     if ( Opts.extract( 'e', value ) ){
-      EosMark = value;
+      EosMark = TiCC::UnicodeFromUTF8(value);
     }
     if ( Opts.extract( "tabbed" ) ){
       Separators = "\t";
@@ -1322,19 +1335,19 @@ namespace Tagger {
 	 << "\t-E <enriched tagged testfile>\n "
 	 << "\t-t <testfile> | -T <tagged testfile> "
 	 << "(default is untagged stdin)\n"
-	 << "\t--tabbed use tabs as separator in TAGGED input. (default is all whitespace)\n"
+	 << "\t--tabbed ONLY use tabs as separator in TAGGED input. (default is all whitespace)\n"
 	 << "\t-o <outputfile> (default stdout)\n"
+	 << "\t-L <file with list of frequent words>\n"
 	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
 	 << "\t  <options>   options to use for Both Known and Unknown Words Case Base\n"
 	 << "\t  K: <options>   options to use for Known Words Case Base\n"
 	 << "\t  U: <options>   options to use for Unknown Words Case Base\n"
 	 << "\t  valid Timbl options: a d k m q v w x -\n"
 	 << "\t-B <beamsize for search> (default = 1) \n"
-	 << "\t-v di add distance to output\n"
-	 << "\t-v db add distribution to output\n"
-	 << "\t-v cf add confidence to output\n"
+	 << "\t-v di add distance to the output\n"
+	 << "\t-v db add distribution to the output\n"
+	 << "\t-v cf add confidence to the output\n"
 	 << "\t-V show Version info\n"
-	 << "\t-L <file with list of frequent words>\n"
 	 << endl;
   }
 

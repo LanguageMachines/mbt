@@ -28,29 +28,30 @@
 #ifndef MBT_TAGLEX_H
 #define MBT_TAGLEX_H
 
-#include "ticcutils/Trie.h"
+#include "ticcutils/UniTrie.h"
+#include "ticcutils/Unicode.h"
 #include "timbl/Common.h"
 
 namespace Tagger {
-  using Tries::Trie;
 
   // a Tagged Lexion. Stores strings , frequencies and assigned tags
   class TagInfo {
     friend std::ostream& operator<<( std::ostream&, TagInfo * );
   public:
-    TagInfo( const std::string& , const std::string& );
+    TagInfo( const icu::UnicodeString& ,
+	     const icu::UnicodeString& );
     ~TagInfo();
-    void Update( const std::string& s );
+    void Update( const icu::UnicodeString& s );
     void Prune( int perc );
     int Freq() const { return WordFreq; };
-    std::string stringRep() { return StringRepr; };
+    icu::UnicodeString stringRep() { return StringRepr; };
     void CreateStringRepr();
-    std::string DisplayTagFreqs() const;
-    std::string Word;
+    icu::UnicodeString DisplayTagFreqs() const;
+    icu::UnicodeString Word;
   private:
     int WordFreq;
-    std::string StringRepr;
-    std::map<std::string, int> TagFreqs;
+    icu::UnicodeString StringRepr;
+    std::map<icu::UnicodeString, int> TagFreqs;
   };
 
   class TagLex {
@@ -58,14 +59,15 @@ namespace Tagger {
   public:
     TagLex();
     ~TagLex();
-    TagInfo *Lookup( const std::string& s );
-    TagInfo *Store( const std::string&  , const std::string&  );
+    TagInfo *Lookup( const icu::UnicodeString& );
+    TagInfo *Store( const icu::UnicodeString&,
+		    const icu::UnicodeString&  );
     std::vector<TagInfo *> CreateSortedVector();
     int numOfLexiconEntries() const { return NumOfEntries; };
   private:
     TagLex( const TagLex& ); // inhibit copies
     TagLex& operator=( const TagLex& ); // inhibit copies
-    Trie<TagInfo> *TagTree;
+    Tries::UniTrie<TagInfo> *TagTree;
     int NumOfEntries;
   };
 

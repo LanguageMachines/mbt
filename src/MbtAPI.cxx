@@ -68,7 +68,7 @@ MbtAPI::MbtAPI( const std::string& optstring ){
   tagger = TaggerClass::StartTagger( opts );
 }
 
-MbtAPI::MbtAPI( const std::string& optstring, LogStream& ls ){
+MbtAPI::MbtAPI( const string& optstring, TiCC::LogStream& ls ){
   TiCC::CL_Options opts;
   opts.allow_args( mbt_short_opts, mbt_long_opts );
   try {
@@ -98,7 +98,7 @@ bool MbtAPI::isInit() const{
   return tagger && tagger->isInit();
 }
 
-string MbtAPI::Tag( const std::string& inp ){
+UnicodeString MbtAPI::Tag( const UnicodeString& inp ){
   if ( tagger ){
     return tagger->Tag( inp );
   }
@@ -107,7 +107,7 @@ string MbtAPI::Tag( const std::string& inp ){
   }
 }
 
-vector<TagResult> MbtAPI::TagLine( const string& inp ){
+vector<TagResult> MbtAPI::TagLine( const UnicodeString& inp ){
   if ( tagger ){
     return tagger->tagLine( inp );
   }
@@ -116,7 +116,7 @@ vector<TagResult> MbtAPI::TagLine( const string& inp ){
   }
 }
 
-string MbtAPI::getResult( const vector<TagResult>& v ) const {
+UnicodeString MbtAPI::getResult( const vector<TagResult>& v ) const {
   if ( tagger ){
     return tagger->TRtoString( v );
   }
@@ -125,7 +125,7 @@ string MbtAPI::getResult( const vector<TagResult>& v ) const {
   }
 }
 
-string MbtAPI::set_eos_mark( const std::string& eos ){
+UnicodeString MbtAPI::set_eos_mark( const UnicodeString& eos ){
   if ( tagger ){
     return tagger->set_eos_mark( eos );
   }

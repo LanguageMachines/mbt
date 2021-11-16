@@ -35,20 +35,24 @@
 #include <string>
 
 #include "ticcutils/StringOps.h"
+#include "ticcutils/Unicode.h"
 #include "mbt/TagLex.h"
 
 namespace Tagger {
   using namespace std;
+  using namespace icu;
+  using namespace Tries;
 
-  TagInfo::TagInfo( const string& name, const string& tag ):
-    Word(name), WordFreq(0) {
+  TagInfo::TagInfo( const UnicodeString& word,
+		    const UnicodeString& tag ):
+    Word(word), WordFreq(0) {
     Update( tag );
   }
 
   TagInfo::~TagInfo(){
   }
 
-  void TagInfo::Update( const string& tag ){
+  void TagInfo::Update( const UnicodeString& tag ){
     ++WordFreq;
     ++TagFreqs[tag];
   }
@@ -66,18 +70,21 @@ namespace Tagger {
     }
   }
 
-  string TagInfo::DisplayTagFreqs( )const {
-    string result;
+  UnicodeString TagInfo::DisplayTagFreqs( )const {
+    UnicodeString result;
     for( const auto& it : TagFreqs ){
-      result += it.first + ":" + TiCC::toString(it.second) + " ";
+      result += it.first;
+      result += ":";
+      result += TiCC::UnicodeFromUTF8(TiCC::toString(it.second));
+      result += " ";
     }
     return result;
   }
 
   struct FS {
-    FS( int f, const string& s ):freq(f), str(s) {};
+    FS( int f, const UnicodeString& s ):freq(f), str(s) {};
     int freq;
-    string str;
+    UnicodeString str;
   };
 
   int cmpFreq( const FS& p1, const FS& p2 ){
@@ -90,7 +97,7 @@ namespace Tagger {
       FreqTags.push_back( FS( it.second, it.first) );
     }
     sort( FreqTags.begin(), FreqTags.end(), cmpFreq );
-    string tmpstr;
+    UnicodeString tmpstr;
     for ( auto const& it2 : FreqTags ){
       tmpstr += it2.str;
       if ( &it2 != &FreqTags.back() ){
@@ -109,7 +116,7 @@ namespace Tagger {
   }
 
   TagLex::TagLex(){
-    TagTree = new Trie<TagInfo>;
+    TagTree = new UniTrie<TagInfo>;
     NumOfEntries = 0;
   }
 
@@ -117,11 +124,12 @@ namespace Tagger {
     delete TagTree;
   }
 
-  TagInfo *TagLex::Lookup( const string& name ){
+  TagInfo *TagLex::Lookup( const UnicodeString& name ){
     return reinterpret_cast<TagInfo *>(TagTree->Retrieve( name ));
   }
 
-  TagInfo *TagLex::Store( const string& name, const string& tag ){
+  TagInfo *TagLex::Store( const UnicodeString& name,
+			  const UnicodeString& tag ){
     TagInfo *info = TagTree->Retrieve( name );
     if ( !info ){
       NumOfEntries++;
@@ -147,7 +155,11 @@ namespace Tagger {
     //
     int diff = t2->Freq() - t1->Freq();
     if ( diff == 0 ){
-      if ( TiCC::lowercase(t2->Word) == TiCC::lowercase(t1->Word) ){
+      UnicodeString u1 = t1->Word;
+      u1.toLower();
+      UnicodeString u2 = t2->Word;
+      u2.toLower();
+      if ( u2 == u1 ){
 	return t2->Word < t1->Word;
       }
       else {

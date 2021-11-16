@@ -51,8 +51,6 @@
 #include <pthread.h>
 #endif
 
-using namespace TiCC;
-
 namespace Tagger {
   using namespace std;
   using namespace Hash;
@@ -67,12 +65,13 @@ namespace Tagger {
     TI->CreateStringRepr();
   }
 
-  bool split_special( const string& Buffer, string& Word, string& Tag ){
-    vector<string> subs;
-    size_t len = split( Buffer, subs );
-    if ( len > 1 ){
-      Word = subs.front();
-      Tag = subs.back();
+  bool split_special( const UnicodeString& buffer,
+		      UnicodeString& word,
+		      UnicodeString& tag ){
+    vector<UnicodeString> subs = TiCC::split( buffer );
+    if ( subs.size() > 1 ){
+      word = subs.front();
+      tag = subs.back();
       return true;
     }
     return false;
@@ -105,13 +104,15 @@ namespace Tagger {
       cerr << "couldn't open inputfile " << filename << endl;
       return false;
     }
-
-    map<string,unsigned int> TagList;
-    string Word, Tag;
-    while ( getline( lex_file, Buffer ) ){
-      if ( split_special( Buffer, Word, Tag ) ){
-	TaggedLexicon.Store( Word, Tag );
-	TagList[Tag]++;
+    TiCC::UnicodeNormalizer nfc_normalizer;
+    map<UnicodeString,unsigned int> TagList;
+    UnicodeString buffer;
+    while ( TiCC::getline( lex_file, buffer ) ){
+      buffer = nfc_normalizer.normalize( buffer );
+      UnicodeString word, tag;
+      if ( split_special( buffer, word, tag ) ){
+	TaggedLexicon.Store( word, tag );
+	TagList[tag]++;
       }
     }
     vector<TagInfo *>TagVect = TaggedLexicon.CreateSortedVector();
@@ -137,7 +138,8 @@ namespace Tagger {
       COUT << "  Creating ambitag lexicon: "  << MTLexFileName << endl;
       for ( const auto& tv : TagVect ){
 	out_file << tv->Word << " " << tv->stringRep() << endl;
-	MT_lexicon->insert( make_pair(tv->Word, tv->stringRep() ) );
+	MT_lexicon->insert( make_pair(tv->Word,
+				      tv->stringRep() ) );
       }
       out_file.close();
     }
@@ -154,7 +156,7 @@ namespace Tagger {
 	  break;
 	}
 	out_file << tv->Word << endl;
-	kwordlist->Hash( tv->Word );
+	kwordlist->hash( tv->Word );
       }
       out_file.close();
     }
@@ -170,7 +172,7 @@ namespace Tagger {
 	    continue;
 	  }
 	  out_file << tv->Word << endl;
-	  uwordlist->Hash( tv->Word );
+	  uwordlist->hash( tv->Word );
 	}
 	out_file.close();
       }
@@ -180,8 +182,8 @@ namespace Tagger {
       }
     }
     if ( DoTagList ){
-      vector<pair<string,unsigned int>> si_vec( TagList.begin(), TagList.end() );
-      sort(si_vec.begin(), si_vec.end(), more_second<string, unsigned int>());
+      vector<pair<UnicodeString,unsigned int>> si_vec( TagList.begin(), TagList.end() );
+      sort(si_vec.begin(), si_vec.end(), more_second<UnicodeString, unsigned int>());
       ofstream os( TagListName );
       if ( os ){
 	for ( const auto& it: si_vec ){
@@ -268,7 +270,7 @@ namespace Tagger {
 				   swcn ) ){
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
-	    if ( (uwordlist->Lookup(mySentence.getword(swcn))) == 0 ){
+	    if ( (uwordlist->lookup( mySentence.getword(swcn))) == 0 ){
 	      skip = true;
 	    }
 	  }
@@ -280,7 +282,7 @@ namespace Tagger {
 	  int thisTagCode = -1;
 #pragma omp critical (hasher)
 	  {
-	    thisTagCode = TheLex.Hash( mySentence.gettag(swcn) );
+	    thisTagCode = TheLex.hash( mySentence.gettag(swcn) );
 	  }
 	  if ( !skip ){
 	    for ( auto const& it : mySentence.getEnrichments(swcn) ){
@@ -403,6 +405,7 @@ namespace Tagger {
       if ( input_kind == ENRICHED ){
 	out_file << "ENRICHED" << endl;
       }
+      out_file << "DATA_VERSION " << DataVersion() << endl;
       out_file << "e " << EosMark << endl;
       out_file << "l " << MTLexFileBaseName << endl;
       out_file << "k " << KnownTreeBaseName << endl;
@@ -426,14 +429,14 @@ namespace Tagger {
   bool TaggerClass::parse_create_args( TiCC::CL_Options& opts ){
     string value;
     if ( opts.extract( '%', value ) ){
-      FilterThreshold = stringTo<int>( value );
+      FilterThreshold = TiCC::stringTo<int>( value );
     }
     if ( opts.extract( 'd', value ) ){
       dumpflag=true;
       cout << "  Dumpflag ON" << endl;
     }
     if ( opts.extract( 'e', value ) ){
-      EosMark = value;
+      EosMark = TiCC::UnicodeFromUTF8(value);
       cout << "  Sentence delimiter set to '" << EosMark << "'" << endl;
     }
     if ( opts.extract( "tabbed" ) ){
@@ -456,10 +459,10 @@ namespace Tagger {
       klistflag = true;
     }
     if ( opts.extract( 'M', value ) ){
-      TopNumber = stringTo<int>(value);
+      TopNumber = TiCC::stringTo<int>(value);
     }
     if ( opts.extract( 'n', value ) ){
-      Npax = stringTo<int>(value);
+      Npax = TiCC::stringTo<int>(value);
       if ( Npax == 0 )
 	DoNpax = false;
     }
@@ -569,7 +572,7 @@ namespace Tagger {
 	 << "\t-% <percentage> Filter Threshold for ambitag construction (default 5%)\n"
 	 << "\t-E <enriched tagged training corpus file> \n"
 	 << "\t-T <tagged training corpus file> \n"
-	 << "\t--tabbed use tabs as separator in TAGGED input. (default is all whitespace)\n"
+	 << "\t--tabbed ONLY use tabs as separator in TAGGED input. (default is all whitespace)\n"
 	 << "\t-O\"Timbl options\" (Note: NO SPACE between O and \"!!!)\n"
 	 << "\t   <options>   options to use for both Known and Unknown Words Case Base\n"
 	 << "\t   K: <options>   options to use for Known Words Case Base\n"

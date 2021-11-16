@@ -57,11 +57,18 @@ else
     export PKG_CONFIG_PATH="$prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
 fi
 
+AC_OSX_PKG( [icu4c] )
+
+PKG_CHECK_MODULES([ICU], [icu-uc >= 50 icu-io] )
+CXXFLAGS="$CXXFLAGS $ICU_CFLAGS"
+LIBS="$ICU_LIBS $LIBS"
+
+
 PKG_CHECK_MODULES([timbl], [timbl >= 6.4.14] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
-PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.23] )
+PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.28] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
 

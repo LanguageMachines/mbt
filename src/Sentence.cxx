@@ -36,6 +36,7 @@
 #include <cctype>
 #include <cassert>
 
+#include "ticcutils/Unicode.h"
 #include "ticcutils/StringOps.h"
 #include "mbt/Pattern.h"
 #include "mbt/Sentence.h"
@@ -43,12 +44,13 @@
 namespace Tagger {
   using namespace Hash;
   using namespace std;
+  using namespace icu;
 
   // New enriched word.
   //
-  word::word( const string& some_word,
-	      const vector<string>& extra_features,
-	      const string& some_tag ):
+  word::word( const UnicodeString& some_word,
+	      const vector<UnicodeString>& extra_features,
+	      const UnicodeString& some_tag ):
     /*!
       construct a word structure
       \param some_word the string value of the word
@@ -99,8 +101,8 @@ namespace Tagger {
     return os;
   }
 
-  string sentence::getenr( unsigned int index ){
-    string result;
+  UnicodeString sentence::getenr( unsigned int index ){
+    UnicodeString result;
     if ( index < no_words ){
       for ( const auto& it : Words[index]->extraFeatures ){
 	result += it;
@@ -127,7 +129,7 @@ namespace Tagger {
     os << "'";
   }
 
-  bool sentence::Utt_Terminator( const string& test ){
+  bool sentence::Utt_Terminator( const UnicodeString& test ){
     /// check if the parameter equals the current EOS marker
     /*!
       /param test the value to check
@@ -137,34 +139,37 @@ namespace Tagger {
       value is a match too.
     */
     if ( InternalEosMark == "EL" ){
-      return test.empty();
+      return test.isEmpty();
     }
     return ( test == InternalEosMark );
   }
 
   // Add an enriched word to a sentence.
   //
-  void sentence::add( const string& a_word,
-		      const vector<string>& extraFeatures,
-		      const string& a_tag ){
-    Words.push_back( new word( a_word, extraFeatures, a_tag ) );
+  void sentence::add( const UnicodeString& u_word,
+		      const vector<UnicodeString>& extraFeatures,
+		      const UnicodeString& u_tag ){
+    Words.push_back( new word( u_word,
+			       extraFeatures,
+			       u_tag ) );
     ++no_words;
   }
 
   // Add a word to a sentence.
   //
-  void sentence::add(const string& a_word, const string& a_tag)
+  void sentence::add( const UnicodeString& a_word,
+		      const UnicodeString& a_tag)
   {
-    vector<string> tmp;
+    vector<UnicodeString> tmp;
     add(a_word, tmp, a_tag);
   }
 
-  bool sentence::init_windowing( map<string,string>& lex,
-				 StringHash& TheLex ) {
+  bool sentence::init_windowing( map<UnicodeString,UnicodeString>& lex,
+				 UnicodeHash& TheLex ) {
     if ( UTAG == -1 ){
 #pragma omp critical (hasher)
       {
-	UTAG = TheLex.Hash( UNKNOWN );
+	UTAG = TheLex.hash( UNKNOWN );
       }
     }
     if ( no_words == 0 ) {
@@ -175,7 +180,7 @@ namespace Tagger {
       for ( const auto& cur_word : Words ){
 #pragma omp critical (hasher)
 	{
-	  cur_word->the_word_index = TheLex.Hash( cur_word->the_word );
+	  cur_word->the_word_index = TheLex.hash(cur_word->the_word );
 	}
 	// look up ambiguous tag in the dictionary
 	//
@@ -183,7 +188,7 @@ namespace Tagger {
 	if ( it != lex.end() ){
 #pragma omp critical (hasher)
 	  {
-	    cur_word->word_amb_tag = TheLex.Hash( it->second );
+	    cur_word->word_amb_tag = TheLex.hash( it->second );
 	  }
 	}
 	else  {
@@ -196,33 +201,38 @@ namespace Tagger {
     }
   }
 
-  int sentence::classify_hapax( const string& word, StringHash& TheLex ) const{
-    string hap = "HAPAX-";
-    if ( word.find( "-" ) != string::npos ){
+  int sentence::classify_hapax( const UnicodeString& word,
+				UnicodeHash& TheLex ) const{
+    UnicodeString hap = "HAPAX-";
+    if ( word.indexOf( "-" ) != -1 ){
       // hyphen anywere
       hap += 'H';
     }
-    if ( isupper( word[0] ) ){
+    if ( u_isupper( word[0] ) ){
       // Capitalized first letter?
       hap += 'C';
     }
-    if ( word.find_first_of( "0123456789" ) != string::npos ) {
-      // digit anywhere
-      hap += 'N';
+    for ( int i=0; i < word.length(); ++i ){
+      if ( u_isdigit( word[i] ) ) {
+	// digit anywhere
+	hap += 'N';
+	break;
+      }
     }
     if ( hap.length() == 6 ){
       hap += "0";
+      //      cerr << "classified HAPAX-0 for: '" << word << "'" << endl;
     }
     int result = -1;
 #pragma omp critical (hasher)
     {
-      result = TheLex.Hash( hap );
+      result = TheLex.hash( hap );
     }
     return result;
   }
 
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
-			  StringHash& wordlist, StringHash& TheLex,
+			  UnicodeHash& wordlist, UnicodeHash& TheLex,
 			  unsigned int position, int *old_pat ) const {
     // safety check:
     //
@@ -260,7 +270,7 @@ namespace Tagger {
     //
     if (aTemplate->numprefix > 0) {
       for ( size_t j = 0; j < (size_t)aTemplate->numprefix; ++j ) {
-	string addChars = "_";
+	UnicodeString addChars = "_";
 	if ( j < CurWLen ) {
 	  addChars += current_word->the_word[j];
 	}
@@ -269,7 +279,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( addChars );
+	  Pat[i_feature] = TheLex.hash( addChars );
 	}
 	i_feature++;
       }
@@ -291,17 +301,17 @@ namespace Tagger {
 	//
 	switch(aTemplate->word_templatestring[i]) {
 	case 'w':
-	  if ( wordlist.NumOfEntries() == 0 ){
+	  if ( wordlist.num_of_entries() == 0 ){
 	    Pat[i_feature] = wPtr->the_word_index;
 	  }
 	  else {
-	    tok = wordlist.Lookup( wPtr->the_word );
+	    tok = wordlist.lookup(  wPtr->the_word );
 	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
 	      Pat[i_feature] = wPtr->the_word_index;
 	    }
 	    else {
-	      Pat[i_feature] = classify_hapax(  wPtr->the_word, TheLex );
+	      Pat[i_feature] = classify_hapax( wPtr->the_word, TheLex );
 	    }
 	  }
 	  i_feature++;
@@ -311,7 +321,7 @@ namespace Tagger {
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( DOT );
+	  Pat[i_feature] = TheLex.hash( DOT );
 	}
 	i_feature++;
       }
@@ -358,7 +368,7 @@ namespace Tagger {
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( DOT );
+	  Pat[i_feature] = TheLex.hash( DOT );
 	}
 	i_feature++;
       }
@@ -368,7 +378,7 @@ namespace Tagger {
     //
     if (aTemplate->numsuffix > 0) {
       for ( size_t j = aTemplate->numsuffix; j > 0; --j ) {
-	string addChars = "_";
+	UnicodeString addChars = "_";
 	if ( j <= CurWLen ){
 	  addChars  += current_word->the_word[CurWLen - j];
 	}
@@ -377,7 +387,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.Hash( addChars );
+	  Pat[i_feature] = TheLex.hash( addChars );
 	}
 	i_feature++;
       }
@@ -386,8 +396,8 @@ namespace Tagger {
     // Hyphen?
     //
     if (aTemplate->hyphen) {
-      string addChars;
-      if ( current_word->the_word.find('-') != string::npos ){
+      UnicodeString addChars;
+      if ( current_word->the_word.indexOf('-') != -1 ){
 	addChars = "_H";
       }
       else {
@@ -395,7 +405,7 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.Hash( addChars );
+	Pat[i_feature] = TheLex.hash( addChars );
       }
       i_feature++;
     }
@@ -403,8 +413,8 @@ namespace Tagger {
     // Capital (First Letter)?
     //
     if ( aTemplate->capital ) {
-      string addChars = "_";
-      if ( isupper(current_word->the_word[0]) ){
+      UnicodeString addChars = "_";
+      if ( u_isupper(current_word->the_word[0]) ){
 	addChars += 'C';
       }
       else {
@@ -412,7 +422,7 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.Hash( addChars );
+	Pat[i_feature] = TheLex.hash( addChars );
       }
       i_feature++;
     }
@@ -420,16 +430,16 @@ namespace Tagger {
     // Numeric (somewhere in word)?
     //
     if ( aTemplate->numeric ) {
-      string addChars = "_0";
+      UnicodeString addChars = "_0";
       for ( unsigned int j = 0; j < CurWLen; ++j ) {
-	if ( isdigit(current_word->the_word[j]) ){
-	  addChars[1] = 'N';
+	if ( u_isdigit(current_word->the_word[j]) ){
+	  addChars = "_N";
 	  break;
 	}
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.Hash( addChars );
+	Pat[i_feature] = TheLex.hash( addChars );
       }
       i_feature++;
     }
@@ -456,38 +466,40 @@ namespace Tagger {
     }
   }
 
-  bool sentence::read( istream &infile, input_kind_type kind,
-		       const string& eom,
-		       const string& seps,
-		       size_t& line ){
+  bool sentence::read( istream &infile,
+		       input_kind_type kind,
+		       const UnicodeString& eom,
+		       const UnicodeString& seps,
+		       size_t& line_no ){
     if ( !infile ) {
       return false;
     }
     InternalEosMark = eom;
     //    cerr << "READ zet InternalEosMark = " << eom << endl;
     if ( kind == TAGGED ){
-      return read_tagged( infile, seps, line );
+      return read_tagged( infile, seps, line_no );
     }
     else if ( kind == UNTAGGED ){
-      return read_untagged( infile, seps, line );
+      return read_untagged( infile, seps, line_no );
     }
     else {
-      return read_enriched( infile, seps, line );
+      return read_enriched( infile, seps, line_no );
     }
   }
 
   bool sentence::read_tagged( istream &infile,
-			      const string& seps,
+			      const UnicodeString& seps,
 			      size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
+    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
-    string line;
-    while ( getline( infile, line ) ){
+    UnicodeString line;
+    while ( TiCC::getline( infile, line ) ){
       ++line_no;
-      //      cerr << "read line: " << line << endl;
-      line = TiCC::trim( line );
-      if ( line.empty() ){
+      //cerr << "read line: " << line << endl;
+      line.trim();
+      if ( line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
@@ -496,7 +508,8 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> parts = TiCC::split_at_first_of( line, seps );
+      line = nfc_normalizer.normalize( line );
+      vector<UnicodeString> parts = TiCC::split_at_first_of( line, seps );
       if ( parts.size() != 2 ){
 #pragma omp critical (errors)
 	{
@@ -511,7 +524,7 @@ namespace Tagger {
 	}
       }
       else {
-	add( TiCC::trim(parts[0]), TiCC::trim(parts[1]) );
+	add( parts[0].trim(), parts[1].trim() );
       }
     }
     //    cerr << "read a sentence: " << *this << endl;
@@ -519,25 +532,27 @@ namespace Tagger {
   }
 
   bool sentence::read_untagged( istream &infile,
-				const string& seps,
+				const UnicodeString& seps,
 				size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
+    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
     //    cerr << "untagged-read remainder='" << remainder << "'" << endl;
-    string line = remainder;
-    remainder.clear();
-    while ( !line.empty() || getline( infile, line ) ){
+    UnicodeString line = remainder;
+    remainder.remove();
+    while ( !line.isEmpty() || TiCC::getline( infile, line ) ){
       ++line_no;
       //      cerr << "untagged-read line: " << line << endl;
-      line = TiCC::trim( line );
-      if ( line.empty() ){
+      UnicodeString u_line = nfc_normalizer.normalize( line );
+      u_line.trim();
+      if ( u_line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
 	continue;
       }
-      vector<string> parts = TiCC::split_at_first_of( line, seps );
+      vector<UnicodeString> parts = TiCC::split_at_first_of( u_line, seps );
       line = "";
       bool terminated = false;
       for ( const auto& p : parts ){
@@ -560,19 +575,18 @@ namespace Tagger {
   }
 
   bool sentence::read_enriched( istream &infile,
-				const string& seps,
+				const UnicodeString& seps,
 				size_t& line_no ){
     // read a sequence of enriched and tagged words from infile
     // every word must be a one_liner
     // cleanup the sentence for re-use...
+    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
-    string line;
-    string Word;
-    string Tag;
-    while( getline( infile, line ) ){
+    UnicodeString line;
+    while( TiCC::getline( infile, line ) ){
       ++line_no;
-      line = TiCC::trim( line );
-      if ( line.empty() ){
+      line.trim();
+      if ( line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
@@ -581,13 +595,14 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      vector<string> extras = TiCC::split_at_first_of( line, seps );
+      line = nfc_normalizer.normalize( line );
+      vector<UnicodeString> extras = TiCC::split_at_first_of( line, seps );
       if ( extras.size() >= 2 ){
-	Word = extras.front();
+	UnicodeString Word = extras.front();
 	extras.erase(extras.begin()); // expensive, but allas. extras is small
-	Tag  = extras.back();
+	UnicodeString Tag = extras.back();
 	extras.pop_back();
-	if ( !Word.empty() && !Tag.empty() ){
+	if ( !Word.isEmpty() && !Tag.isEmpty() ){
 	  add( Word, extras, Tag );
 	}
       }
