@@ -22,7 +22,7 @@ mbtg_SOURCES = Mbtg.cxx
 convert_SOURCES = convert.cxx
 
 lib_LTLIBRARIES = libmbt.la
-libmbt_la_LDFLAGS= -version-info 1:0:0
+libmbt_la_LDFLAGS= -version-info 2:0:0
 
 libmbt_la_SOURCES = MbtAPI.cxx Pattern.cxx TagLex.cxx Sentence.cxx \
 	RunTagger.cxx GenerateTagger.cxx Tagger.cxx
