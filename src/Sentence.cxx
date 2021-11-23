@@ -279,9 +279,8 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.hash( addChars );
+	  Pat[i_feature++] = TheLex.hash( addChars );
 	}
-	i_feature++;
       }
     }
 
@@ -321,9 +320,8 @@ namespace Tagger {
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.hash( DOT );
+	  Pat[i_feature++] = TheLex.hash( DOT );
 	}
-	i_feature++;
       }
     } // i
 
@@ -354,23 +352,20 @@ namespace Tagger {
 	  i_feature++;
 	  break;
 	case 'f':
-	  Pat[i_feature] = wPtr->word_amb_tag;
-	  i_feature++;
+	  Pat[i_feature++] = wPtr->word_amb_tag;
 	  break;
 	case 'F':
 	  break;
 	case 'a':
-	  Pat[i_feature] = wPtr->word_amb_tag;
-	  i_feature++;
+	  Pat[i_feature++] = wPtr->word_amb_tag;
 	  break;
 	}
       }
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.hash( DOT );
+	  Pat[i_feature++] = TheLex.hash( DOT );
 	}
-	i_feature++;
       }
     } // i
 
@@ -387,9 +382,8 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature] = TheLex.hash( addChars );
+	  Pat[i_feature++] = TheLex.hash( addChars );
 	}
-	i_feature++;
       }
     }
 
@@ -405,9 +399,8 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.hash( addChars );
+	Pat[i_feature++] = TheLex.hash( addChars );
       }
-      i_feature++;
     }
 
     // Capital (First Letter)?
@@ -422,9 +415,8 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.hash( addChars );
+	Pat[i_feature++] = TheLex.hash( addChars );
       }
-      i_feature++;
     }
 
     // Numeric (somewhere in word)?
@@ -441,7 +433,6 @@ namespace Tagger {
       {
 	Pat[i_feature] = TheLex.hash( addChars );
       }
-      i_feature++;
     }
     //    cerr << "next_pat: i_feature = " << i_feature << endl;
     //    for ( int bla = 0; bla < i_feature; bla++ )
