@@ -234,6 +234,7 @@ namespace Tagger {
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
 			  UnicodeHash& wordlist, UnicodeHash& TheLex,
 			  unsigned int position, int *old_pat ) const {
+    Pat.clear();
     // safety check:
     //
     if ( no_words == 0 || position >= no_words ){
@@ -241,7 +242,6 @@ namespace Tagger {
     }
     word *current_word = Words[position];
     size_t CurWLen = current_word->the_word.length();
-    int i_feature=0;
     const PatTemplate *aTemplate;
     word* wPtr;
     unsigned int tok;
@@ -279,7 +279,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature++] = TheLex.hash( addChars );
+	  Pat.push_back( TheLex.hash( addChars ) );
 	}
       }
     }
@@ -301,26 +301,25 @@ namespace Tagger {
 	switch(aTemplate->word_templatestring[i]) {
 	case 'w':
 	  if ( wordlist.num_of_entries() == 0 ){
-	    Pat[i_feature] = wPtr->the_word_index;
+	    Pat.push_back( wPtr->the_word_index );
 	  }
 	  else {
 	    tok = wordlist.lookup(  wPtr->the_word );
 	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
-	      Pat[i_feature] = wPtr->the_word_index;
+	      Pat.push_back( wPtr->the_word_index );
 	    }
 	    else {
-	      Pat[i_feature] = classify_hapax( wPtr->the_word, TheLex );
+	      Pat.push_back( classify_hapax( wPtr->the_word, TheLex ) );
 	    }
 	  }
-	  i_feature++;
 	  break;
 	}
       }
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature++] = TheLex.hash( DOT );
+	  Pat.push_back( TheLex.hash( DOT ) );
 	}
       }
     } // i
@@ -342,29 +341,28 @@ namespace Tagger {
 	switch(aTemplate->templatestring[ii]){
 	case 'd':
 	  if ( old_pat == 0 ){
-	    Pat[i_feature] = wPtr->word_ass_tag;
+	    Pat.push_back( wPtr->word_ass_tag );
 	  }
 	  else {
 	    // cerr << "bekijk old pat = " << position+ii-aTemplate->focuspos
 	    //  << " - " << old_pat[position+ii-aTemplate->focuspos] << endl;
-	    Pat[i_feature] = old_pat[position+ii-aTemplate->focuspos];
+	    Pat.push_back( old_pat[position+ii-aTemplate->focuspos] );
 	  }
-	  i_feature++;
 	  break;
 	case 'f':
-	  Pat[i_feature++] = wPtr->word_amb_tag;
+	  Pat.push_back( wPtr->word_amb_tag );
 	  break;
 	case 'F':
 	  break;
 	case 'a':
-	  Pat[i_feature++] = wPtr->word_amb_tag;
+	  Pat.push_back( wPtr->word_amb_tag );
 	  break;
 	}
       }
       else {   // Out of context.
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature++] = TheLex.hash( DOT );
+	  Pat.push_back( TheLex.hash( DOT ) );
 	}
       }
     } // i
@@ -382,7 +380,7 @@ namespace Tagger {
 	}
 #pragma omp critical (hasher)
 	{
-	  Pat[i_feature++] = TheLex.hash( addChars );
+	  Pat.push_back( TheLex.hash( addChars ) );
 	}
       }
     }
@@ -399,7 +397,7 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature++] = TheLex.hash( addChars );
+	Pat.push_back( TheLex.hash( addChars ) );
       }
     }
 
@@ -415,7 +413,7 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature++] = TheLex.hash( addChars );
+	Pat.push_back( TheLex.hash( addChars ) );
       }
     }
 
@@ -431,12 +429,9 @@ namespace Tagger {
       }
 #pragma omp critical (hasher)
       {
-	Pat[i_feature] = TheLex.hash( addChars );
+	Pat.push_back( TheLex.hash( addChars ) );
       }
     }
-    //    cerr << "next_pat: i_feature = " << i_feature << endl;
-    //    for ( int bla = 0; bla < i_feature; bla++ )
-    //      cerr << bla << " - " << Pat[bla] << endl;
     return true;
   }
 

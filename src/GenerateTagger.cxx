@@ -221,21 +221,16 @@ namespace Tagger {
 
   int TaggerClass::makedataset( istream& infile, bool do_known ){
     int no_words=0;
-    int nslots=0;
     ofstream outfile;
     MatchAction Action;
     vector<int> TestPat;
     if ( do_known ){
-      nslots = Ktemplate.totalslots() - Ktemplate.skipfocus;
       outfile.open( K_option_name, ios::trunc | ios::out );
       Action = MakeKnown;
-      TestPat.reserve(Ktemplate.totalslots());
     }
     else {
-      nslots = Utemplate.totalslots() - Utemplate.skipfocus;
       outfile.open( U_option_name, ios::trunc | ios::out );
       Action = MakeUnknown;
-      TestPat.reserve(Utemplate.totalslots());
     }
     // loop as long as you get sentences
     //
@@ -276,8 +271,8 @@ namespace Tagger {
 	    }
 	  }
 	  if ( !skip ){
-	    for ( int f=0; f < nslots; ++f ){
-	      outfile << indexlex( TestPat[f], TheLex ) << " ";
+	    for ( const auto& pat: TestPat ){
+	      outfile << indexlex( pat, TheLex ) << " ";
 	    }
 	  }
 	  int thisTagCode = -1;
