@@ -1,4 +1,4 @@
-mbt version 3.7 2020-04-15
+mbt version 3.7 2020-12-15
 [Ko vd Sloot]
 * use NFC vormalized UnicodeString interally, making Mbt robust against UTF8
   encoded files even for more exotic languages the Dutch.
