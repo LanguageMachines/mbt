@@ -1,3 +1,11 @@
+mbt version 3.7 2020-04-15
+[Ko vd Sloot]
+* use NFC vormalized UnicodeString interally, making Mbt robust against UTF8
+  encoded files even for more exotic languages the Dutch.
+* Uses the newest UTF8 aware Timbl
+* bumped library version
+* some code refactoring
+
 mbt version 3.6 2020-04-15
 [Ko vd Sloot]
 * replaced uses of Lexicon class by a normal std::map
