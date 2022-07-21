@@ -10,6 +10,22 @@
     "description": "MBT is a memory-based tagger-generator and tagger in one. The tagger-generator part can generate a sequence tagger on the basis of a training set of tagged sequences; the tagger part can tag new sequences. MBT can, for instance, be used to generate part-of-speech taggers or chunkers for natural language processing. It has also been used for named-entity recognition, information extraction in domain-specific texts, and disfluency chunking in transcribed speech. ",
     "license": "https://spdx.org/licenses/GPL-3.0",
 	"url": "https://languagemachines.github.io/mbt",
+    "producer": {
+        "@id": "https://huc.knaw.nl",
+        "@type": "Organization",
+        "name": "KNAW Humanities Cluster",
+        "url": "https://huc.knaw.nl",
+        "parentOrganization": {
+            "@id": "https://knaw.nl",
+            "@type": "Organization",
+            "name": "KNAW",
+            "url": "https://knaw.nl",
+            "location": {
+                "@type": "Place",
+                "name": "Amsterdam"
+            }
+        }
+    },
     "author": [
 		{
 			"@type": "Person",
@@ -45,8 +61,7 @@
 			"@type": "Person",
 			"givenName": "Antal",
 			"familyName": "van den Bosch",
-			"email": "antal.vandenbosch@let.ru.nl",
-			"affiliation": { "@id": "https://cls.ru.nl" }
+			"email": "antal.vandenbosch@let.ru.nl"
 		},
 		{
 			"@type": "Person",
@@ -59,13 +74,12 @@
 			"familyName": "Zavrel"
 		}
 	],
-	"sourceOrganization": { "@id": "https://www.ru.nl/clst" },
 	"programmingLanguage": {
 		"@type": "ComputerLanguage",
 		"identifier": "c++",
 		"name": "C++"
 	},
-	"operatingSystem": "POSIX",
+	"operatingSystem": [ "Linux", "BSD", "macOS"],
 	"codeRepository": "https://github.com/LanguageMachines/mbt",
     "softwareRequirements": [
         {
@@ -98,5 +112,21 @@
 			"url": "http://ilk.uvt.nl/mblp",
             "publisher": "Cambridge University Press"
 		}
-	]
+	],
+    "targetProduct": [
+        {
+            "@type": "SoftwareLibrary",
+            "executableName": "libmbt",
+            "name": "libmbt",
+            "runtimePlatform": [ "Linux", "BSD", "macOS" ],
+            "description": "Memory-based Tagging Library with API for C++"
+        },
+        {
+            "@type": "CommandLineApplication",
+            "executableName": "mbt",
+            "name": "mbt",
+            "runtimePlatform": [ "Linux", "BSD", "macOS" ],
+            "description": "Command-line interface to the full NLP suite"
+        }
+    ]
 }
