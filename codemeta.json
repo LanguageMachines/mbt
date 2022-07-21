@@ -127,7 +127,7 @@
             "executableName": "mbt",
             "name": "mbt",
             "runtimePlatform": [ "Linux", "BSD", "macOS" ],
-            "description": "Command-line interface to the full NLP suite"
+            "description": "Memory-based tagger, command-line tool"
         }
     ]
 }
