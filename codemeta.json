@@ -103,7 +103,7 @@
 	"issueTracker": "https://github.com/LanguageMachines/mbt/issues",
 	"contIntegration": "https://travis-ci.org/LanguageMachines/mbt",
 	"releaseNotes": "https://github.com/LanguageMachines/mbt/releases",
-	"developmentStatus": "active",
+	"developmentStatus": "https://www.repostatus.org/#active",
 	"keywords":  [ "nlp", "natural language processing", "memory based learning", "tagger", "machine learning" ],
     "referencePublication": [
 		{
