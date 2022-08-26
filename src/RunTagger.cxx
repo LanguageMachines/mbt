@@ -97,7 +97,6 @@ namespace Tagger {
 	   (paths = new int*[Size]) == 0 ||
 	   (temppaths = new int*[Size]) == 0 ){
 	throw runtime_error( "Beam: not enough memory for N-best search tables" );
-	return false;
       }
       else {
 	for ( int q=0; q < Size; ++q ){
@@ -105,7 +104,6 @@ namespace Tagger {
 	  temppaths[q] = 0;
 	  if ( (n_best_array[q] = new n_best_tuple) == 0 ){
 	    throw runtime_error( "Beam: not enough memory for N-best search tables" );
-	    return false;
 	  }
 	}
       }
@@ -120,7 +118,6 @@ namespace Tagger {
       if ( (paths[q] = new int[noWords]) == 0 ||
 	   (temppaths[q] = new int[noWords]) == 0 ){
 	throw runtime_error( "Beam: not enough memory for N-best search tables" );
-	return false;
       }
     }
     size = Size;
