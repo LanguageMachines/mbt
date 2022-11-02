@@ -38,8 +38,8 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 
 # check for pthreads
-ACX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
-if test x"$acx_pthread_ok" = xyes; then
+AX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
+if test x"$ax_pthread_ok" = xyes; then
    LIBS="$PTHREAD_LIBS $LIBS" \
    CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 fi
