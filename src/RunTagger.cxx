@@ -637,7 +637,7 @@ namespace Tagger {
   }
 
   void TaggerClass::InitTest( const sentence& mySentence,
-			      vector<int>& TestPat,
+			      const vector<int>& TestPat,
 			      MatchAction Action ){
     // Now make a testpattern for Timbl to process.
     string teststring = pat_to_string( mySentence, TestPat, Action, 0 );

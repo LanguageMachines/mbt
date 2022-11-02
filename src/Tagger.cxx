@@ -75,7 +75,7 @@ namespace Tagger {
 
   class BeamData;
 
-  TaggerClass::TaggerClass( ){
+  TaggerClass::TaggerClass(){
     cur_log = new LogStream( cerr );
     cur_log->setlevel( LogNormal );
     cur_log->setstamp( StampMessage );

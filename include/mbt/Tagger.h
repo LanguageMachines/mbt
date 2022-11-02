@@ -178,7 +178,7 @@ namespace Tagger {
     bool create_lexicons();
     int ProcessFile( std::istream&, std::ostream& );
     void ProcessTags( TagInfo * );
-    void InitTest( const sentence&, std::vector<int>&, MatchAction );
+    void InitTest( const sentence&, const std::vector<int>&, MatchAction );
     bool NextBest( const sentence&, std::vector<int>&, int, int );
     const Timbl::TargetValue *Classify( MatchAction, const std::string&,
 					const Timbl::ValueDistribution **distribution,
