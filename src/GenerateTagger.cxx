@@ -627,7 +627,7 @@ namespace Tagger {
       }
     }
     if ( kwords < 0 || uwords < 0 ){
-      cerr << "Generationg a tagger failed" << endl;
+      cerr << "Generating a tagger failed" << endl;
       return -1;
     }
     COUT << "      ready: " << kwords << " words processed."
