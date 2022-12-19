@@ -63,7 +63,7 @@ CXXFLAGS="$CXXFLAGS $ICU_CFLAGS"
 LIBS="$ICU_LIBS $LIBS"
 
 
-PKG_CHECK_MODULES([timbl], [timbl >= 6.4.14] )
+PKG_CHECK_MODULES([timbl], [timbl >= 6.8] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
