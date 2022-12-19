@@ -75,7 +75,7 @@ namespace Tagger {
     for( const auto& it : TagFreqs ){
       result += it.first;
       result += ":";
-      result += TiCC::UnicodeFromUTF8(TiCC::toString(it.second));
+      result += TiCC::toUnicodeString(it.second);
       result += " ";
     }
     return result;

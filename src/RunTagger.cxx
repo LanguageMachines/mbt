@@ -397,6 +397,7 @@ namespace Tagger {
     }
     const vector<UnicodeString> enr = mySentence.getEnrichments(word);
     line += TiCC::join( enr, " " );
+    line += " ";
     if ( input_kind != UNTAGGED ){
       line += mySentence.gettag(word);
     }
