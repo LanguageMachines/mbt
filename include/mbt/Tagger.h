@@ -180,7 +180,8 @@ namespace Tagger {
     void ProcessTags( TagInfo * );
     void InitTest( const sentence&, const std::vector<int>&, MatchAction );
     bool NextBest( const sentence&, std::vector<int>&, int, int );
-    const Timbl::TargetValue *Classify( MatchAction, const std::string&,
+    const Timbl::TargetValue *Classify( MatchAction,
+					const icu::UnicodeString&,
 					const Timbl::ValueDistribution **distribution,
 					double& );
     void statistics( const sentence&,
@@ -188,10 +189,10 @@ namespace Tagger {
 		     int& no_unknown,
 		     int& no_correct_known,
 		     int& no_correct_unknown );
-    std::string pat_to_string( const sentence&,
-			       const std::vector<int>&,
-			       MatchAction,
-			       int );
+    icu::UnicodeString pat_to_string( const sentence&,
+				      const std::vector<int>&,
+				      MatchAction,
+				      int );
 
     std::string TimblOptStr;
     int FilterThreshold;

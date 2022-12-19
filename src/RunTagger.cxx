@@ -379,10 +379,10 @@ namespace Tagger {
     os << endl;
   }
 
-  string TaggerClass::pat_to_string( const sentence& mySentence,
-				     const vector<int>& pat,
-				     MatchAction action,
-				     int word ){
+  UnicodeString TaggerClass::pat_to_string( const sentence& mySentence,
+					    const vector<int>& pat,
+					    MatchAction action,
+					    int word ){
     int slots;
     if ( action == Unknown ){
       slots = Utemplate.totalslots() - Utemplate.skipfocus;
@@ -396,9 +396,7 @@ namespace Tagger {
       line += " ";
     }
     const vector<UnicodeString> enr = mySentence.getEnrichments(word);
-    for ( const auto& er: enr ){
-      line += er + " ";
-    }
+    line += TiCC::join( enr, " " );
     if ( input_kind != UNTAGGED ){
       line += mySentence.gettag(word);
     }
@@ -416,7 +414,7 @@ namespace Tagger {
       }
       cout << endl;
     }
-    return TiCC::UnicodeToUTF8(line);
+    return line;
   }
 
   void TaggerClass::read_lexicon( const string& FileName ){
@@ -604,7 +602,7 @@ namespace Tagger {
 #endif
 
   const TargetValue *TaggerClass::Classify( MatchAction Action,
-					    const string& teststring,
+					    const icu::UnicodeString& teststring,
 					    const ValueDistribution **distribution,
 					    double& distance ){
     const TargetValue *answer = 0;
@@ -616,12 +614,12 @@ namespace Tagger {
     timer1.start();
     if ( Action == Known ){
       timer2.start();
-      answer = KnownTree->Classify( teststring, *distribution, distance );
+      answer = KnownTree->Classify_u( teststring, *distribution, distance );
       timer2.stop();
     }
     else {
       timer3.start();
-      answer = unKnownTree->Classify( teststring, *distribution, distance );
+      answer = unKnownTree->Classify_u( teststring, *distribution, distance );
       timer3.stop();
     }
     timer1.stop();
@@ -640,10 +638,13 @@ namespace Tagger {
 			      const vector<int>& TestPat,
 			      MatchAction Action ){
     // Now make a testpattern for Timbl to process.
-    string teststring = pat_to_string( mySentence, TestPat, Action, 0 );
+    UnicodeString test_string = pat_to_string( mySentence, TestPat, Action, 0 );
     const ValueDistribution *distribution = 0;
     double distance;
-    const TargetValue *answer = Classify( Action, teststring, &distribution, distance );
+    const TargetValue *answer = Classify( Action,
+					  test_string,
+					  &distribution,
+					  distance );
     distance_array.resize( mySentence.size() );
     distribution_array.resize( mySentence.size() );
     confidence_array.resize( mySentence.size() );
@@ -680,14 +681,17 @@ namespace Tagger {
 				  *kwordlist, TheLex,
 				  i_word, Beam->paths[beam_cnt] ) ){
       // Now make a testpattern for Timbl to process.
-      string teststring = pat_to_string( mySentence, TestPat, Action, i_word );
-      // process teststring to predict a category, using the
+      UnicodeString test_string = pat_to_string( mySentence,
+						 TestPat,
+						 Action,
+						 i_word );
+      // process test_string to predict a category, using the
       // appropriate tree
       //
-      //      cerr << "teststring '" << teststring << "'" << endl;
+      //      cerr << "test_string '" << test_string << "'" << endl;
       const ValueDistribution *distribution = 0;
       double distance;
-      const TargetValue *answer = Classify( Action, teststring,
+      const TargetValue *answer = Classify( Action, test_string,
 					    &distribution, distance );
       if ( beam_cnt == 0 ){
 	if ( distance_flag ){

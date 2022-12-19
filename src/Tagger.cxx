@@ -121,13 +121,13 @@ namespace Tagger {
   }
 
   TaggerClass::TaggerClass( const TaggerClass& in ):
-    cur_log( in.cur_log ),
+    cur_log( in.cur_log ),         //!> is a pointer to avoid copies
     KnownTree( in.KnownTree ),
     unKnownTree( in.unKnownTree ),
     initialized( in.initialized ),
-    kwordlist( in.kwordlist ),
-    uwordlist( in.uwordlist ),
-    Beam( 0 ),
+    kwordlist( in.kwordlist ),     //!> is a pointer to avoid copies
+    uwordlist( in.uwordlist ),     //!> is a pointer to avoid copies
+    Beam( 0 ),                     //!> reset pointer
     input_kind( in.input_kind ),
     piped_input( in.piped_input ),
     lexflag( in.lexflag ),
