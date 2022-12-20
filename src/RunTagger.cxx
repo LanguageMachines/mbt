@@ -615,12 +615,12 @@ namespace Tagger {
     timer1.start();
     if ( Action == Known ){
       timer2.start();
-      answer = KnownTree->Classify_u( teststring, *distribution, distance );
+      answer = KnownTree->Classify( teststring, *distribution, distance );
       timer2.stop();
     }
     else {
       timer3.start();
-      answer = unKnownTree->Classify_u( teststring, *distribution, distance );
+      answer = unKnownTree->Classify( teststring, *distribution, distance );
       timer3.stop();
     }
     timer1.stop();
