@@ -1,3 +1,9 @@
+mbt version 3.9 2023-01-02
+[Ko van der Sloot]
+* start using the newest Timbl
+* Better Unicode support
+* modernizing code
+
 mbt version 3.8 2022-07-22
 [Maarten van Gompel]
 * updated metadata (codemeta.json) following new (proposed) CLARIAH requirements (CLARIAH/clariah-plus#38)
