@@ -237,11 +237,11 @@ namespace Tagger {
     }
     double sum_freq = 0.0;
     for ( const auto& it : *Dist ){
-      UnicodeString name = it.second->Value()->name_u();
+      UnicodeString name = it.second->Value()->name();
       double freq = it.second->Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
-      if ( name == PrefClass->name_u() ){
+      if ( name == PrefClass->name() ){
 	assert( Pref == 0 );
 	Pref = tmp;
       }
@@ -267,7 +267,7 @@ namespace Tagger {
 			    const TargetValue *answer,
 			    const ValueDistribution *distrib ){
     if ( size == 1 ){
-      paths[0][0] = TheLex.hash( answer->name_u() );
+      paths[0][0] = TheLex.hash( answer->name() );
       path_prob[0] = 1.0;
     }
     else {
@@ -299,7 +299,7 @@ namespace Tagger {
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
       n_best_array[0]->path = beam_cnt;
-      n_best_array[0]->tag = TheLex.hash( answer->name_u() );
+      n_best_array[0]->tag = TheLex.hash( answer->name() );
     }
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
