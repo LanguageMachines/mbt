@@ -604,7 +604,7 @@ namespace Tagger {
 
   const TargetValue *TaggerClass::Classify( MatchAction Action,
 					    const icu::UnicodeString& teststring,
-					    const ClassDistribution **distribution,
+					    const ClassDistribution *&distribution,
 					    double& distance ){
     const TargetValue *answer = 0;
 #if defined(HAVE_PTHREAD)
@@ -615,12 +615,12 @@ namespace Tagger {
     timer1.start();
     if ( Action == Known ){
       timer2.start();
-      answer = KnownTree->Classify( teststring, *distribution, distance );
+      answer = KnownTree->Classify( teststring, distribution, distance );
       timer2.stop();
     }
     else {
       timer3.start();
-      answer = unKnownTree->Classify( teststring, *distribution, distance );
+      answer = unKnownTree->Classify( teststring, distribution, distance );
       timer3.stop();
     }
     timer1.stop();
@@ -644,7 +644,7 @@ namespace Tagger {
     double distance;
     const TargetValue *answer = Classify( Action,
 					  test_string,
-					  &distribution,
+					  distribution,
 					  distance );
     distance_array.resize( mySentence.size() );
     distribution_array.resize( mySentence.size() );
@@ -693,7 +693,7 @@ namespace Tagger {
       const ClassDistribution *distribution = 0;
       double distance;
       const TargetValue *answer = Classify( Action, test_string,
-					    &distribution, distance );
+					    distribution, distance );
       if ( beam_cnt == 0 ){
 	if ( distance_flag ){
 	  distance_array[i_word] = distance;

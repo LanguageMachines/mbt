@@ -182,7 +182,7 @@ namespace Tagger {
     bool NextBest( const sentence&, std::vector<int>&, int, int );
     const Timbl::TargetValue *Classify( MatchAction,
 					const icu::UnicodeString&,
-					const Timbl::ValueDistribution **distribution,
+					const Timbl::ValueDistribution *&,
 					double& );
     void statistics( const sentence&,
 		     int& no_known,
