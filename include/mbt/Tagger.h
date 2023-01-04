@@ -68,10 +68,10 @@ namespace Tagger {
     bool Init( int, unsigned int );
     void InitPaths( Hash::UnicodeHash&,
 		    const Timbl::TargetValue *,
-		    const Timbl::ValueDistribution * );
+		    const Timbl::ClassDistribution * );
     void NextPath( Hash::UnicodeHash&,
 		   const Timbl::TargetValue *,
-		   const Timbl::ValueDistribution *,
+		   const Timbl::ClassDistribution *,
 		   int );
     void ClearBest();
     void Shift( int, int );
@@ -80,7 +80,7 @@ namespace Tagger {
     int size;
     int **paths;
     int **temppaths;
-    double *path_prob;
+    std::vector<double> path_prob;
     n_best_tuple **n_best_array;
   private:
     BeamData( const BeamData& ); // inhibit copies
@@ -182,7 +182,7 @@ namespace Tagger {
     bool NextBest( const sentence&, std::vector<int>&, int, int );
     const Timbl::TargetValue *Classify( MatchAction,
 					const icu::UnicodeString&,
-					const Timbl::ValueDistribution *&,
+					const Timbl::ClassDistribution *&,
 					double& );
     void statistics( const sentence&,
 		     int& no_known,

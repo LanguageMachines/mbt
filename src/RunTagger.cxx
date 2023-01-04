@@ -70,7 +70,6 @@ namespace Tagger {
     size = 0;
     paths = 0;
     temppaths = 0;
-    path_prob = 0;
     n_best_array = 0;
   }
 
@@ -84,16 +83,15 @@ namespace Tagger {
     }
     delete [] paths;
     delete [] temppaths;
-    delete [] path_prob;
     delete [] n_best_array;
   }
 
   bool BeamData::Init( int Size, unsigned int noWords ){
     // Beaming Stuff...
-    if ( path_prob == 0 ){
+    if ( path_prob.size() == 0 ){
       // the first time
-      if ( (path_prob = new double[Size]) == 0 ||
-	   (n_best_array = new n_best_tuple*[Size]) == 0 ||
+      path_prob.resize(Size);
+      if ( (n_best_array = new n_best_tuple*[Size]) == 0 ||
 	   (paths = new int*[Size]) == 0 ||
 	   (temppaths = new int*[Size]) == 0 ){
 	throw runtime_error( "Beam: not enough memory for N-best search tables" );
