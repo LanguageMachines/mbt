@@ -225,7 +225,7 @@ namespace Tagger {
   }
 
 
-  name_prob_pair *break_down( const ValueDistribution *Dist,
+  name_prob_pair *break_down( const ClassDistribution *Dist,
 			      const TargetValue *PrefClass ){
     // split a distribution into names/probabilities  AND sort them descending
     // But put preferred in front.
@@ -265,7 +265,7 @@ namespace Tagger {
 
   void BeamData::InitPaths( UnicodeHash& TheLex,
 			    const TargetValue *answer,
-			    const ValueDistribution *distrib ){
+			    const ClassDistribution *distrib ){
     if ( size == 1 ){
       paths[0][0] = TheLex.hash( answer->name() );
       path_prob[0] = 1.0;
@@ -294,7 +294,7 @@ namespace Tagger {
 
   void BeamData::NextPath( UnicodeHash& TheLex,
 			   const TargetValue *answer,
-			   const ValueDistribution *distrib,
+			   const ClassDistribution *distrib,
 			   int beam_cnt ){
     if ( size == 1 ){
       n_best_array[0]->prob = 1.0;
@@ -604,7 +604,7 @@ namespace Tagger {
 
   const TargetValue *TaggerClass::Classify( MatchAction Action,
 					    const icu::UnicodeString& teststring,
-					    const ValueDistribution **distribution,
+					    const ClassDistribution **distribution,
 					    double& distance ){
     const TargetValue *answer = 0;
 #if defined(HAVE_PTHREAD)
@@ -640,7 +640,7 @@ namespace Tagger {
 			      MatchAction Action ){
     // Now make a testpattern for Timbl to process.
     UnicodeString test_string = pat_to_string( mySentence, TestPat, Action, 0 );
-    const ValueDistribution *distribution = 0;
+    const ClassDistribution *distribution = 0;
     double distance;
     const TargetValue *answer = Classify( Action,
 					  test_string,
@@ -690,7 +690,7 @@ namespace Tagger {
       // appropriate tree
       //
       //      cerr << "test_string '" << test_string << "'" << endl;
-      const ValueDistribution *distribution = 0;
+      const ClassDistribution *distribution = 0;
       double distance;
       const TargetValue *answer = Classify( Action, test_string,
 					    &distribution, distance );
