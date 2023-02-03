@@ -340,16 +340,13 @@ namespace Tagger {
 	return false;
       }
     }
-    char affix[32];
+
     LexFileBaseName = TestFileName;
     LexFileBaseName += ".lex";
     LexFileName = prefixWithAbsolutePath( LexFileBaseName, SettingsFilePath );
-    if ( FilterThreshold < 10 ){
-      sprintf( affix, ".0%1i",  FilterThreshold );
-    }
-    else {
-      sprintf( affix, ".%2i",  FilterThreshold );
-    }
+    string affix = std::to_string( FilterThreshold );
+    affix = TiCC::pad( affix, 2, '0' );
+    affix = "." + affix;
     if ( !knownoutfileflag ){
       K_option_name = TestFileName + ".known.inst." + KtmplStr;
       K_option_name = prefixWithAbsolutePath( K_option_name,
@@ -384,12 +381,14 @@ namespace Tagger {
       TopNFileName = TopNFileBaseName;
     }
     else {
-      sprintf( affix, ".top%d",  TopNumber );
+      affix = std::to_string( TopNumber );
+      affix = ".top" + affix;
       TopNFileBaseName = TestFileName + affix;
       TopNFileName = prefixWithAbsolutePath( TopNFileBaseName,
 					     SettingsFilePath );
     }
-    sprintf( affix, ".%dpaxes",  Npax );
+    affix = std::to_string( Npax );
+    affix = "." + affix + "paxes";
     NpaxFileBaseName = TestFileName + affix;
     NpaxFileName = prefixWithAbsolutePath( NpaxFileBaseName,
 					   SettingsFilePath );
