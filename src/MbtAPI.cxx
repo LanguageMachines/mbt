@@ -92,7 +92,7 @@ MbtAPI::MbtAPI( const string& optstring, TiCC::LogStream& ls ){
 }
 
 MbtAPI::~MbtAPI(){
-  RemoveTagger( tagger );
+  delete tagger;
 }
 
 bool MbtAPI::isInit() const{

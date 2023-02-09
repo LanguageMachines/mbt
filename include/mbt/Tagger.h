@@ -277,10 +277,6 @@ namespace Tagger {
     bool _known;
   };
 
-  inline void RemoveTagger( TaggerClass* tagger ){
-    delete tagger;
-  }
-
   std::vector<TagResult> StringToTR( const std::string&, bool=false );
 
   const icu::UnicodeString& indexlex( const unsigned int, Hash::UnicodeHash& );
