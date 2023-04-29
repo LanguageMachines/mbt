@@ -1,5 +1,5 @@
 AM_CPPFLAGS = -I@top_srcdir@/include
-AM_CXXFLAGS = -std=c++11 -W -Wall -g -pedantic -O3
+AM_CXXFLAGS = -std=c++14 -W -Wall -g -pedantic -O3
 
 LDADD = libmbt.la
 
