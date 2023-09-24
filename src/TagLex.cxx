@@ -171,7 +171,7 @@ namespace Tagger {
 
   vector<TagInfo *> TagLex::CreateSortedVector(){
     vector<TagInfo*> TagVec;
-    TagTree->ForEachDo( StoreInVector, (void *)&TagVec );
+    TagTree->ForEachDo( StoreInVector, static_cast<void *>(&TagVec) );
     sort( TagVec.begin(), TagVec.end() , ascendingInfo );
     return TagVec;
   }
