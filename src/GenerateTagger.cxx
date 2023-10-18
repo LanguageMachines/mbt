@@ -105,11 +105,9 @@ namespace Tagger {
       cerr << "couldn't open inputfile " << filename << endl;
       return false;
     }
-    TiCC::UnicodeNormalizer nfc_normalizer;
     map<UnicodeString,unsigned int> TagList;
     UnicodeString buffer;
     while ( TiCC::getline( lex_file, buffer ) ){
-      buffer = nfc_normalizer.normalize( buffer );
       UnicodeString word, tag;
       if ( split_special( buffer, word, tag ) ){
 	TaggedLexicon.Store( word, tag );

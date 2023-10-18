@@ -478,7 +478,6 @@ namespace Tagger {
 			      size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
-    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
     UnicodeString line;
     while ( TiCC::getline( infile, line ) ){
@@ -494,7 +493,6 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      line = nfc_normalizer.normalize( line );
       vector<UnicodeString> parts = TiCC::split_at_first_of( line, seps );
       if ( parts.size() != 2 ){
 #pragma omp critical (errors)
@@ -522,7 +520,6 @@ namespace Tagger {
 				size_t& line_no ){
     // read a whole sentence from a stream
     // A sentence can be delimited either by an Eos marker or EOF.
-    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
     //    cerr << "untagged-read remainder='" << remainder << "'" << endl;
     UnicodeString line = remainder;
@@ -530,15 +527,14 @@ namespace Tagger {
     while ( !line.isEmpty() || TiCC::getline( infile, line ) ){
       ++line_no;
       //      cerr << "untagged-read line: " << line << endl;
-      UnicodeString u_line = nfc_normalizer.normalize( line );
-      u_line.trim();
-      if ( u_line.isEmpty() ){
+      line.trim();
+      if ( line.isEmpty() ){
 	if ( InternalEosMark == "EL" ){
 	  return true;
 	}
 	continue;
       }
-      vector<UnicodeString> parts = TiCC::split_at_first_of( u_line, seps );
+      vector<UnicodeString> parts = TiCC::split_at_first_of( line, seps );
       line = "";
       bool terminated = false;
       for ( const auto& p : parts ){
@@ -566,7 +562,6 @@ namespace Tagger {
     // read a sequence of enriched and tagged words from infile
     // every word must be a one_liner
     // cleanup the sentence for re-use...
-    static TiCC::UnicodeNormalizer nfc_normalizer;
     clear();
     UnicodeString line;
     while( TiCC::getline( infile, line ) ){
@@ -581,7 +576,6 @@ namespace Tagger {
       else if ( Utt_Terminator( line ) ){
 	return true;
       }
-      line = nfc_normalizer.normalize( line );
       vector<UnicodeString> extras = TiCC::split_at_first_of( line, seps );
       if ( extras.size() >= 2 ){
 	UnicodeString Word = extras.front();

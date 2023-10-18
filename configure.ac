@@ -67,7 +67,7 @@ PKG_CHECK_MODULES([timbl], [timbl >= 6.8] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
-PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.32] )
+PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.34] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
 
