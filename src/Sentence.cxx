@@ -164,7 +164,7 @@ namespace Tagger {
     add(a_word, tmp, a_tag);
   }
 
-  bool sentence::init_windowing( map<UnicodeString,UnicodeString>& lex,
+  bool sentence::init_windowing( const map<UnicodeString,UnicodeString>& lex,
 				 UnicodeHash& TheLex ) {
     if ( UTAG == -1 ){
 #pragma omp critical (hasher)

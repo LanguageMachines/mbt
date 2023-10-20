@@ -107,7 +107,7 @@ namespace Tagger {
     StringRepr = tmpstr;
   }
 
-  ostream& operator<<( ostream& os, TagInfo *LI ){
+  ostream& operator<<( ostream& os, const TagInfo *LI ){
     if ( LI ){
       os << " " << LI->Word << ":" << LI->WordFreq
 	 << " {" << LI->DisplayTagFreqs() << "} " << LI->StringRepr;
@@ -176,7 +176,7 @@ namespace Tagger {
     return TagVec;
   }
 
-  ostream& operator<<( ostream& os, TagLex *L ){
+  ostream& operator<<( ostream& os, const TagLex *L ){
     return os << L->TagTree; }
 
 }

@@ -36,7 +36,7 @@ namespace Tagger {
 
   // a Tagged Lexion. Stores strings , frequencies and assigned tags
   class TagInfo {
-    friend std::ostream& operator<<( std::ostream&, TagInfo * );
+    friend std::ostream& operator<<( std::ostream&, const TagInfo * );
   public:
     TagInfo( const icu::UnicodeString& ,
 	     const icu::UnicodeString& );
@@ -55,7 +55,7 @@ namespace Tagger {
   };
 
   class TagLex {
-    friend std::ostream& operator<< ( std::ostream&, TagLex * );
+    friend std::ostream& operator<< ( std::ostream&, const TagLex * );
   public:
     TagLex();
     ~TagLex();

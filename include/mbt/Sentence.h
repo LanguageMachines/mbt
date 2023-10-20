@@ -69,7 +69,8 @@ namespace Tagger {
     sentence( const PatTemplate&, const PatTemplate& );
     ~sentence();
     void clear();
-    bool init_windowing( std::map<icu::UnicodeString,icu::UnicodeString>&, UnicodeHash& );
+    bool init_windowing( const std::map<icu::UnicodeString, icu::UnicodeString>&,
+			 UnicodeHash& );
     bool nextpat( MatchAction&, std::vector<int>&, UnicodeHash& , UnicodeHash&,
 		  unsigned int, int * = 0 ) const;
     int classify_hapax( const icu::UnicodeString&, UnicodeHash& ) const;
