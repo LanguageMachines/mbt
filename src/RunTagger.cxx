@@ -70,7 +70,6 @@ namespace Tagger {
     size = 0;
     paths = 0;
     temppaths = 0;
-    n_best_array = 0;
   }
 
   BeamData::~BeamData(){
@@ -83,7 +82,6 @@ namespace Tagger {
     }
     delete [] paths;
     delete [] temppaths;
-    delete [] n_best_array;
   }
 
   bool BeamData::Init( int Size, unsigned int noWords ){
@@ -91,8 +89,8 @@ namespace Tagger {
     if ( path_prob.size() == 0 ){
       // the first time
       path_prob.resize(Size);
-      if ( (n_best_array = new n_best_tuple*[Size]) == 0 ||
-	   (paths = new int*[Size]) == 0 ||
+      n_best_array.resize(Size);
+      if ( (paths = new int*[Size]) == 0 ||
 	   (temppaths = new int*[Size]) == 0 ){
 	throw runtime_error( "Beam: not enough memory for N-best search tables" );
       }
@@ -100,9 +98,7 @@ namespace Tagger {
 	for ( int q=0; q < Size; ++q ){
 	  paths[q] = 0;
 	  temppaths[q] = 0;
-	  if ( (n_best_array[q] = new n_best_tuple) == 0 ){
-	    throw runtime_error( "Beam: not enough memory for N-best search tables" );
-	  }
+	  n_best_array[q] = new n_best_tuple();
 	}
       }
     }
@@ -671,14 +667,18 @@ namespace Tagger {
 
   bool TaggerClass::NextBest( const sentence& mySentence,
 			      vector<int>& TestPat,
-			      int i_word, int beam_cnt ){
+			      int i_word,
+			      int beam_cnt ){
     MatchAction Action = Unknown;
     if ( Beam->paths[beam_cnt][i_word-1] == EMPTY_PATH ){
       return false;
     }
-    else if ( mySentence.nextpat( Action, TestPat,
-				  *kwordlist, TheLex,
-				  i_word, Beam->paths[beam_cnt] ) ){
+    else if ( !mySentence.nextpat( Action, TestPat,
+				   *kwordlist, TheLex,
+				   i_word, Beam->paths[beam_cnt] ) ){
+      return false;
+    }
+    else {
       // Now make a testpattern for Timbl to process.
       UnicodeString test_string = pat_to_string( mySentence,
 						 TestPat,
@@ -714,9 +714,6 @@ namespace Tagger {
 	Beam->PrintBest( LOG, TheLex );
       }
       return true;
-    }
-    else {
-      return false;
     }
   }
 
