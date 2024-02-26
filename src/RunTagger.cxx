@@ -75,7 +75,6 @@ namespace Tagger {
   BeamData::~BeamData(){
     if ( paths ){
       for ( int q=0; q < size; ++q ){
-	delete n_best_array[q];
 	delete [] paths[q];
 	delete [] temppaths[q];
       }
@@ -98,7 +97,6 @@ namespace Tagger {
 	for ( int q=0; q < Size; ++q ){
 	  paths[q] = 0;
 	  temppaths[q] = 0;
-	  n_best_array[q] = new n_best_tuple();
 	}
       }
     }
@@ -121,24 +119,24 @@ namespace Tagger {
   void BeamData::ClearBest(){
     DBG << "clearing n_best_array..." << endl;
     for ( int i=0; i < size; ++i ){
-      n_best_array[i]->clean();
+      n_best_array[i].clean();
     }
   }
 
   void BeamData::Shift(	int no_words, int i_word ){
     for ( int q1 = 0; q1 < no_words; ++q1 ){
       for ( int jb = 0; jb < size; ++jb ){
-	path_prob[jb] = n_best_array[jb]->prob;
-	if ( n_best_array[jb]->path != EMPTY_PATH ){
+	path_prob[jb] = n_best_array[jb].prob;
+	if ( n_best_array[jb].path != EMPTY_PATH ){
 	  if ( q1 < i_word ){
-	    DBG << "shift paths[" << n_best_array[jb]->path << ","
+	    DBG << "shift paths[" << n_best_array[jb].path << ","
 		<< q1 << "] into paths[" << jb << "," << q1 << "]" << endl;
-	    temppaths[jb][q1] = paths[n_best_array[jb]->path][q1];
+	    temppaths[jb][q1] = paths[n_best_array[jb].path][q1];
 	  }
 	  else if ( q1 == i_word ){
-	    DBG << "shift tag " <<  n_best_array[jb]->tag
+	    DBG << "shift tag " <<  n_best_array[jb].tag
 		<< " into paths[" << jb << "," << q1 << "]" << endl;
-	    temppaths[jb][q1] = n_best_array[jb]->tag;
+	    temppaths[jb][q1] = n_best_array[jb].tag;
 	  }
 	  else {
 	    temppaths[jb][q1] = EMPTY_PATH;
@@ -175,15 +173,15 @@ namespace Tagger {
 
   void BeamData::PrintBest( ostream& os, UnicodeHash& TheLex ){
     for ( int i=0; i < size; ++i ){
-      if (  n_best_array[i]->path != EMPTY_PATH ){
+      if (  n_best_array[i].path != EMPTY_PATH ){
 	os << "n_best_array[" << i << "] = "
-	   << n_best_array[i]->prob << " "
-	   << n_best_array[i]->path << " "
-	   << indexlex( n_best_array[i]->tag, TheLex ) << endl;
+	   << n_best_array[i].prob << " "
+	   << n_best_array[i].path << " "
+	   << indexlex( n_best_array[i].tag, TheLex ) << endl;
       }
       else {
 	os << "n_best_array[" << i << "] = "
-	    << n_best_array[i]->prob << " EMPTY " << endl;
+	    << n_best_array[i].prob << " EMPTY " << endl;
       }
     }
   }
@@ -291,9 +289,9 @@ namespace Tagger {
 			   const ClassDistribution *distrib,
 			   int beam_cnt ){
     if ( size == 1 ){
-      n_best_array[0]->prob = 1.0;
-      n_best_array[0]->path = beam_cnt;
-      n_best_array[0]->tag = TheLex.hash( answer->name() );
+      n_best_array[0].prob = 1.0;
+      n_best_array[0].path = beam_cnt;
+      n_best_array[0].tag = TheLex.hash( answer->name() );
     }
     else {
       DBG << "BeamData::NextPath[" << beam_cnt << "] ( " << answer << " , "
@@ -308,27 +306,27 @@ namespace Tagger {
 	  double thisPProb = thisWProb * path_prob[beam_cnt];
 	  int dtag = TheLex.hash( d_pnt->name );
 	  for ( int ane = size-1; ane >=0; --ane ){
-	    if ( thisPProb <= n_best_array[ane]->prob )
+	    if ( thisPProb <= n_best_array[ane].prob )
 	      break;
 	    if ( ane == 0 ||
-		 thisPProb <= n_best_array[ane-1]->prob ){
+		 thisPProb <= n_best_array[ane-1].prob ){
  	      if ( ane == 0 ){
  		DBG << "Insert, n=0" << endl;
 	      }
  	      else {
  		DBG << "Insert, n=" << ane << " Prob = " << thisPProb
-		    << " after prob = " << n_best_array[ane-1]->prob
+		    << " after prob = " << n_best_array[ane-1].prob
 		    << endl;
 	      }
 	      // shift
-	      n_best_tuple *keep = n_best_array[size-1];
+	      n_best_tuple keep = n_best_array[size-1];
 	      for ( int ash = size-1; ash > ane; --ash ){
 		n_best_array[ash] = n_best_array[ash-1];
 	      }
 	      n_best_array[ane] = keep;
-	      n_best_array[ane]->prob = thisPProb;
-	      n_best_array[ane]->path = beam_cnt;
-	      n_best_array[ane]->tag = dtag;
+	      n_best_array[ane].prob = thisPProb;
+	      n_best_array[ane].path = beam_cnt;
+	      n_best_array[ane].tag = dtag;
 	    }
 	  }
 	}

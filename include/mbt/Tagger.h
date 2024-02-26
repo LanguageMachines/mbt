@@ -81,7 +81,7 @@ namespace Tagger {
     int **paths;
     int **temppaths;
     std::vector<double> path_prob;
-    std::vector<n_best_tuple *>n_best_array;
+    std::vector<n_best_tuple>n_best_array;
   private:
     BeamData( const BeamData& ); // inhibit copies
     BeamData& operator=( const BeamData& ); // inhibit copies
