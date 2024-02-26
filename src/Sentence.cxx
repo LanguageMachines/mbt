@@ -233,7 +233,8 @@ namespace Tagger {
 
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
 			  UnicodeHash& wordlist, UnicodeHash& TheLex,
-			  unsigned int position, int *old_pat ) const {
+			  unsigned int position,
+			  const vector<int>& old_pat ) const {
     Pat.clear();
     // safety check:
     //
@@ -340,7 +341,7 @@ namespace Tagger {
 	//
 	switch(aTemplate->templatestring[ii]){
 	case 'd':
-	  if ( old_pat == 0 ){
+	  if ( old_pat[0] == 0 ){
 	    Pat.push_back( wPtr->word_ass_tag );
 	  }
 	  else {

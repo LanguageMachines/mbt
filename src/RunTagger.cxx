@@ -66,21 +66,10 @@ namespace Tagger {
 
   class BeamData;
 
-  BeamData::BeamData(){
-    size = 0;
-    paths = 0;
-    temppaths = 0;
+  BeamData::BeamData():size(0){
   }
 
   BeamData::~BeamData(){
-    if ( paths ){
-      for ( int q=0; q < size; ++q ){
-	delete [] paths[q];
-	delete [] temppaths[q];
-      }
-    }
-    delete [] paths;
-    delete [] temppaths;
   }
 
   bool BeamData::Init( int Size, unsigned int noWords ){
@@ -89,28 +78,12 @@ namespace Tagger {
       // the first time
       path_prob.resize(Size);
       n_best_array.resize(Size);
-      if ( (paths = new int*[Size]) == 0 ||
-	   (temppaths = new int*[Size]) == 0 ){
-	throw runtime_error( "Beam: not enough memory for N-best search tables" );
-      }
-      else {
-	for ( int q=0; q < Size; ++q ){
-	  paths[q] = 0;
-	  temppaths[q] = 0;
-	}
-      }
-    }
-    else {
-      for ( int q=0; q < Size; ++q ){
-	delete [] paths[q];
-	delete [] temppaths[q];
-      }
+      paths.resize(Size);
+      temppaths.resize(Size);
     }
     for ( int q=0; q < Size; ++q ){
-      if ( (paths[q] = new int[noWords]) == 0 ||
-	   (temppaths[q] = new int[noWords]) == 0 ){
-	throw runtime_error( "Beam: not enough memory for N-best search tables" );
-      }
+      paths[q].resize(noWords,0);
+      temppaths[q].resize(noWords,0);
     }
     size = Size;
     return true;
@@ -819,7 +792,8 @@ namespace Tagger {
 	MatchAction Action = Unknown;
 	vector<int> TestPat;
 	TestPat.reserve(Utemplate.totalslots());
-	if ( mySentence.nextpat( Action, TestPat, *kwordlist, TheLex, 0 )){
+	vector<int> start;
+	if ( mySentence.nextpat( Action, TestPat, *kwordlist, TheLex, 0, start )){
 	  DBG << "Start: " << mySentence.getword( 0 ) << endl;
 	  InitTest( mySentence, TestPat, Action );
 	  for ( unsigned int iword=1; iword < mySentence.size(); ++iword ){

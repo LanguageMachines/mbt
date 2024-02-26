@@ -78,8 +78,8 @@ namespace Tagger {
     void Print( std::ostream& os, int i_word, Hash::UnicodeHash& TheLex );
     void PrintBest( std::ostream& os, Hash::UnicodeHash& TheLex );
     int size;
-    int **paths;
-    int **temppaths;
+    std::vector<std::vector<int>> paths;
+    std::vector<std::vector<int>> temppaths;
     std::vector<double> path_prob;
     std::vector<n_best_tuple>n_best_array;
   private:

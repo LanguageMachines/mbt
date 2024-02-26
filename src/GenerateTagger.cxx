@@ -259,9 +259,10 @@ namespace Tagger {
 	// of the words in the dictionary and the values
 	// of the features are stored in the testpattern
 	int swcn = 0;
+	vector<int> dummy(1,0);
 	while( mySentence.nextpat( Action, TestPat,
 				   *kwordlist, TheLex,
-				   swcn ) ){
+				   swcn, dummy ) ){
 	  bool skip = false;
 	  if ( DoNpax && !do_known ){
 	    if ( (uwordlist->lookup( mySentence.getword(swcn))) == 0 ){

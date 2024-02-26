@@ -71,8 +71,12 @@ namespace Tagger {
     void clear();
     bool init_windowing( const std::map<icu::UnicodeString, icu::UnicodeString>&,
 			 UnicodeHash& );
-    bool nextpat( MatchAction&, std::vector<int>&, UnicodeHash& , UnicodeHash&,
-		  unsigned int, int * = 0 ) const;
+    bool nextpat( MatchAction&,
+		  std::vector<int>&,
+		  UnicodeHash&,
+		  UnicodeHash&,
+		  unsigned int,
+		  const std::vector<int>& ) const;
     int classify_hapax( const icu::UnicodeString&, UnicodeHash& ) const;
     void assign_tag( int, unsigned int );
     icu::UnicodeString getword( unsigned int i ) const {
