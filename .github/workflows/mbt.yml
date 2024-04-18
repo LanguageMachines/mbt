@@ -54,10 +54,11 @@ jobs:
                 sudo apt-get install pkg-config autoconf-archive
              else
                 brew upgrade;
-                brew install pkg-config;
-                brew install autoconf-archive;
-                brew install autoconf;
-                brew install automake;
+                brew install pkg-config
+                brew install libtool
+                brew install autoconf-archive
+                brew install autoconf
+                brew install automake
              fi
       - name: Install Dependencies
         run: |
