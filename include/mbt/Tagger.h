@@ -65,7 +65,7 @@ namespace Tagger {
   public:
     BeamData();
     ~BeamData();
-    bool Init( int, unsigned int );
+    void Init( int, unsigned int );
     void InitPaths( Hash::UnicodeHash&,
 		    const Timbl::TargetValue *,
 		    const Timbl::ClassDistribution * );
@@ -96,7 +96,7 @@ namespace Tagger {
     ~TaggerClass();
     bool InitTagging();
     bool InitLearning();
-    bool InitBeaming( unsigned int );
+    void InitBeaming( unsigned int );
     TaggerClass *clone() const;
     int Run( );
     std::vector<TagResult> tagLine( const icu::UnicodeString& );

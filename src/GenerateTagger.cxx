@@ -119,7 +119,7 @@ namespace Tagger {
 	  out_file.good() ) ){
       COUT << "  Creating lexicon: "  << LexFileName << " of "
 	   << TagVect.size() << " entries." << endl;
-      for ( auto const& tv : TagVect ){
+      for ( auto const *tv : TagVect ){
 	out_file << tv->Freq() << " " << tv->Word
 		 << " " << tv->DisplayTagFreqs() << endl;
       }

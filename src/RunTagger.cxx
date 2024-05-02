@@ -72,7 +72,7 @@ namespace Tagger {
   BeamData::~BeamData(){
   }
 
-  bool BeamData::Init( int Size, unsigned int noWords ){
+  void BeamData::Init( int Size, unsigned int noWords ){
     // Beaming Stuff...
     if ( path_prob.size() == 0 ){
       // the first time
@@ -86,7 +86,6 @@ namespace Tagger {
       temppaths[q].resize(noWords,0);
     }
     size = Size;
-    return true;
   }
 
   void BeamData::ClearBest(){
@@ -311,11 +310,11 @@ namespace Tagger {
     }
   }
 
-  bool TaggerClass::InitBeaming( unsigned int no_words ){
+  void TaggerClass::InitBeaming( unsigned int no_words ){
     if ( !Beam ){
       Beam = new BeamData();
     }
-    return Beam->Init( Beam_Size, no_words );
+    Beam->Init( Beam_Size, no_words );
   }
 
   int TaggerClass::ProcessLines( istream &is, ostream& os ){
@@ -780,11 +779,11 @@ namespace Tagger {
 
   vector<TagResult> TaggerClass::tagSentence( sentence& mySentence ){
     vector<TagResult> result;
+    if ( !initialized ){
+      throw runtime_error( "Tagger not initialized" );
+    }
     if ( mySentence.size() != 0 ){
-      if ( !initialized ||
-	   !InitBeaming( mySentence.size() ) ){
-	throw runtime_error( "Tagger not initialized" );
-      }
+      InitBeaming( mySentence.size() );
       DBG << mySentence << endl;
       if ( mySentence.init_windowing( *MT_lexicon, TheLex ) ) {
 	// here the word window is looked up in the dictionary and the values

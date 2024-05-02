@@ -45,7 +45,9 @@ namespace Tagger {
 
   TagInfo::TagInfo( const UnicodeString& word,
 		    const UnicodeString& tag ):
-    Word(word), WordFreq(0) {
+    Word(word),
+    WordFreq(0)
+  {
     Update( tag );
   }
 
@@ -143,7 +145,7 @@ namespace Tagger {
   }
 
   void StoreInVector( TagInfo *TI, void *arg ){
-    vector<TagInfo*> *vec = (vector<TagInfo*> *)arg;
+    vector<TagInfo*> *vec = static_cast<vector<TagInfo*>*>(arg);
     vec->push_back( TI );
   }
 
