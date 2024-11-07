@@ -80,7 +80,7 @@ namespace Tagger {
 
   template <typename T1, typename T2>
   struct more_second {
-    typedef pair<T1, T2> type;
+    using type = pair<T1, T2>;
     bool operator ()(type const& a, type const& b) const {
       return a.second > b.second;
     }
