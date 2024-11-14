@@ -56,6 +56,7 @@ using namespace icu;
 
 LogStream default_log( cerr );
 LogStream *cur_log = &default_log;  // fill the externals
+LogStream default_cout( cout, "", NoStamp);
 
 LogLevel internal_default_level = LogNormal;
 LogLevel Tagger_Log_Level       = internal_default_level;

@@ -33,7 +33,7 @@
 
 extern TiCC::LogStream default_log;
 extern TiCC::LogStream *cur_log;
-static TiCC::LogStream default_cout(std::cout);
+extern TiCC::LogStream default_cout;
 extern LogLevel Tagger_Log_Level;
 
 #define LOG (*TiCC::Log(cur_log))
