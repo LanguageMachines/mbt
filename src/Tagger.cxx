@@ -55,7 +55,6 @@ using namespace std;
 using namespace icu;
 
 LogStream default_log( cerr );
-LogStream default_cout( cout, "", NoStamp);
 LogStream *cur_log = &default_log;  // fill the externals
 
 LogLevel internal_default_level = LogNormal;
@@ -186,7 +185,8 @@ namespace Tagger {
     if ( !cloned ){
       delete cur_log;
     }
-    cur_log = new LogStream( os, "mbt-" );
+    cur_log = new LogStream( &os );
+    cur_log->set_message( "mbt-" );
     return true;
   }
 
