@@ -187,7 +187,7 @@ namespace Tagger {
       delete cur_log;
     }
     cur_log = new LogStream( &os );
-    cur_log->set_message( "mbt-" );
+    cur_log->addmessage( "mbt-" );
     return true;
   }
 
