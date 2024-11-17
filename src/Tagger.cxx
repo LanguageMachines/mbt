@@ -56,7 +56,7 @@ using namespace icu;
 
 LogStream default_log( cerr );
 LogStream *cur_log = &default_log;  // fill the externals
-LogStream default_cout( cout, "", NoStamp);
+LogStream default_cout( cout );
 
 LogLevel internal_default_level = LogNormal;
 LogLevel Tagger_Log_Level       = internal_default_level;
@@ -78,9 +78,9 @@ namespace Tagger {
   TaggerClass::TaggerClass():
     cur_log(new LogStream( cerr ))
   {
-    cur_log->setlevel( LogNormal );
-    cur_log->setstamp( StampMessage );
-    default_cout.setstamp( NoStamp );
+    cur_log->set_level( LogNormal );
+    cur_log->set_stamp( StampMessage );
+    default_cout.set_stamp( NoStamp );
     KnownTree = NULL;
     unKnownTree = NULL;
     TimblOptStr = "+vS -FColumns K: -a IGTREE +D U: -a IB1 ";
@@ -187,7 +187,7 @@ namespace Tagger {
       delete cur_log;
     }
     cur_log = new LogStream( &os );
-    cur_log->addmessage( "mbt-" );
+    cur_log->add_message( "mbt-" );
     return true;
   }
 
