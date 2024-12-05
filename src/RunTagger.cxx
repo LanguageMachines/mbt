@@ -1170,19 +1170,19 @@ namespace Tagger {
     }
     if ( Opts.extract( 'D', value ) ){
       if ( value == "LogSilent" ) {
-	cur_log->setlevel( LogSilent );
+	cur_log->set_level( LogSilent );
       }
       else if ( value == "LogNormal" ){
-	cur_log->setlevel( LogNormal );
+	cur_log->set_level( LogNormal );
       }
       else if ( value == "LogDebug" ){
-	cur_log->setlevel( LogDebug );
+	cur_log->set_level( LogDebug );
       }
       else if ( value == "LogHeavy" ){
-	cur_log->setlevel( LogHeavy );
+	cur_log->set_level( LogHeavy );
       }
       else if ( value == "LogExtreme" ){
-	cur_log->setlevel( LogExtreme );
+	cur_log->set_level( LogExtreme );
       }
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;

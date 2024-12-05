@@ -42,7 +42,7 @@ using std::ws;
 using std::map;
 using std::string;
 
-using string_map = map<string, string>;
+typedef  map<string, string> string_map;
 
 void fill_map( istream& in, string_map& map ){
   string tag, word;

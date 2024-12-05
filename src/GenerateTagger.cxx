@@ -80,8 +80,8 @@ namespace Tagger {
 
   template <typename T1, typename T2>
   struct more_second {
-    using type = pair<T1, T2>;
-    bool operator ()(type const& a, type const& b) const {
+    using c_type = pair<T1, T2>;
+    bool operator ()(c_type const& a, c_type const& b) const {
       return a.second > b.second;
     }
   };
@@ -531,24 +531,24 @@ namespace Tagger {
     }
     if ( opts.extract( 'D', value ) ){
       if ( value == "LogSilent" ){
-	cur_log->setlevel( LogSilent );
-	default_cout.setlevel( LogSilent );
+	cur_log->set_level( LogSilent );
+	default_cout.set_level( LogSilent );
       }
       else if ( value == "LogNormal" ){
-	cur_log->setlevel( LogNormal );
-	default_cout.setlevel( LogNormal );
+	cur_log->set_level( LogNormal );
+	default_cout.set_level( LogNormal );
       }
       else if ( value == "LogDebug" ){
-	cur_log->setlevel( LogDebug );
-	default_cout.setlevel( LogDebug );
+	cur_log->set_level( LogDebug );
+	default_cout.set_level( LogDebug );
       }
       else if ( value == "LogHeavy" ){
-	cur_log->setlevel( LogHeavy );
-	default_cout.setlevel( LogHeavy );
+	cur_log->set_level( LogHeavy );
+	default_cout.set_level( LogHeavy );
       }
       else if ( value == "LogExtreme" ){
-	cur_log->setlevel( LogExtreme );
-	default_cout.setlevel( LogExtreme );
+	cur_log->set_level( LogExtreme );
+	default_cout.set_level( LogExtreme );
       }
       else {
 	cerr << "Unknown Debug mode! (-D " << value << ")" << endl;

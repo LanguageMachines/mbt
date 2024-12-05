@@ -139,7 +139,7 @@ bool MbtAPI::GenerateTagger(int argc, char *argv[]) {
   // generate a tagger using argv.
   // Independent, static function so, don't use the internal _tagger here
   //
-  cur_log->setlevel( Tagger_Log_Level );
+  cur_log->set_level( Tagger_Log_Level );
   time_t timebefore, timeafter, timediff;
   time(&timebefore);
   int nw = TaggerClass::CreateTagger( argc, argv );
@@ -164,7 +164,7 @@ bool MbtAPI::GenerateTagger( const std::string& arg ) {
   // generate a tagger using a string.
   // Independent, static function so, don't use the internal _tagger here
   //
-  cur_log->setlevel( Tagger_Log_Level );
+  cur_log->set_level( Tagger_Log_Level );
   time_t timebefore, timeafter, timediff;
   time(&timebefore);
   int nw = TaggerClass::CreateTagger( arg );
