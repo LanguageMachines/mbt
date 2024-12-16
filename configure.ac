@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([mbt],[3.11],[lamasoftware@science.ru.nl]) #also adapt in codemeta.json!
+AC_INIT([mbt],[3.12],[lamasoftware@science.ru.nl]) #also adapt in codemeta.json!
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
