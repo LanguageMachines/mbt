@@ -1,3 +1,10 @@
+mbt version 3.11 2024-12-16
+[Ko van der Sloot]
+* updated to latest ticcutils
+* C++17 is required
+* some code improvements (more C++, less pointers)
+* updated GitHub CI
+
 mbt version 3.10 2023-10-21
 [Ko van der Sloot]
 * removed dependency on libtar
