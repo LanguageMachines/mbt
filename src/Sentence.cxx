@@ -232,7 +232,8 @@ namespace Tagger {
   }
 
   bool sentence::nextpat( MatchAction& Action, vector<int>& Pat,
-			  UnicodeHash& wordlist, UnicodeHash& TheLex,
+			  const UnicodeHash& wordlist,
+			  UnicodeHash& TheLex,
 			  unsigned int position,
 			  const vector<int>& old_pat ) const {
     Pat.clear();

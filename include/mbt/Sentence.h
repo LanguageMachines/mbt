@@ -73,7 +73,7 @@ namespace Tagger {
 			 UnicodeHash& );
     bool nextpat( MatchAction&,
 		  std::vector<int>&,
-		  UnicodeHash&,
+		  const UnicodeHash&,
 		  UnicodeHash&,
 		  unsigned int,
 		  const std::vector<int>& ) const;
