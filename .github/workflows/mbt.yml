@@ -3,7 +3,7 @@ name: C/C++ CI
 
 on:
   schedule:
-    - cron: "0 19 3 * 5"  # run test once a month
+    - cron: "0 19 4 * 5"  # run test once a month
   push:
     branches:
       - master
