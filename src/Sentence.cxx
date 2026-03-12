@@ -245,7 +245,6 @@ namespace Tagger {
     size_t CurWLen = current_word->the_word.length();
     const PatTemplate *aTemplate;
     word* wPtr;
-    unsigned int tok;
     // is the present pattern for a known or unknown word?
     //
     if ( Action == MakeKnown ){
@@ -305,7 +304,7 @@ namespace Tagger {
 	    Pat.push_back( wPtr->the_word_index );
 	  }
 	  else {
-	    tok = wordlist.lookup(  wPtr->the_word );
+	    auto tok = wordlist.lookup(  wPtr->the_word );
 	    //cerr << "known word Lookup(" << wPtr->the_word << ") gave " << tok << endl;
 	    if ( tok ){
 	      Pat.push_back( wPtr->the_word_index );

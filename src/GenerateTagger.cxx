@@ -90,7 +90,6 @@ namespace Tagger {
     TagLex TaggedLexicon;
     ifstream lex_file;
     ofstream out_file;
-    string Buffer;
     string filename = TestFilePath + TestFileName;
     if ( filename != "" ){
       if ( ( lex_file.open( filename, ios::in ),
