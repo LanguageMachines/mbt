@@ -201,8 +201,8 @@ namespace Tagger {
     }
     double sum_freq = 0.0;
     for ( const auto& it : *Dist ){
-      UnicodeString name = it.second->Value()->name();
-      double freq = it.second->Weight();
+      UnicodeString name = it.Value()->name();
+      double freq = it.Weight();
       sum_freq += freq;
       tmp = new name_prob_pair( name, freq );
       if ( name == PrefClass->name() ){
