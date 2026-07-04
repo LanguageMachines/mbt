@@ -1,6 +1,3 @@
-# $Id$
-# $URL$
-
 ACLOCAL_AMFLAGS = -I m4 --install
 
 SUBDIRS = src include docs example
