@@ -1,3 +1,8 @@
+mbt version 3.12 2026-07-06
+[Ko van der Sloot]
+* new release to work with timbl v7.0 (changed ABI)
+* some small code updates
+
 mbt version 3.11 2024-12-16
 [Ko van der Sloot]
 * updated to latest ticcutils
