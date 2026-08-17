@@ -1,3 +1,7 @@
+mbt version 3.13 2026-08-17
+[Maarten van Gompel]
+* 3.12 was released prematurely, this fixes it
+
 mbt version 3.12 2026-07-06
 [Ko van der Sloot]
 * new release to work with timbl v7.0 (changed ABI)
