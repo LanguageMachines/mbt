@@ -17,7 +17,7 @@ RUN if [ "$VERSION" = "distro" ]; then \
         apk update && apk add mbt; \
     else \
         PACKAGES="libtar libbz2 icu-libs libxml2 libexttextcat libgomp libstdc++" &&\
-        BUILD_PACKAGES="build-base autoconf-archive autoconf automake libtool libtar-dev bzip2-dev icu-dev libxml2-dev git" &&\
+        BUILD_PACKAGES="build-base autoconf-archive autoconf automake libtool bzip2-dev icu-dev libxml2-dev git" &&\
         apk add $PACKAGES $BUILD_PACKAGES &&\ 
         cd /usr/src/ && ./mbt/build-deps.sh &&\
         cd mbt && sh ./bootstrap.sh && ./configure && make && make install &&\
