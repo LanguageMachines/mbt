@@ -77,7 +77,7 @@ namespace Tagger {
 		  UnicodeHash&,
 		  unsigned int,
 		  const std::vector<int>& ) const;
-    int classify_hapax( const icu::UnicodeString&, UnicodeHash& ) const;
+    static int classify_hapax( const icu::UnicodeString&, UnicodeHash& );
     void assign_tag( int, unsigned int );
     icu::UnicodeString getword( unsigned int i ) const {
       return Words[i]->the_word;

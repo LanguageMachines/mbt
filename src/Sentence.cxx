@@ -202,7 +202,7 @@ namespace Tagger {
   }
 
   int sentence::classify_hapax( const UnicodeString& word,
-				UnicodeHash& TheLex ) const{
+				UnicodeHash& TheLex ) {
     UnicodeString hap = "HAPAX-";
     if ( word.indexOf( "-" ) != -1 ){
       // hyphen anywere
